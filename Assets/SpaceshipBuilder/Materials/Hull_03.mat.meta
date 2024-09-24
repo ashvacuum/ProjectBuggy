@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 411da7129d738164ba5abeae39ca906b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Materials/Hull_03.mat
+  uploadId: 466984

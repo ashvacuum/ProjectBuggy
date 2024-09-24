@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 56801c5b1930cca4bb286109b5a3c29e
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Prefabs/Weapons/Weapon_02.prefab
+  uploadId: 466984

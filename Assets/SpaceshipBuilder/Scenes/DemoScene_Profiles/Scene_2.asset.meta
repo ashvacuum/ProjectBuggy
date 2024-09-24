@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 67419a9e9b1eab249a52db686bfb35ed
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Scenes/DemoScene_Profiles/Scene_2.asset
+  uploadId: 466984

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a94b152d2dda3d247b5e5cc44d3b8c03
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Prefabs/Components_S_Size/Component_101.prefab
+  uploadId: 466984

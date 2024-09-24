@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 727134b271f4cfd4784ffc400212e3ed
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Materials/Background_03.mat
+  uploadId: 466984

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f797d0bdbed8ef24bb5d59146fde41cf
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Materials/skyProc.mat
+  uploadId: 466984

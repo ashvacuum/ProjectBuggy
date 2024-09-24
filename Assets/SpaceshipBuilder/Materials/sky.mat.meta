@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6e76248b6bde6dd47ab02c585f33eebe
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Materials/sky.mat
+  uploadId: 466984

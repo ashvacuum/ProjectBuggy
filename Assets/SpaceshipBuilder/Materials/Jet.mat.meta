@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 0c2e586d723c3654f83fdd5faf49f855
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Materials/Jet.mat
+  uploadId: 466984

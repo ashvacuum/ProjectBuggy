@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 04608464309407f43a2b38e7d97188ac
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Prefabs/Ships/Ship_01.prefab
+  uploadId: 466984

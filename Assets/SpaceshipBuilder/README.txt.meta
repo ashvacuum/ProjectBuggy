@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: ee45b2d11aca8f84aba734c67fab6712
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/README.txt
+  uploadId: 466984

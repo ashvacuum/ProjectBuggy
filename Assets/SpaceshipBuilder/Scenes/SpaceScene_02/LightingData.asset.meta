@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 711e31d2d4b265546b6b46933aaf760f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 189247
+  packageName: The Big Spaceship Builder
+  packageVersion: 2.2
+  assetPath: Assets/SpaceshipBuilder/Scenes/SpaceScene_02/LightingData.asset
+  uploadId: 466984
