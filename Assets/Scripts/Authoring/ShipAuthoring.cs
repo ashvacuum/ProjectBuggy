@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace Authoring
@@ -17,6 +18,7 @@ namespace Authoring
                 {
                     forwardSpeed = authoring.speed
                 });
+                AddComponent(entity, new LocalTransform());
 
             }
         }
