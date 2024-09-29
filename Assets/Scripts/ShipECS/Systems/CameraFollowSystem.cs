@@ -38,7 +38,7 @@ namespace ShipECS.Systems
                         quaternion.RotateX(cameraFollow.CameraPitch));
                     cameraFollow.CameraPitch = -1;*/
         //TODO: Remove this
-                        transform.ValueRW.Position.z += SystemAPI.Time.DeltaTime * 5;
+                        //transform.ValueRW.Position.z += SystemAPI.Time.DeltaTime * 5;
 
                     }
                 }
