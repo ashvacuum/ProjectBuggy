@@ -24,7 +24,6 @@ namespace ShipECS.Systems
                 var prefab = SystemAPI.GetSingleton<Spawner>().Prefab;
                 var instances = state.EntityManager.Instantiate(prefab);
                 var transform = SystemAPI.GetComponentRW<LocalTransform>(instances);
-               // transform.ValueRW.Position = 
             }
         }
     }
