@@ -1,5 +1,6 @@
 using System;
 using Authoring;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -15,7 +16,8 @@ namespace ShipECS.Systems
         {
             state.RequireForUpdate<EnemyFollowTarget>();
         }
-
+        
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             
@@ -24,6 +26,12 @@ namespace ShipECS.Systems
                          .WithAll<ShipComponent>()
                          .WithEntityAccess())
             {
+                new FollowPlayerJob()
+                {
+                    TargetLocation = playerTransform.ValueRO.Position,
+                    DeltaTime = SystemAPI.Time.DeltaTime
+                }.ScheduleParallel();
+                /*
                 foreach (var (enemyTransform, followComponent, entity) in
                          SystemAPI.Query<RefRW<LocalTransform>, RefRO<EnemyFollowTarget>>()
                              .WithNone<NewEnemySpawn>()
@@ -43,12 +51,44 @@ namespace ShipECS.Systems
                         math.pow(calcExp, 1f/3f));
                     
                     var direction = playerTransform.ValueRO.Position - enemyTransform.ValueRO.Position;
-                    enemyTransform.ValueRW.Rotation = quaternion.LookRotation(math.normalize(direction)  * SystemAPI.Time.DeltaTime * followComponent.ValueRO.RotationSpeed
-                        , math.up());
-                }
+                    enemyTransform.ValueRW.Rotation = quaternion.LookRotation(
+                        math.normalize(direction)  * SystemAPI.Time.DeltaTime * followComponent.ValueRO.RotationSpeed,
+                        math.up());
+
+                    
+                }*/
             }
         }
+    }
+    
+    [WithAll(typeof(EnemyFollowTarget))]
+    [WithNone(typeof(NewEnemySpawn))]
+    [BurstCompile]
+    public partial struct FollowPlayerJob : IJobEntity
+    {
+        public float3 TargetLocation;
+        public float DeltaTime;
 
-        
+        void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, ref EnemyFollowTarget followTarget)
+        {
+            if (math.distance(shipTransform.Position,TargetLocation) < 50f)
+            {
+                return;
+            }
+            
+            var calcExp = DeltaTime * followTarget.Speed;
+            shipTransform.Position = math.lerp(
+                shipTransform.Position,
+                // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                shipTransform.Position + shipTransform.Forward(),
+                math.pow(calcExp, 1f/3f));
+            
+            var direction = TargetLocation - shipTransform.Position;
+            shipTransform.Rotation = quaternion.LookRotation(
+                math.normalize(direction)  * DeltaTime * followTarget.RotationSpeed,
+                math.up());
+            
+            
+        }
     }
 }

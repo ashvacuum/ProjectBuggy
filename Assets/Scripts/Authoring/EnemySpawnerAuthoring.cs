@@ -1,5 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Authoring
 {
@@ -7,7 +8,8 @@ namespace Authoring
     {
 
         public GameObject EnemyPrefab;
-        public float Radius;
+        [FormerlySerializedAs("Radius")] public float MinRadius;
+        public float MaxRadius;
         public int MaximumEnemies;
         private class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
         {
@@ -17,7 +19,8 @@ namespace Authoring
                 AddComponent(entity, new EnemySpawnerData()
                 {
                     EnemyPrefab = GetEntity(authoring.EnemyPrefab, TransformUsageFlags.Dynamic),
-                    Radius = authoring.Radius,
+                    MinRadius = authoring.MinRadius,
+                    MaxRadius = authoring.MaxRadius,
                     MaximumEnemies = authoring.MaximumEnemies
                 });
             }
@@ -27,7 +30,8 @@ namespace Authoring
     public struct EnemySpawnerData : IComponentData
     {
         public Entity EnemyPrefab;
-        public float Radius;
+        public float MinRadius;
+        public float MaxRadius;
         public int MaximumEnemies;
     }
 }

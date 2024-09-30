@@ -60,7 +60,8 @@ namespace ShipECS.Systems
                 {
                     SeedOffset = seedOffset,
                     ReferencePoint = transform.ValueRO.Position,
-                    Radius = spawnData.Radius
+                    MinRadius = spawnData.MinRadius,
+                    MaxRadius = spawnData.MaxRadius,
                 }.ScheduleParallel();
             }
 
@@ -73,16 +74,19 @@ namespace ShipECS.Systems
     partial struct RandomPositionJob : IJobEntity
     {
         public uint SeedOffset;
-        public float Radius;
+        public float MinRadius;
+        public float MaxRadius;
         public float3 ReferencePoint;
 
-        public void Execute([EntityIndexInQuery] int index, ref LocalTransform transform)
+        private void Execute([EntityIndexInQuery] int index, ref LocalTransform transform)
         {
             // Random instances with similar seeds produce similar results, so to get proper
             // randomness here, we use CreateFromIndex, which hashes the seed.
             var random = Random.CreateFromIndex(SeedOffset + (uint)index);
-            var xz = random.NextFloat2Direction() * Radius;
-            transform.Position = new float3(ReferencePoint.x + xz[0], 50,ReferencePoint.z + xz[1]);
+            var randomRadius = MinRadius + random.NextFloat() * (MaxRadius - MinRadius);
+            var xz = random.NextFloat2Direction() * randomRadius;
+
+            transform.Position = new float3(ReferencePoint.x + xz[0], 0, ReferencePoint.z + xz[1]);
         }
     }
 }
