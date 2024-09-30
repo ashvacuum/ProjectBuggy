@@ -8,6 +8,7 @@ namespace Authoring
     {
 
         public float speed = 20f;
+        public float rotationSpeed = 20f;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring)
@@ -17,7 +18,8 @@ namespace Authoring
                 AddComponent(entity, new NewEnemySpawn());
                 AddComponent(entity, new EnemyFollowTarget()
                 {
-                    Speed = authoring.speed
+                    Speed = authoring.speed,
+                    RotationSpeed = authoring.rotationSpeed
                 });
             }
         }
@@ -26,6 +28,7 @@ namespace Authoring
     public struct EnemyFollowTarget : IComponentData
     {
         public float Speed;
+        public float RotationSpeed;
     }
 
     public struct NewEnemySpawn : IComponentData { }

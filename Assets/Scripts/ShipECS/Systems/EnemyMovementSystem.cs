@@ -1,7 +1,9 @@
+using System;
 using Authoring;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems
 {
@@ -24,28 +26,29 @@ namespace ShipECS.Systems
             {
                 foreach (var (enemyTransform, followComponent, entity) in
                          SystemAPI.Query<RefRW<LocalTransform>, RefRO<EnemyFollowTarget>>()
-                             .WithAll<EnemyFollowTarget>()
                              .WithNone<NewEnemySpawn>()
                              .WithEntityAccess())
                 {
-                    //stop if you get too close
+                    
                     if (math.distance(enemyTransform.ValueRO.Position,playerTransform.ValueRO.Position) < 10f)
                     {
                         return;
                     }
-
+                    
                     var calcExp = SystemAPI.Time.DeltaTime * followComponent.ValueRO.Speed;
                     enemyTransform.ValueRW.Position = math.lerp(
                         enemyTransform.ValueRO.Position,
-                        playerTransform.ValueRO.Position,
+                        // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                        enemyTransform.ValueRO.Position + enemyTransform.ValueRO.Forward(),
                         math.pow(calcExp, 1f/3f));
-
-                    //TODO: rotate towards direction
-                    //TODO: move them towards their forward direction and them rotate them towards enemy slowly.
                     
-
+                    var direction = playerTransform.ValueRO.Position - enemyTransform.ValueRO.Position;
+                    enemyTransform.ValueRW.Rotation = quaternion.LookRotation(math.normalize(direction)  * SystemAPI.Time.DeltaTime * followComponent.ValueRO.RotationSpeed
+                        , math.up());
                 }
             }
         }
+
+        
     }
 }
