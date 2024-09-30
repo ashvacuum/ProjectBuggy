@@ -1,15 +1,15 @@
 using Unity.Entities;
 using UnityEngine;
 
-namespace CameraSystem
+namespace Authoring
 {
-    public class SpawnerAuthoring : MonoBehaviour
+    public class PlayerSpawnerAuthoring : MonoBehaviour
     {
         public GameObject prefab;
 
-        class Baker : Baker<SpawnerAuthoring>
+        class Baker : Baker<PlayerSpawnerAuthoring>
         {
-            public override void Bake(SpawnerAuthoring authoring)
+            public override void Bake(PlayerSpawnerAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.None);
                 AddComponent(entity, new Spawner()

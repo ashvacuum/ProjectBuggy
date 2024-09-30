@@ -1,5 +1,4 @@
 using Authoring;
-using CameraSystem;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -16,7 +15,6 @@ namespace ShipECS.Systems
 
         public void OnUpdate(ref SystemState state)
         {
-            
 
             var shipQuery = SystemAPI.QueryBuilder().WithAll<ShipComponent>().Build();
             if (shipQuery.IsEmpty)

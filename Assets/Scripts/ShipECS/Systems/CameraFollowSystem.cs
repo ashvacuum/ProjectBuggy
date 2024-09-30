@@ -34,12 +34,7 @@ namespace ShipECS.Systems
                     {
                         cameraTransform.position = math.lerp(cameraTransform.position, cameraFollow.Offset + transform.ValueRO.Position,
                             math.sqrt(SystemAPI.Time.DeltaTime * cameraFollow.CameraSpeed));
-                        /*cameraTransform.rotation = math.mul(cameraTransform.rotation,
-                        quaternion.RotateX(cameraFollow.CameraPitch));
-                    cameraFollow.CameraPitch = -1;*/
-        //TODO: Remove this
-                        //transform.ValueRW.Position.z += SystemAPI.Time.DeltaTime * 5;
-
+                        //TODO: find a way to rotate camera and set rotation without turning endlessly, use camera pitch somehow
                     }
                 }
                 
