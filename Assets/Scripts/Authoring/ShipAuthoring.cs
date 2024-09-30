@@ -1,5 +1,9 @@
+using ShipECS.Systems;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Authoring
 {
@@ -7,6 +11,10 @@ namespace Authoring
     {
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public float speed = 100f;
+        public float3 CameraOffset;
+        public float CameraPitchOverride;
+        public float CameraSpeedOverride;
+        
 
         public class Baker : Baker<ShipAuthoring>
         {
@@ -17,6 +25,14 @@ namespace Authoring
                 {
                     forwardSpeed = authoring.speed
                 });
+                AddComponent(entity, new LocalTransform());
+                AddComponent(entity, new CameraFollow()
+                {
+                    Offset = authoring.CameraOffset,
+                    CameraPitch = authoring.CameraPitchOverride,
+                    CameraSpeed = authoring.CameraSpeedOverride
+                });
+                
 
             }
         }
