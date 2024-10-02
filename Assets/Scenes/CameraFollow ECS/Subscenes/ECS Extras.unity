@@ -208,8 +208,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnemyPrefab: {fileID: 3249313154710831440, guid: d86f80a954201624ba05738c32249da2, type: 3}
-  Radius: 200
-  MaximumEnemies: 20
+  MinRadius: 750
+  MaxRadius: 1500
+  MaximumEnemies: 500
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

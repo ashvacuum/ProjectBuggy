@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 8501589321424488365, guid: 3a55112667d7c2344bdaf6659f6e17e7, type: 3}
       propertyPath: m_Name
-      value: Ship_21 Variant
+      value: Ship 21 Authored
       objectReference: {fileID: 0}
     - target: {fileID: 8501589321424488366, guid: 3a55112667d7c2344bdaf6659f6e17e7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -77,3 +77,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a684e4ea9d57c44479af4f668ef4e3a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 10
+  rotationSpeed: 0.2

@@ -6,6 +6,9 @@ namespace Authoring
 {
     public class EnemyAuthoring : MonoBehaviour
     {
+
+        public float speed = 20f;
+        public float rotationSpeed = 20f;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring)
@@ -13,12 +16,20 @@ namespace Authoring
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new LocalTransform());
                 AddComponent(entity, new NewEnemySpawn());
-                AddComponent(entity, new EnemyFollowTarget());
+                AddComponent(entity, new EnemyFollowTarget()
+                {
+                    Speed = authoring.speed,
+                    RotationSpeed = authoring.rotationSpeed
+                });
             }
         }
     }
 
-    public struct EnemyFollowTarget : IComponentData { }
+    public struct EnemyFollowTarget : IComponentData
+    {
+        public float Speed;
+        public float RotationSpeed;
+    }
 
     public struct NewEnemySpawn : IComponentData { }
 }
