@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
       propertyPath: m_Name
-      value: Ship Authored
+      value: Ship 04 Authored
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -80,7 +80,7 @@ MonoBehaviour:
   speed: 100
   CameraOffset:
     x: 0
-    y: 250
+    y: 1000
     z: 0
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
