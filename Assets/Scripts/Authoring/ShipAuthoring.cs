@@ -16,6 +16,7 @@ namespace Authoring
         public float CameraPitchOverride;
         public float CameraSpeedOverride;
         public float Health = 400f;
+        public float NextTimeCanTakeDamage = 0.4f;
         
 
         public class Baker : Baker<ShipAuthoring>
@@ -51,5 +52,11 @@ namespace Authoring
     public struct HealthComponent : IComponentData
     {
         public float Health;
+        public float NextTimeToTakeDamage;
+    }
+
+    public struct DamageComponent : IComponentData
+    {
+        public float Damage;
     }
 }

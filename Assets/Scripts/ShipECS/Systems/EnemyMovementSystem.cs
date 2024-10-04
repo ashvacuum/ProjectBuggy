@@ -31,32 +31,6 @@ namespace ShipECS.Systems
                     TargetLocation = playerTransform.ValueRO.Position,
                     DeltaTime = SystemAPI.Time.DeltaTime
                 }.ScheduleParallel();
-                /*
-                foreach (var (enemyTransform, followComponent, entity) in
-                         SystemAPI.Query<RefRW<LocalTransform>, RefRO<EnemyFollowTarget>>()
-                             .WithNone<NewEnemySpawn>()
-                             .WithEntityAccess())
-                {
-                    
-                    if (math.distance(enemyTransform.ValueRO.Position,playerTransform.ValueRO.Position) < 10f)
-                    {
-                        return;
-                    }
-                    
-                    var calcExp = SystemAPI.Time.DeltaTime * followComponent.ValueRO.Speed;
-                    enemyTransform.ValueRW.Position = math.lerp(
-                        enemyTransform.ValueRO.Position,
-                        // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-                        enemyTransform.ValueRO.Position + enemyTransform.ValueRO.Forward(),
-                        math.pow(calcExp, 1f/3f));
-                    
-                    var direction = playerTransform.ValueRO.Position - enemyTransform.ValueRO.Position;
-                    enemyTransform.ValueRW.Rotation = quaternion.LookRotation(
-                        math.normalize(direction)  * SystemAPI.Time.DeltaTime * followComponent.ValueRO.RotationSpeed,
-                        math.up());
-
-                    
-                }*/
             }
         }
     }
@@ -71,7 +45,7 @@ namespace ShipECS.Systems
 
         void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, ref EnemyFollowTarget followTarget)
         {
-            if (math.distance(shipTransform.Position,TargetLocation) < 5f)
+            if (math.distance(shipTransform.Position,TargetLocation) < 50f)
             {
                 return;
             }

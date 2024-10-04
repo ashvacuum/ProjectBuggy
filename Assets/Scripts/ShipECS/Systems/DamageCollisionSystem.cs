@@ -1,3 +1,4 @@
+using Authoring;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -11,9 +12,12 @@ namespace ShipECS.Systems
     [UpdateBefore(typeof(PhysicsSimulationGroup))]
     public partial struct DamageCollisionSystem : ISystem
     {
+        private SimulationSingleton Simulation;
+        
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<SimulationSingleton>();
+            Simulation = SystemAPI.GetSingleton<SimulationSingleton>();
         }
 
         [BurstCompile]
@@ -21,17 +25,30 @@ namespace ShipECS.Systems
         {
             NativeReference<int> numCollisionEvents = new NativeReference<int>(0, Allocator.TempJob);
 
-            var collisionEvents = SystemAPI.GetSingleton<SimulationSingleton>().AsSimulation().CollisionEvents;
-            var collisionCount = 0;
-            foreach (var collisionEvent in collisionEvents)
+            var collisionEvents = Simulation.AsSimulation().CollisionEvents;
+            /*
+            new CollisionCheckJob()
             {
-                collisionCount++;
-            }
+                
+            }.Schedule(,Simulation,)
             
-            Debug.Log($"{collisionCount}");
-        
+        */
 
             // ...
+        }
+    }
+
+    public struct CollisionCheckJob : ICollisionEventsJob
+    {
+        public float DeltaTime;
+        public ComponentLookup<HealthComponent> HealthGroup;
+        // To read damage data
+        [ReadOnly] public ComponentLookup<DamageComponent> DamageGroup;
+        
+        
+        public void Execute(CollisionEvent collisionEvent)
+        {
+            
         }
     }
 }
