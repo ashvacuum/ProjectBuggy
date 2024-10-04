@@ -71,7 +71,7 @@ namespace ShipECS.Systems
 
         void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, ref EnemyFollowTarget followTarget)
         {
-            if (math.distance(shipTransform.Position,TargetLocation) < 50f)
+            if (math.distance(shipTransform.Position,TargetLocation) < 5f)
             {
                 return;
             }

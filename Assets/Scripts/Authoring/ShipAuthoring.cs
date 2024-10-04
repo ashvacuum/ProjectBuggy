@@ -1,6 +1,7 @@
 using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,6 +15,7 @@ namespace Authoring
         public float3 CameraOffset;
         public float CameraPitchOverride;
         public float CameraSpeedOverride;
+        public float Health = 400f;
         
 
         public class Baker : Baker<ShipAuthoring>
@@ -23,16 +25,19 @@ namespace Authoring
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new ShipComponent()
                 {
-                    forwardSpeed = authoring.speed
+                    ForwardSpeed = authoring.speed
                 });
-                AddComponent(entity, new LocalTransform());
                 AddComponent(entity, new CameraFollow()
                 {
                     Offset = authoring.CameraOffset,
                     CameraPitch = authoring.CameraPitchOverride,
                     CameraSpeed = authoring.CameraSpeedOverride
                 });
-                
+                AddComponent(entity, new HealthComponent()
+                {
+                    Health = authoring.Health
+                });
+
 
             }
         }
@@ -40,6 +45,11 @@ namespace Authoring
 
     public struct ShipComponent : IComponentData
     {
-        public float forwardSpeed;
+        public float ForwardSpeed;
+    }
+
+    public struct HealthComponent : IComponentData
+    {
+        public float Health;
     }
 }

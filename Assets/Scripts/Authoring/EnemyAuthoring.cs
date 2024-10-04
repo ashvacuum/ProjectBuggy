@@ -14,7 +14,6 @@ namespace Authoring
             public override void Bake(EnemyAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent(entity, new LocalTransform());
                 AddComponent(entity, new NewEnemySpawn());
                 AddComponent(entity, new EnemyFollowTarget()
                 {
