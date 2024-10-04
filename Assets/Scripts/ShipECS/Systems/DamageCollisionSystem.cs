@@ -50,16 +50,18 @@ namespace ShipECS.Systems
             {
                 var healthA = HealthGroup[entityA];
                 var damageB = DamageGroup[entityB];
-                if (healthA.CurrentNextTimeToTakeDamage <= 0)
+                if (healthA.CurrentNextTimeToTakeDamage >= 0)
                 {
                     healthA.Health -= damageB.Damage;
                     healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
-                    Debug.Log($"Entity B took {damageB.Damage}, total Health : {healthA.Health}");
+                    Debug.Log($"Entity B took {damageB.Damage}, total Health : {healthA.Health}, {healthA.CurrentNextTimeToTakeDamage }");
                 }
                 else
                 {
                     healthA.CurrentNextTimeToTakeDamage -= DeltaTime;
+                    Debug.Log($"Entity A can't be damaged until {healthA.CurrentNextTimeToTakeDamage} seconds");
                 }
+                
                 HealthGroup[entityA] = healthA;
                 
                
@@ -69,7 +71,7 @@ namespace ShipECS.Systems
             {
                 var healthB = HealthGroup[entityB];
                 var damageA = DamageGroup[entityA];
-                if (healthB.CurrentNextTimeToTakeDamage <= 0)
+                if (healthB.CurrentNextTimeToTakeDamage >= 0)
                 {
                     healthB.Health -= damageA.Damage;
                     healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
@@ -79,6 +81,7 @@ namespace ShipECS.Systems
                 else
                 {
                     healthB.CurrentNextTimeToTakeDamage -= DeltaTime;
+                    Debug.Log($"Entity B can't be damaged until {healthB.CurrentNextTimeToTakeDamage} seconds");
                 }
                 HealthGroup[entityB] = healthB;
             }
