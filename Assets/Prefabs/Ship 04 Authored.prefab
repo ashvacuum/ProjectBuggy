@@ -65,6 +65,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3574062286998883874}
+    - targetCorrespondingSourceObject: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9160538506472942447}
   m_SourcePrefab: {fileID: 100100000, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
 --- !u!1 &6569234968048207877 stripped
 GameObject:
@@ -90,6 +93,8 @@ MonoBehaviour:
     z: 0
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
+  Health: 400
+  NextTimeCanTakeDamage: 0.4
 --- !u!114 &3743403228728422599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,3 +289,16 @@ MonoBehaviour:
     Tag05: 0
     Tag06: 0
     Tag07: 0
+--- !u!114 &9160538506472942447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6569234968048207877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b59077a3b6f09634ca544e4df1abc214, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 100
