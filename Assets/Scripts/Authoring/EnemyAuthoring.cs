@@ -6,9 +6,9 @@ namespace Authoring
 {
     public class EnemyAuthoring : MonoBehaviour
     {
-
         public float speed = 20f;
         public float rotationSpeed = 20f;
+        public float damage = 1;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring)
@@ -19,6 +19,10 @@ namespace Authoring
                 {
                     Speed = authoring.speed,
                     RotationSpeed = authoring.rotationSpeed
+                });
+                AddComponent(entity, new DamageComponent()
+                {
+                    Damage = authoring.damage
                 });
             }
         }

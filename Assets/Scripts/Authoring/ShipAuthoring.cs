@@ -36,7 +36,9 @@ namespace Authoring
                 });
                 AddComponent(entity, new HealthComponent()
                 {
-                    Health = authoring.Health
+                    Health = authoring.Health,
+                    NextTimeToTakeDamage = authoring.NextTimeCanTakeDamage,
+                    CurrentNextTimeToTakeDamage = 0
                 });
 
 
@@ -53,6 +55,7 @@ namespace Authoring
     {
         public float Health;
         public float NextTimeToTakeDamage;
+        public float CurrentNextTimeToTakeDamage;
     }
 
     public struct DamageComponent : IComponentData
