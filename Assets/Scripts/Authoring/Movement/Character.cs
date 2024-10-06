@@ -27,5 +27,17 @@ public class CharacterBaker : Baker<Character>
         { 
         
         });
+        
+        AddComponent(entity, new ProximityComponent() 
+        { 
+        
+        });
+        
+        AddComponent(entity, new TargetComponent() 
+        { 
+        
+        });
+        
+        
     }
 }

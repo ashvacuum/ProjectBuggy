@@ -1,11 +1,11 @@
 using Unity.Entities;
-using Unity.Transforms;
 using Unity.Mathematics;
+using Unity.Transforms;
 
 public partial class WeaponFiringSystem : SystemBase
 {
     private EndSimulationEntityCommandBufferSystem _commandBufferSystem;
-    
+
     protected override void OnCreate()
     {
         _commandBufferSystem = World.GetOrCreateSystemManaged<EndSimulationEntityCommandBufferSystem>();
@@ -14,38 +14,51 @@ public partial class WeaponFiringSystem : SystemBase
     protected override void OnUpdate()
     {
         var deltaTime = SystemAPI.Time.DeltaTime;
-        var elapsedTime = SystemAPI.Time.ElapsedTime;
         var commandBuffer = _commandBufferSystem.CreateCommandBuffer().AsParallelWriter();
 
-        var ecb = _commandBufferSystem.CreateCommandBuffer().AsParallelWriter();
-        
+        // Create a local variable to hold the command buffer for use in the lambda
+        var weaponDataList = new NativeList<WeaponData>(Allocator.TempJob);
+
         Entities
-            .WithAll<WeaponComponent, LaserComponent>()
-            .ForEach((Entity entity, int entityInQueryIndex, ref WeaponComponent weapon, ref LaserComponent laser, ref TargetComponent target, ref ProximityComponent proximity, in LocalToWorld weaponPosition) =>
+            .WithAll<WeaponComponent, ProximityComponent>()
+            .ForEach((Entity entity, int entityInQueryIndex, ref WeaponComponent weapon, ref ProximityComponent proximity, in LocalToWorld weaponPosition) =>
             {
-                if (proximity.EnemyInProximity && target.HasTarget)
+                if (proximity.EnemyInProximity)
                 {
-                    float3 direction = math.normalize(target.TargetPosition - weaponPosition.Position);
-                    float currentTime = (float)elapsedTime;
-
-                    if (currentTime >= laser.LastFireTime + laser.BarrelOffsetTime && laser.IsFiring)
+                    // Iterate over each equipped weapon
+                    for (int i = 0; i < weapon.EquippedWeapons.Length; i++)
                     {
-                        FireProjectile(ecb, entityInQueryIndex, weapon, direction);
-                        laser.LastFireTime = currentTime;
-                    }
+                        var weaponData = weapon.EquippedWeapons[i];
 
-                    if (weapon.NumProjectiles == 0)
-                    {
-                        laser.IsFiring = false;
+                        // Check if the weapon can fire based on FireRate
+                        if (CanFireWeapon(weaponData, deltaTime))
+                        {
+                            FireProjectiles(commandBuffer, entityInQueryIndex, weaponData, weaponPosition);
+                        }
                     }
                 }
             }).ScheduleParallel();
-        
+
         _commandBufferSystem.AddJobHandleForProducer(Dependency);
     }
 
-    private static void FireProjectile(EntityCommandBuffer.ParallelWriter ecb, int entityInQueryIndex, WeaponComponent weapon, float3 direction)
+    private bool CanFireWeapon(WeaponData weaponData, float deltaTime)
     {
-        // Add logic to create projectile entities with the provided attributes like speed, damage, etc.
+        // Implement logic to check if the weapon can fire based on FireRate and elapsed time
+        // For demonstration, let's assume we always allow firing
+        return true;
+    }
+
+    private void FireProjectiles(EntityCommandBuffer.ParallelWriter ecb, int entityInQueryIndex, WeaponData weaponData, LocalToWorld weaponPosition)
+    {
+        for (int j = 0; j < weaponData.NumProjectiles; j++)
+        {
+            // Logic to instantiate projectiles based on weapon data
+            // You will need to create a new projectile entity and set its properties based on weaponData
+            // Example:
+            // var projectileEntity = ecb.Instantiate(entityInQueryIndex, projectilePrefab);
+            // ecb.SetComponent(entityInQueryIndex, projectileEntity, new ProjectileData { Speed = weaponData.ProjectileSpeed, Damage = weaponData.DamagePerProjectile });
+            // Set the position and direction of the projectile based on weaponPosition and firing direction
+        }
     }
 }
