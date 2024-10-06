@@ -17,12 +17,9 @@ namespace ShipECS.Systems
         {
 
             var shipQuery = SystemAPI.QueryBuilder().WithAll<ShipComponent>().Build();
-            if (shipQuery.IsEmpty)
-            {
-                var prefab = SystemAPI.GetSingleton<Spawner>().Prefab;
-                var instances = state.EntityManager.Instantiate(prefab);
-                var transform = SystemAPI.GetComponentRW<LocalTransform>(instances);
-            }
+            if (!shipQuery.IsEmpty) return;
+            var prefab = SystemAPI.GetSingleton<Spawner>().Prefab;
+            state.EntityManager.Instantiate(prefab);
         }
     }
     
