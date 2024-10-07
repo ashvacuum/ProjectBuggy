@@ -4,6 +4,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
+using Random = Unity.Mathematics.Random;
 
 namespace ShipECS.Systems
 {
@@ -40,9 +42,19 @@ namespace ShipECS.Systems
             state.EntityManager.RemoveComponent<NewEnemySpawn>(newSpawnQuery);
             
             var enemySpawnQuery = SystemAPI.QueryBuilder().WithAll<EnemyFollowTarget>().Build();
-            var currentEnemyCount = enemySpawnQuery.ToEntityArray(Allocator.Temp).Length;
+            var totalCount = 0;
+            
+            foreach (var (playerTransform, playerEntity) in
+                     SystemAPI.Query<RefRO<EnemyFollowTarget>>()
+                         .WithEntityAccess())
+            {
+                totalCount++;
+            }
 
-            if (currentEnemyCount > count)
+            
+            Debug.Log($"Total Count: {totalCount}");
+            
+            if (totalCount >= count)
             {
                 return;
             }
