@@ -25,7 +25,7 @@ namespace ShipECS.Systems
                 if(math.length(moveDirection) <= .05f) continue;
                 position += moveDirection * data.ValueRO.speed * SystemAPI.Time.DeltaTime;
             
-                transform.ValueRW.Position = new float3(position.x, 0, position.y);
+                transform.ValueRW.Position = new float3(position.x, 0, position.z);
 
 
                 if (!(math.length(moveDirection) > 0.01f)) continue; // Only rotate if there's significant movement
