@@ -28,6 +28,7 @@ public class CharacterBaker : Baker<Character>
         
         });
         
+        /*
         AddComponent(entity, new ProximityComponent() 
         { 
         
@@ -36,7 +37,7 @@ public class CharacterBaker : Baker<Character>
         AddComponent(entity, new TargetComponent() 
         { 
         
-        });
+        });*/
         
         
     }
