@@ -1,0 +1,24 @@
+.header {
+}
+
+.progressBar {
+    align-self: center;
+    align-content: center;
+    opacity: 1;
+    background-size: 95% 100%;
+    padding-right: 30px;
+    padding-left: 30px;
+    justify-content: flex-end;
+    align-items: auto;
+    flex-shrink: 1;
+    flex-direction: column-reverse;
+    margin-top: 4px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+    margin-left: 4px;
+    -unity-text-outline-width: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
