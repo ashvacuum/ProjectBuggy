@@ -37,7 +37,7 @@ public class GameSceneEvents : MonoBehaviour
         
         
         _progressBar.value = newHealth;
-        Debug.Log($"$New Value {newHealth}");
+        Debug.Log($"New Value {newHealth}");
     }
 
 }

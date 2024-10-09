@@ -1,6 +1,7 @@
 using Authoring;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace ShipECS.Systems
@@ -13,21 +14,25 @@ namespace ShipECS.Systems
     }
     public partial struct HealthNotifySystem : ISystem
     {
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<HealthChangeEvent>();
+        }
+
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            
-            // Check for entities with the HealthChangedTag and update UI
-            foreach (var (health, entity) in SystemAPI.Query<RefRO<HealthComponent>>().WithAll<HealthChangedTag>().WithAll<ShipComponent>().WithEntityAccess())
-            {
-                // Update the UI with the new health value
-                // e.g., call a MonoBehaviour to update UI
-                GameSceneEvents.Instance.UpdateHealth(health.ValueRO.HealthPercent * 100);
 
-                // Remove the tag after processing
-                //state.EntityManager.RemoveComponent<HealthChangedTag>(entity);
-                ecb.DestroyEntity(entity);
+
+            foreach (var (healthTag, tagEntity) in SystemAPI.Query<RefRO<HealthChangeEvent>>().WithEntityAccess())
+            {
+                Debug.Log("Updating Health");
+                GameSceneEvents.Instance.UpdateHealth(healthTag.ValueRO.NewHealth);
+
+                // Destroy Entity
+                ecb.DestroyEntity(tagEntity);
             }
+
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
@@ -38,20 +43,26 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (health, entity) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
+            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>().WithAll<ShipComponent>().WithNone<EnemyFollowTarget>())
             {
                 if (health.ValueRO.CurrentNextTimeToTakeDamage > 0)
                 {
                     health.ValueRW.CurrentNextTimeToTakeDamage -= SystemAPI.Time.DeltaTime;
                 }
-                
-                if (Mathf.Approximately(health.ValueRO.CurrentHealth, health.ValueRO.PreviousHealth)) continue;
+
+                var difference = math.abs(health.ValueRO.CurrentHealth - health.ValueRO.PreviousHealth);
+                if (difference < 0.1) continue;
                 
                 var eventEntity = ecb.CreateEntity();
                 ecb.AddComponent(eventEntity, new HealthChangeEvent
                 {
-                    NewHealth = health.ValueRO.CurrentHealth
+                    NewHealth = health.ValueRO.HealthPercent
                 });
+
+                health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;
+                
+                
+                Debug.Log($"Created Health Change Tag: {health.ValueRO.CurrentHealth} {health.ValueRO.PreviousHealth} : {difference}");
             }
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
