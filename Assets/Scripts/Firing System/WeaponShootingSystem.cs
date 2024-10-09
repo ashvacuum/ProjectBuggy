@@ -22,13 +22,13 @@ public partial struct  WeaponShootingSystem : ISystem
             state.EntityManager.SetComponentData(instance, new LocalTransform
             {
                 Position = SystemAPI.GetComponent<LocalToWorld>(weapon.BulletSpawn).Position,
-                Rotation = quaternion.identity,
+                Rotation = SystemAPI.GetComponent<LocalToWorld>(weapon.BulletSpawn).Rotation,
                 Scale = SystemAPI.GetComponent<LocalTransform>(weapon.BulletPrefab).Scale
             });
 
-            state.EntityManager.SetComponentData(instance, new Projectile()
+            state.EntityManager.SetComponentData(instance, new Projectile
             {
-                Velocity = localToWorld.ValueRO.Up * 20.0f
+                Velocity = localToWorld.ValueRO.Right * 20.0f
             });
 
 
