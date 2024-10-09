@@ -51,9 +51,6 @@ namespace ShipECS.Systems
                 totalCount++;
             }
 
-            
-            Debug.Log($"Total Count: {totalCount}");
-            
             if (totalCount >= count)
             {
                 return;

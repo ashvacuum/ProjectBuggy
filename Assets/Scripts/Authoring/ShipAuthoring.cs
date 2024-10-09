@@ -5,6 +5,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 namespace Authoring
 {
@@ -15,7 +16,7 @@ namespace Authoring
         public float3 CameraOffset;
         public float CameraPitchOverride;
         public float CameraSpeedOverride;
-        public float Health = 400f;
+        [FormerlySerializedAs("Health")] public float MaxHealth = 400f;
         public float NextTimeCanTakeDamage = 0.4f;
         
 
@@ -36,9 +37,11 @@ namespace Authoring
                 });
                 AddComponent(entity, new HealthComponent()
                 {
-                    Health = authoring.Health,
+                    MaxHealth = authoring.MaxHealth,
                     NextTimeToTakeDamage = authoring.NextTimeCanTakeDamage,
-                    CurrentNextTimeToTakeDamage = 0
+                    CurrentNextTimeToTakeDamage = 0,
+                    CurrentHealth = authoring.MaxHealth,
+                    PreviousHealth = authoring.MaxHealth
                 });
 
 
@@ -53,9 +56,13 @@ namespace Authoring
 
     public struct HealthComponent : IComponentData
     {
-        public float Health;
+        public float CurrentHealth;
+        public float MaxHealth;
+        public float PreviousHealth;
         public float NextTimeToTakeDamage;
         public float CurrentNextTimeToTakeDamage;
+
+        public float HealthPercent => CurrentHealth / MaxHealth * 100;
     }
 
     public struct DamageComponent : IComponentData
