@@ -9,7 +9,6 @@ using UnityEngine;
 namespace ShipECS.Systems
 {
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-    [UpdateBefore(typeof(PhysicsSimulationGroup))]
     public partial struct DamageCollisionSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -22,7 +21,6 @@ namespace ShipECS.Systems
         {
             var collisionCheckJob  = new CollisionCheckJob()
             {
-                DeltaTime = SystemAPI.Time.DeltaTime,
                 DamageGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
                 HealthGroup = SystemAPI.GetComponentLookup<HealthComponent>()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
@@ -35,7 +33,6 @@ namespace ShipECS.Systems
     [BurstCompile]
     public struct CollisionCheckJob : ICollisionEventsJob
     {
-        public float DeltaTime;
         public ComponentLookup<HealthComponent> HealthGroup;
         // To read damage data
         [ReadOnly] public ComponentLookup<DamageComponent> DamageGroup;
@@ -45,45 +42,35 @@ namespace ShipECS.Systems
         {
             var entityA = collisionEvent.EntityA;
             var entityB = collisionEvent.EntityB;
-            
+
             if (HealthGroup.HasComponent(entityA) && DamageGroup.HasComponent(entityB))
             {
                 var healthA = HealthGroup[entityA];
                 var damageB = DamageGroup[entityB];
-                if (healthA.CurrentNextTimeToTakeDamage >= 0)
-                {
-                    healthA.Health -= damageB.Damage;
-                    healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
-                    Debug.Log($"Entity B took {damageB.Damage}, total Health : {healthA.Health}, {healthA.CurrentNextTimeToTakeDamage }");
-                }
-                else
-                {
-                    healthA.CurrentNextTimeToTakeDamage -= DeltaTime;
-                    Debug.Log($"Entity A can't be damaged until {healthA.CurrentNextTimeToTakeDamage} seconds");
-                }
-                
+
+                if (!(healthA.CurrentNextTimeToTakeDamage <= 0)) return;
+
+                healthA.PreviousHealth = healthA.CurrentHealth;
+                healthA.CurrentHealth -= damageB.Damage;
+                healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
+                //Debug.Log($"Entity A took {damageB.Damage}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage}");
                 HealthGroup[entityA] = healthA;
-                
-               
             }
-            
+
             if (HealthGroup.HasComponent(entityB) && DamageGroup.HasComponent(entityA))
             {
                 var healthB = HealthGroup[entityB];
                 var damageA = DamageGroup[entityA];
-                if (healthB.CurrentNextTimeToTakeDamage >= 0)
-                {
-                    healthB.Health -= damageA.Damage;
-                    healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
-                    
-                    Debug.Log($"Entity A took {damageA.Damage}, total Health : {healthB.Health}");
-                }
-                else
-                {
-                    healthB.CurrentNextTimeToTakeDamage -= DeltaTime;
-                    Debug.Log($"Entity B can't be damaged until {healthB.CurrentNextTimeToTakeDamage} seconds");
-                }
+                
+                if (!(healthB.CurrentNextTimeToTakeDamage <= 0)) return;
+                
+                healthB.PreviousHealth = healthB.CurrentHealth;
+                healthB.CurrentHealth -= damageA.Damage;
+                healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
+                //Debug.Log($"Entity B took {damageA.Damage}, total Health : {healthB.CurrentHealth}, {healthB.CurrentNextTimeToTakeDamage }");
                 HealthGroup[entityB] = healthB;
+
+
             }
         }
     }

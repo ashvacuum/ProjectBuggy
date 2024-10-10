@@ -45,17 +45,19 @@ namespace ShipECS.Systems
 
         void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, ref EnemyFollowTarget followTarget)
         {
-            if (math.distance(shipTransform.Position,TargetLocation) < 50f)
+            if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits)
             {
                 return;
             }
             
             var calcExp = DeltaTime * followTarget.Speed;
-            shipTransform.Position = math.lerp(
+            var calculatedPosition = math.lerp(
                 shipTransform.Position,
                 // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                 shipTransform.Position + shipTransform.Forward(),
-                math.pow(calcExp, 1f/3f));
+                calcExp);
+            
+            shipTransform.Position = new float3(calculatedPosition.x, 0, calculatedPosition.z);
             
             var direction = TargetLocation - shipTransform.Position;
             shipTransform.Rotation = quaternion.LookRotation(
