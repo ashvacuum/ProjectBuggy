@@ -27,5 +27,6 @@ public class CharacterBaker : Baker<Character>
         });
 
         AddComponent(entity, new InputsData() );
+
     }
 }

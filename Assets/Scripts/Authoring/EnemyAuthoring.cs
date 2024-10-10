@@ -26,6 +26,11 @@ namespace Authoring
                 {
                     Damage = authoring.damage
                 });
+                
+                /*AddComponent(entity, new ()
+                {
+                    
+                });*/
             }
         }
     }
