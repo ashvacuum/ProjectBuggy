@@ -1,24 +1,46 @@
-.header {
+.unity-progress-bar__progress {
+    background-image: url("project://database/Assets/Art/Kenney/PNG/Red/Default/bar_round_gloss_large.png?fileID=2800000&guid=b14228a813cbbe84fac42394c419827e&type=3#bar_round_gloss_large");
+    background-color: rgba(255, 255, 255, 0);
+    background-size: 100% 100%;
+    -unity-text-outline-color: rgba(255, 255, 255, 0);
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-slice-scale: 1px;
+    -unity-slice-bottom: 0;
+    -unity-slice-left: 0;
+    -unity-slice-top: 0;
+    -unity-slice-right: 0;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-bottom-width: 5px;
+    border-left-width: 5px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-left-color: rgba(255, 255, 255, 0);
+    border-right-color: rgba(255, 255, 255, 0);
+    border-top-color: rgba(255, 255, 255, 0);
+    border-bottom-color: rgba(255, 255, 255, 0);
 }
 
-.progressBar {
-    align-self: center;
-    align-content: center;
-    opacity: 1;
-    background-size: 95% 100%;
-    padding-right: 30px;
-    padding-left: 30px;
-    justify-content: flex-end;
-    align-items: auto;
-    flex-shrink: 1;
-    flex-direction: column-reverse;
-    margin-top: 4px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-    margin-left: 4px;
-    -unity-text-outline-width: 0;
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
+.unity-progress-bar__background {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0);
+    background-size: 100% 100%;
+    -unity-text-outline-color: rgba(255, 255, 255, 0);
+    -unity-background-scale-mode: scale-and-crop;
+    -unity-slice-scale: 1px;
+    -unity-slice-bottom: 0;
+    -unity-slice-left: 30;
+    -unity-slice-top: 0;
+    -unity-slice-right: 30;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+}
+
+#ExperienceBar > #unity-progress-bar > .unity-progress-bar__background > .unity-progress-bar__progress {
+    background-image: url("project://database/Assets/Art/Kenney/PNG/Yellow/Double/bar_round_gloss_large.png?fileID=2800000&guid=1b0442512c88151419b19eade13c3b66&type=3#bar_round_gloss_large");
+}
+
+.exp_bar {
 }

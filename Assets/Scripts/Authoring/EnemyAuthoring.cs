@@ -10,6 +10,7 @@ namespace Authoring
         public float rotationSpeed = 20f;
         public float damage = 1;
         public float targetRangeBounds = 50f;
+        public float MaxHealth = 100f;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring)
@@ -26,6 +27,15 @@ namespace Authoring
                 {
                     Damage = authoring.damage
                 });
+                AddComponent(entity, new HealthComponent()
+                {
+                    MaxHealth = authoring.MaxHealth,
+                    CurrentHealth = authoring.MaxHealth,
+                    CurrentNextTimeToTakeDamage = 0f,
+                    NextTimeToTakeDamage = 0f,
+                    PreviousHealth = authoring.MaxHealth
+                });
+
                 
                 /*AddComponent(entity, new ()
                 {

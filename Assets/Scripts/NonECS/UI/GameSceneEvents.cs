@@ -1,43 +1,92 @@
 using System;
 using Authoring;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
-public class GameSceneEvents : MonoBehaviour
+namespace NonECS.UI
 {
-    private UIDocument _document;
-    private ProgressBar _progressBar;
-    
-    public static GameSceneEvents Instance { get; private set; }
-
-    private void Awake()
+    public class GameSceneEvents : MonoBehaviour
     {
-        if (Instance != null && Instance != this)
+        private UIDocument _document;
+        private ProgressBar _healthBar;
+        private ProgressBar _expBar;
+        private EntityManager _entityManager;
+        private Entity _targetEntity;
+
+        public static GameSceneEvents Instance { get; private set; }
+
+        private void Awake()
         {
-            Destroy(gameObject);
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                Instance = this;
+            }
         }
-        else
+
+        void Start()
         {
-            Instance = this;
+            _document = GetComponent<UIDocument>();
+            _healthBar = _document.rootVisualElement.Q("HealthBar") as ProgressBar;
+            _expBar = _document.rootVisualElement.Q("ExperienceBar") as ProgressBar;
+            if (_healthBar != null) _healthBar.value = 100;
+            if (_expBar != null) _expBar.value = 0;
+
+            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         }
-    }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        _document = GetComponent<UIDocument>();
-        _progressBar = _document.rootVisualElement.Q("ProgressBar") as ProgressBar;
-        if (_progressBar != null) _progressBar.value = 100;
-    }
-    
-    public void UpdateHealth(float newHealth)
-    {
-        if (_progressBar == null) return;
-        
-        
-        _progressBar.value = newHealth;
-        Debug.Log($"New Value {newHealth}");
-    }
+        private void LateUpdate()
+        {
+            if (_targetEntity != Entity.Null)
+            {
+                FollowEntity();
+                return;
+            }
 
+            var entityQuery = _entityManager.CreateEntityQuery(typeof(ShipComponent));
+            if (entityQuery.HasSingleton<ShipComponent>())
+                _targetEntity = entityQuery.GetSingletonEntity();
+        }
+
+        void FollowEntity()
+        {
+            if (!_entityManager.HasComponent<LocalTransform>(_targetEntity)) return;
+
+            var entityPosition = _entityManager.GetComponentData<LocalTransform>(_targetEntity).Position;
+
+            if (Camera.main == null) return;
+            var screenPosition = Camera.main.WorldToScreenPoint(entityPosition);
+
+            var uiPosition = new Vector2(screenPosition.x, Screen.height - screenPosition.y);
+
+            if (_healthBar == null) return;
+
+            _healthBar.style.left = uiPosition.x - _healthBar.resolvedStyle.width / 2;
+            _healthBar.style.top = uiPosition.y;
+        }
+
+        public void UpdateHealth(float newHealth)
+        {
+            if (_healthBar == null) return;
+
+            _healthBar.value = newHealth;
+            Debug.Log($"New Health Value {newHealth}");
+        }
+        
+        public void UpdateExp(float ExpValue)
+        {
+            if (_expBar == null) return;
+
+            _expBar.value += ExpValue;
+            Debug.Log($"New Exp Value {_expBar.value}");
+        }
+
+    }
 }

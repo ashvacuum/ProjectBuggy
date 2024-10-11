@@ -30,6 +30,16 @@ namespace ShipECS.Systems
         }
     }
 
+    public struct TriggerCheckJob : ITriggerEventsJob
+    {
+        
+        public ComponentLookup<Projectile> ProjectileGroup;
+        public void Execute(TriggerEvent triggerEvent)
+        {
+            
+        }
+    }
+
     [BurstCompile]
     public struct CollisionCheckJob : ICollisionEventsJob
     {

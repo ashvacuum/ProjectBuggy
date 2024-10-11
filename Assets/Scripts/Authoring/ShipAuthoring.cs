@@ -18,6 +18,7 @@ namespace Authoring
         public float CameraSpeedOverride;
         [FormerlySerializedAs("Health")] public float MaxHealth = 400f;
         public float NextTimeCanTakeDamage = 0.4f;
+        public float InitialPickupradius = 300f;
         
 
         public class Baker : Baker<ShipAuthoring>
@@ -43,6 +44,11 @@ namespace Authoring
                     CurrentHealth = authoring.MaxHealth,
                     PreviousHealth = authoring.MaxHealth
                 });
+                AddComponent(entity, new PickupRadiusComponent()
+                {
+                    BasePickupRadius = authoring.InitialPickupradius,
+                    PickupRadiusBonus = 0f
+                });
 
 
             }
@@ -63,6 +69,13 @@ namespace Authoring
         public float CurrentNextTimeToTakeDamage;
 
         public float HealthPercent => CurrentHealth / MaxHealth * 100;
+    }
+
+    public struct PickupRadiusComponent : IComponentData
+    {
+        public float BasePickupRadius;
+        public float PickupRadiusBonus; //add to this value over time but starts at 0;
+        public float TotalPickupRadius => BasePickupRadius + (PickupRadiusBonus/100 * PickupRadiusBonus);
     }
 
     public struct DamageComponent : IComponentData
