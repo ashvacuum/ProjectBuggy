@@ -1,4 +1,5 @@
 using Authoring;
+using NonECS.UI;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;

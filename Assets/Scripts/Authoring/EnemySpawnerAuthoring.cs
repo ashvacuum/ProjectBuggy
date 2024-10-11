@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,6 +14,12 @@ namespace Authoring
         [FormerlySerializedAs("Radius")] public float MinRadius;
         public float MaxRadius;
         public int MaximumEnemies;
+        public float MaximumTime = 1800;
+        public float BossTime = 300f;
+        //public 
+        
+        
+        
         private class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
         {
             public override void Bake(EnemySpawnerAuthoring authoring)
@@ -21,7 +30,9 @@ namespace Authoring
                     EnemyPrefab = GetEntity(authoring.EnemyPrefab, TransformUsageFlags.Dynamic),
                     MinRadius = authoring.MinRadius,
                     MaxRadius = authoring.MaxRadius,
-                    MaximumEnemies = authoring.MaximumEnemies
+                    MaximumEnemies = authoring.MaximumEnemies,
+                    MaximumTime = authoring.MaximumTime,
+                    BossTime = authoring.BossTime
                 });
             }
         }
@@ -33,5 +44,7 @@ namespace Authoring
         public float MinRadius;
         public float MaxRadius;
         public int MaximumEnemies;
+        public float MaximumTime;
+        public float BossTime;
     }
 }
