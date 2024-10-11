@@ -54,9 +54,5 @@ namespace Firing_System
             ecb.Dispose();
         }
 
-        public void OnCreateForCompiler(ref SystemState state)
-        {
-            
-        }
     }
 }
