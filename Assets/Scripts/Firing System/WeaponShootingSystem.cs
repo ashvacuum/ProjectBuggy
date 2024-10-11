@@ -17,7 +17,8 @@ public partial struct  WeaponShootingSystem : ISystem
                  SystemAPI.Query<WeaponAspect, RefRO<LocalToWorld>>()
                      .WithAll<Shooting>())
         {
-            Entity instance = state.EntityManager.Instantiate(weapon.BulletPrefab);
+            if (weapon.BulletPrefab == Entity.Null) continue;
+            var instance = state.EntityManager.Instantiate(weapon.BulletPrefab);
 
             state.EntityManager.SetComponentData(instance, new LocalTransform
             {

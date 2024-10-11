@@ -70,7 +70,7 @@ PrefabInstance:
       addedObject: {fileID: 9160538506472942447}
     - targetCorrespondingSourceObject: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5068680455290038057}
+      addedObject: {fileID: 2898807237400095174}
   m_SourcePrefab: {fileID: 100100000, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
 --- !u!1 &6569234968048207877 stripped
 GameObject:
@@ -96,7 +96,7 @@ MonoBehaviour:
     z: 0
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
-  Health: 400
+  MaxHealth: 400
   NextTimeCanTakeDamage: 0.4
 --- !u!114 &3743403228728422599
 MonoBehaviour:
@@ -306,6 +306,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 100
   rotSpeed: 20
+--- !u!114 &2898807237400095174
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -314,13 +315,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6569234968048207877}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2adf7b8fd25e18a478d6c1897b93988a, type: 3}
+  m_Script: {fileID: 11500000, guid: c9273fd6f671dd544be259c5453ffafe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FireRate: 0
+  bulletPrefab: {fileID: 0}
+  bulletSpawn: {fileID: 0}
+  Id: 0
+  NameId: 0
   AreaOfEffect: 0
   Duration: 0
   NumProjectiles: 0
   DamagePerProjectile: 0
   ProjectileSpeed: 0
   ProjectilePenetration: 0
+  ProjectileInterval: 0
