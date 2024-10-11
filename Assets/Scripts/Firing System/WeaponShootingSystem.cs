@@ -13,8 +13,8 @@ namespace Firing_System
 
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (weapon, localToWorld) in
-                     SystemAPI.Query<WeaponAspect, RefRO<LocalToWorld>>()
+            foreach (var weapon in
+                     SystemAPI.Query<WeaponAspect>()
                          .WithAll<Shooting>())
             {
                 if (weapon.BulletPrefab == Entity.Null) continue;
@@ -42,7 +42,7 @@ namespace Firing_System
 
                 state.EntityManager.SetComponentData(instance, new Projectile
                 {
-                    Velocity = localToWorld.ValueRO.Right * 20.0f
+                    Velocity = weapon.LocalToWorld.ValueRO.Right * 20.0f
                 });
 
 
