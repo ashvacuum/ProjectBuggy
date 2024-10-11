@@ -1,38 +1,52 @@
-using Unity.Burst;
+using Authoring;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Rendering;
 using Unity.Transforms;
 
-public partial struct  WeaponShootingSystem : ISystem
+namespace Firing_System
 {
-    public void OnCreate(ref SystemState state)
+    public partial struct  WeaponShootingSystem : ISystem
     {
-        state.RequireForUpdate<Weapon>();
-    }
-
-    public void OnUpdate(ref SystemState state)
-    {
-        foreach (var (weapon, localToWorld) in
-                 SystemAPI.Query<WeaponAspect, RefRO<LocalToWorld>>()
-                     .WithAll<Shooting>())
+        public void OnCreate(ref SystemState state)
         {
-            if (weapon.BulletPrefab == Entity.Null) continue;
-            var instance = state.EntityManager.Instantiate(weapon.BulletPrefab);
+            state.RequireForUpdate<Weapon>();
+        }
 
-            state.EntityManager.SetComponentData(instance, new LocalTransform
+        public void OnUpdate(ref SystemState state)
+        {
+            foreach (var (weapon, localToWorld) in
+                     SystemAPI.Query<WeaponAspect, RefRO<LocalToWorld>>()
+                         .WithAll<Shooting>())
             {
-                Position = SystemAPI.GetComponent<LocalToWorld>(weapon.BulletSpawn).Position,
-                Rotation = SystemAPI.GetComponent<LocalToWorld>(weapon.BulletSpawn).Rotation,
-                Scale = SystemAPI.GetComponent<LocalTransform>(weapon.BulletPrefab).Scale
-            });
+                if (weapon.BulletPrefab == Entity.Null) continue;
+                var instance = state.EntityManager.Instantiate(weapon.BulletPrefab);
+                state.EntityManager.AddComponent<DamageComponent>(instance);
+                state.EntityManager.SetComponentData(instance, new DamageComponent()
+                {
+                    Damage = weapon.DamagePerProjectile
+                });
+                state.EntityManager.AddComponent<HealthComponent>(instance);
+                state.EntityManager.SetComponentData(instance, new HealthComponent()
+                {
+                    CurrentHealth = weapon.ProjectilePenetration,
+                    CurrentNextTimeToTakeDamage = 0,
+                    MaxHealth = weapon.ProjectilePenetration,
+                    NextTimeToTakeDamage = 0f,
+                    PreviousHealth = weapon.ProjectilePenetration
+                });
+                state.EntityManager.SetComponentData(instance, new LocalTransform
+                {
+                    Position = SystemAPI.GetComponent<LocalToWorld>(weapon.BulletSpawn).Position,
+                    Rotation = SystemAPI.GetComponent<LocalToWorld>(weapon.BulletSpawn).Rotation,
+                    Scale = SystemAPI.GetComponent<LocalTransform>(weapon.BulletPrefab).Scale
+                });
 
-            state.EntityManager.SetComponentData(instance, new Projectile
-            {
-                Velocity = localToWorld.ValueRO.Right * 20.0f
-            });
+                state.EntityManager.SetComponentData(instance, new Projectile
+                {
+                    Velocity = localToWorld.ValueRO.Right * 20.0f
+                });
 
 
+            }
         }
     }
 }
