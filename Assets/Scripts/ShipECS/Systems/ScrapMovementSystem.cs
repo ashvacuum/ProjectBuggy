@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems
 {
@@ -24,11 +25,16 @@ namespace ShipECS.Systems
                              .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess())
                 {
                     // dont move if the player is not nearby or if the scrap is not yet picked up by the player
+
+                    //Debug.Log($"{math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position)} : {pickupRadius.ValueRO.TotalPickupRadius} : {!scrap.ValueRW.IsMovingTowardsTarget}");
+
                     if (math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position) >
-                        pickupRadius.ValueRO.TotalPickupRadius && !scrap.ValueRW.IsMovingTowardsTarget) continue; 
-                    
+                        pickupRadius.ValueRO.TotalPickupRadius && !scrap.ValueRW.IsMovingTowardsTarget) continue;
+
                     var lerpTime = 0f;
-                    if (scrap.ValueRO.TimeLeft >= scrap.ValueRO.TimeToReachTarget) // destroy entity if it has reached target
+
+                    if (scrap.ValueRO.TimeLeft >=
+                        scrap.ValueRO.TimeToReachTarget || math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position) < 1f) // destroy entity if it has reached target
                     {
                         ecb.DestroyEntity(entity);
                         var scrapNotifyEntity = ecb.CreateEntity();
@@ -38,21 +44,20 @@ namespace ShipECS.Systems
                         });
                         continue;
                     }
-                    else
-                    {
-                        scrap.ValueRW.IsMovingTowardsTarget = true;
-                        lerpTime = (scrap.ValueRO.TimeLeft / scrap.ValueRO.TimeToReachTarget) - 1;
-                    }
 
+                    scrap.ValueRW.IsMovingTowardsTarget = true;
+                    lerpTime = (scrap.ValueRO.TimeLeft / scrap.ValueRO.TimeToReachTarget);
                     lerpTime = ComputeEaseIn(lerpTime);
-                    
+
                     //Do easing here
                     var newPos = math.lerp(transform.ValueRO.Position, targetTransform.ValueRO.Position, lerpTime);
 
                     transform.ValueRW.Position = newPos;
-                    
+
                     scrap.ValueRW.TimeLeft += SystemAPI.Time.DeltaTime;
                 }
+
+                break; // do this so it only does it to the first element in this array
             }
             
             ecb.Playback(state.EntityManager);
@@ -75,14 +80,6 @@ namespace ShipECS.Systems
             return 1 - math.pow((t - 0.5f) * 2, 3) / 2; // Scale to [0, 1] for t in [0.5, 1]
 
         }
-    }
-
-    public struct ScrapComponent : IComponentData
-    {
-        public float TimeToReachTarget;
-        public float TimeLeft;
-        public float ScrapToGive;
-        public bool IsMovingTowardsTarget;
     }
 
     public struct ScrapNotify : IComponentData

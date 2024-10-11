@@ -84,8 +84,8 @@ namespace NonECS.UI
         {
             if (_expBar == null) return;
 
-            _expBar.value = ExpValue;
-            Debug.Log($"New Exp Value {ExpValue}");
+            _expBar.value += ExpValue;
+            Debug.Log($"New Exp Value {_expBar.value}");
         }
 
     }
