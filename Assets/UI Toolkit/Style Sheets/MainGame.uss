@@ -37,3 +37,10 @@
     -unity-slice-right: 30;
     -unity-background-image-tint-color: rgb(255, 255, 255);
 }
+
+#ExperienceBar > #unity-progress-bar > .unity-progress-bar__background > .unity-progress-bar__progress {
+    background-image: url("project://database/Assets/Art/Kenney/PNG/Yellow/Double/bar_round_gloss_large.png?fileID=2800000&guid=1b0442512c88151419b19eade13c3b66&type=3#bar_round_gloss_large");
+}
+
+.exp_bar {
+}
