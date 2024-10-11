@@ -1,10 +1,11 @@
 using Authoring;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 
 namespace Firing_System
 {
-    public partial struct  WeaponShootingSystem : ISystem
+    public partial struct WeaponShootingSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
@@ -13,19 +14,21 @@ namespace Firing_System
 
         public void OnUpdate(ref SystemState state)
         {
+
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
             foreach (var weapon in
                      SystemAPI.Query<WeaponAspect>()
                          .WithAll<Shooting>())
             {
-                if (weapon.BulletPrefab == Entity.Null) continue;
+                //if (weapon.BulletPrefab == Entity.Null) continue;
                 var instance = state.EntityManager.Instantiate(weapon.BulletPrefab);
-                state.EntityManager.AddComponent<DamageComponent>(instance);
-                state.EntityManager.SetComponentData(instance, new DamageComponent()
+                ecb.AddComponent<DamageComponent>(instance);
+                ecb.SetComponent(instance, new DamageComponent()
                 {
                     Damage = weapon.DamagePerProjectile
                 });
-                state.EntityManager.AddComponent<HealthComponent>(instance);
-                state.EntityManager.SetComponentData(instance, new HealthComponent()
+                ecb.AddComponent<HealthComponent>(instance);
+                ecb.SetComponent(instance, new HealthComponent()
                 {
                     CurrentHealth = weapon.ProjectilePenetration,
                     CurrentNextTimeToTakeDamage = 0,
@@ -40,13 +43,20 @@ namespace Firing_System
                     Scale = SystemAPI.GetComponent<LocalTransform>(weapon.BulletPrefab).Scale
                 });
 
-                state.EntityManager.SetComponentData(instance, new Projectile
+                ecb.SetComponent(instance, new Projectile
                 {
                     Velocity = weapon.LocalToWorld.ValueRO.Right * 20.0f
                 });
 
 
             }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
+        }
+
+        public void OnCreateForCompiler(ref SystemState state)
+        {
+            
         }
     }
 }
