@@ -24,7 +24,7 @@ namespace ShipECS.Systems
                 DamageGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
                 HealthGroup = SystemAPI.GetComponentLookup<HealthComponent>()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
-
+/*
             var triggerEventJob = new TriggerCheckJob()
             {
                 ProjectileGroup = SystemAPI.GetComponentLookup<Projectile>(true),
@@ -32,6 +32,7 @@ namespace ShipECS.Systems
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
             
             triggerEventJob.Complete();
+            */
             collisionCheckJob.Complete();
         }
     }
