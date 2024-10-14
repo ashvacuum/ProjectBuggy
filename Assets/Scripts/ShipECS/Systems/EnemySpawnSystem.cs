@@ -43,6 +43,7 @@ namespace ShipECS.Systems
             if (EnemySpawnSingleton.Instance != null)
             {
                 //Debug.Log($"Total Time = {totalTime}");
+                //TODO: figure out a different way of doing this, maybe scriptable objects?
                 count = EnemySpawnSingleton.Instance.GetNumEnemiesBasedOnTime(totalTime);
             }
             
