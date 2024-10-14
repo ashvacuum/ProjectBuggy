@@ -861,6 +861,7 @@ GameObject:
   - component: {fileID: 1497746679}
   - component: {fileID: 1497746678}
   - component: {fileID: 1497746680}
+  - component: {fileID: 1497746681}
   m_Layer: 5
   m_Name: MainUI
   m_TagString: Untagged
@@ -914,6 +915,90 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80008bebc400ba54c84a678c0b55a135, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1497746681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497746677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c0e6fd4c6192d94abb0f750d7f20b18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InitialNumberEnemies: 5
+  EnemySpawnCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.16037071
+      value: 0.030062802
+      inSlope: -0.047402874
+      outSlope: -0.047402874
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.4926748
+    - serializedVersion: 3
+      time: 0.3367589
+      value: 0.10833832
+      inSlope: 0.026835551
+      outSlope: 0.026835551
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.46609387
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.50230926
+      value: 0.27265835
+      inSlope: 0.03866428
+      outSlope: 0.03866428
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.17071533
+    - serializedVersion: 3
+      time: 0.68124795
+      value: 0.59345835
+      inSlope: -0.017172283
+      outSlope: -0.017172283
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.71476305
+    - serializedVersion: 3
+      time: 0.8016022
+      value: 0.7676006
+      inSlope: -0.011089499
+      outSlope: -0.011089499
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.49596208
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.28375554
+      outSlope: -0.28375554
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.23380713
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  MaximumEnemies: 3000
+  MaximumTime: 1800
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
