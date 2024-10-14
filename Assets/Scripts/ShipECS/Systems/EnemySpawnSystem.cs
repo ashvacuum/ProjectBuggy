@@ -1,4 +1,5 @@
 using Authoring;
+using NonECS;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -13,20 +14,22 @@ namespace ShipECS.Systems
     {
         uint seedOffset;
         float spawnTimer;
+        private float totalTime;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<EnemySpawnerData>();
+            totalTime = 0;
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             
             const float spawnWait = 0.05f; // 0.05 seconds
 
             spawnTimer -= SystemAPI.Time.DeltaTime;
+            totalTime += SystemAPI.Time.DeltaTime;
             if (spawnTimer > 0)
             {
                 return;
@@ -37,12 +40,20 @@ namespace ShipECS.Systems
             var spawnData = SystemAPI.GetSingleton<EnemySpawnerData>();
             var count = spawnData.MaximumEnemies;
             
+            if (EnemySpawnSingleton.Instance != null)
+            {
+                //Debug.Log($"Total Time = {totalTime}");
+                //TODO: figure out a different way of doing this, maybe scriptable objects?
+                count = EnemySpawnSingleton.Instance.GetNumEnemiesBasedOnTime(totalTime);
+            }
+            
             // Remove the NewSpawn tag component from the entities spawned in the prior frame.
             var newSpawnQuery = SystemAPI.QueryBuilder().WithAll<NewEnemySpawn>().Build();
             state.EntityManager.RemoveComponent<NewEnemySpawn>(newSpawnQuery);
             
             var enemySpawnQuery = SystemAPI.QueryBuilder().WithAll<EnemyFollowTarget>().Build();
             var totalCount = 0;
+            Debug.Log($"Max To Spawn = {count}");
             
             foreach (var (playerTransform, playerEntity) in
                      SystemAPI.Query<RefRO<EnemyFollowTarget>>()
@@ -55,11 +66,16 @@ namespace ShipECS.Systems
             {
                 return;
             }
+            else
+            {
+                count -= totalCount;
+            }
             
             // Spawn the enemies
             var prefab = spawnData.EnemyPrefab;
             state.EntityManager.Instantiate(prefab, count, Allocator.Temp);
-            seedOffset += (uint)count;
+            seedOffset += (uint)totalCount;
+            
             foreach (var (transform, entity) in
                      SystemAPI.Query<RefRO<LocalTransform>>()
                          .WithAll<ShipComponent>()
