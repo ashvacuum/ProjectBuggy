@@ -94,7 +94,7 @@ MonoBehaviour:
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
   MaxHealth: 400
-  NextTimeCanTakeDamage: 0.4
+  NextTimeCanTakeDamage: 0.1
   InitialPickupradius: 300
 --- !u!114 &3743403228728422599
 MonoBehaviour:

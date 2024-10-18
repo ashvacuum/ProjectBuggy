@@ -927,7 +927,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0e6fd4c6192d94abb0f750d7f20b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialNumberEnemies: 5
+  InitialNumberEnemies: 1500
   EnemySpawnCurve:
     serializedVersion: 2
     m_Curve:

@@ -98,7 +98,8 @@ MonoBehaviour:
   speed: 50
   rotationSpeed: 0.3
   damage: 1
-  targetRangeBounds: 50
+  targetRangeBounds: 200
+  MaxHealth: 100
 --- !u!114 &5198315014815891808
 MonoBehaviour:
   m_ObjectHideFlags: 0
