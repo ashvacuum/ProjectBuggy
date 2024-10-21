@@ -51,7 +51,6 @@ namespace ShipECS.Systems
             var newSpawnQuery = SystemAPI.QueryBuilder().WithAll<NewEnemySpawn>().Build();
             state.EntityManager.RemoveComponent<NewEnemySpawn>(newSpawnQuery);
             
-            var enemySpawnQuery = SystemAPI.QueryBuilder().WithAll<EnemyFollowTarget>().Build();
             var totalCount = 0;
             Debug.Log($"Max To Spawn = {count}");
             

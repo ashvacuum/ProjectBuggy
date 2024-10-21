@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -544,7 +545,10 @@ MonoBehaviour:
   m_SolverIterationCount: 4
   m_EnableSolverStabilizationHeuristic: 0
   m_MultiThreaded: 1
+  m_CollisionTolerance: 0.01
   m_SynchronizeCollisionWorld: 0
+  m_IncrementalDynamicBroadphase: 0
+  m_IncrementalStaticBroadphase: 0
 --- !u!114 &594703642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -927,7 +931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0e6fd4c6192d94abb0f750d7f20b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialNumberEnemies: 5
+  InitialNumberEnemies: 1500
   EnemySpawnCurve:
     serializedVersion: 2
     m_Curve:

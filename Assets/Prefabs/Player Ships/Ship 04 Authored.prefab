@@ -94,8 +94,14 @@ MonoBehaviour:
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
   MaxHealth: 400
-  NextTimeCanTakeDamage: 0.4
+  NextTimeCanTakeDamage: 0.1
   InitialPickupradius: 300
+  BulletPrefab: {fileID: 978311671124842774, guid: fdc28d55ee3027642b62536037a39f0d, type: 3}
+  BaseProjectileLifetime: 5
+  InitialWeaponCount: 1
+  InitialPenetration: 0
+  InitialSpeed: 10
+  FireRate: 3
 --- !u!114 &3743403228728422599
 MonoBehaviour:
   m_ObjectHideFlags: 0
