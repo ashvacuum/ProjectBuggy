@@ -27,20 +27,21 @@ namespace ShipECS.Systems
 /*
             var triggerEventJob = new TriggerCheckJob()
             {
-                ProjectileGroup = SystemAPI.GetComponentLookup<Projectile>(true),
+                ProjectileGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
                 EnemyGroup = SystemAPI.GetComponentLookup<HealthComponent>()
-            }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
+            }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), collisionCheckJob);
+            triggerEventJob.Complete();*/
             
-            triggerEventJob.Complete();
-            */
+            
             collisionCheckJob.Complete();
+            
         }
     }
 
     public struct TriggerCheckJob : ITriggerEventsJob
     {
         
-        public ComponentLookup<Projectile> ProjectileGroup;
+        public ComponentLookup<DamageComponent> ProjectileGroup;
         public ComponentLookup<HealthComponent> EnemyGroup;
         public void Execute(TriggerEvent triggerEvent)
         {
@@ -50,7 +51,7 @@ namespace ShipECS.Systems
             if (ProjectileGroup.HasComponent(entityA) && EnemyGroup.HasComponent(entityB) &&
                 EnemyGroup.HasComponent(entityA))
             {
-                
+                Debug.Log("Detected Trigger Event");
             }
         }
     }

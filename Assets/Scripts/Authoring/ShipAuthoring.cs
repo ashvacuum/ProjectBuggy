@@ -19,6 +19,13 @@ namespace Authoring
         [FormerlySerializedAs("Health")] public float MaxHealth = 400f;
         public float NextTimeCanTakeDamage = 0.4f;
         public float InitialPickupradius = 300f;
+
+        public GameObject BulletPrefab;
+        public float BaseProjectileLifetime = 5f;
+        public int InitialWeaponCount = 1;
+        public int InitialPenetration = 0;
+        public float InitialSpeed = 10;
+        public float FireRate = 3f;
         
 
         public class Baker : Baker<ShipAuthoring>
@@ -44,6 +51,13 @@ namespace Authoring
                     CurrentHealth = authoring.MaxHealth,
                     PreviousHealth = authoring.MaxHealth
                 });
+                AddComponent(entity, new PickupRadiusComponent()
+                {
+                    BasePickupRadius = authoring.InitialPickupradius,
+                    PickupRadiusBonus = 0f
+                });
+                var bullet = GetEntity(authoring.BulletPrefab, TransformUsageFlags.Dynamic);
+                AddComponent(bullet, new LocalTransform());
                 AddComponent(entity, new PickupRadiusComponent()
                 {
                     BasePickupRadius = authoring.InitialPickupradius,

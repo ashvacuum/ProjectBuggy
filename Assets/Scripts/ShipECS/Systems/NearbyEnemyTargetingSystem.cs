@@ -6,7 +6,7 @@ using Unity.Transforms;
 
 namespace ShipECS.Systems
 {
-    public partial struct NearbyEnemyTargeting : ISystem
+    public partial struct NearbyEnemyTargetingSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
