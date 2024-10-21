@@ -16,21 +16,18 @@ namespace ShipECS.Systems
 
         public void OnUpdate(ref SystemState state)
         {
-            var NearestEnemyPosition = float.PositiveInfinity;
-            var trackingComponent = SystemAPI.GetSingleton<EnemyTrackingComponent>();
+            var nearestEnemyPosition = float.PositiveInfinity;
             foreach (var playerTransform in SystemAPI.Query<RefRO<LocalTransform>>()
                          .WithAll<ShipComponent>())
             {
-                NearestEnemyPosition = SystemAPI.Query<RefRO<LocalTransform>>()
+                nearestEnemyPosition = SystemAPI.Query<RefRO<LocalTransform>>()
                     .WithAll<EnemyFollowTarget>()
                     .WithNone<NewEnemySpawn>()
                     .Select(enemyTransform => math.distance(playerTransform.ValueRO.Position, (float3)enemyTransform.ValueRO.Position))
-                    .Aggregate(NearestEnemyPosition, (current, distance) => math.min(distance, current));
+                    .Aggregate(nearestEnemyPosition, (current, distance) => math.min(distance, current));
 
                 break;
             }
-
-            trackingComponent.TrackingTargetPosition = NearestEnemyPosition;
         }
     }
 
