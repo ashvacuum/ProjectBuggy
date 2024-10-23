@@ -38,7 +38,7 @@ namespace ShipECS.Systems
             ecb.Dispose();
         }
     }
-    
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct HealthSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)

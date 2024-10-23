@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
-    public partial struct ProjectileMotionSystem : ISystem
+    public partial struct ProjectileMovementSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
@@ -22,7 +22,7 @@ namespace ShipECS.Systems
                     projectile.Position + projectile.ForwardVector,
                     Time.deltaTime * projectile.Speed);
                 projectile.Lifetime -= SystemAPI.Time.DeltaTime;
-                Debug.DrawRay(projectile.Position,(projectile.Position + projectile.ForwardVector), Color.red, .1f );
+                //Debug.DrawRay(projectile.Position,(projectile.Position + projectile.ForwardVector), Color.red, .1f );
                 
             }
         }

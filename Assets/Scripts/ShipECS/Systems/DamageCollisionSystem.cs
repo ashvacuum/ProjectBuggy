@@ -2,6 +2,7 @@ using Authoring;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.Content;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using UnityEngine;
@@ -21,14 +22,14 @@ namespace ShipECS.Systems
         {
             var collisionCheckJob  = new CollisionCheckJob()
             {
-                DamageGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
-                HealthGroup = SystemAPI.GetComponentLookup<HealthComponent>()
+                DamageGroup = state.GetComponentLookup<DamageComponent>(true),
+                HealthGroup = state.GetComponentLookup<HealthComponent>()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
 
             var triggerEventJob = new TriggerCheckJob()
             {
-                DamageGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
-                EnemyGroup = SystemAPI.GetComponentLookup<HealthComponent>()
+                DamageGroup = state.GetComponentLookup<DamageComponent>(true),
+                EnemyGroup = state.GetComponentLookup<HealthComponent>()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), collisionCheckJob);
             triggerEventJob.Complete();
             
@@ -45,7 +46,6 @@ namespace ShipECS.Systems
         public ComponentLookup<HealthComponent> EnemyGroup;
         public void Execute(TriggerEvent triggerEvent)
         {
-            
             var entityA = triggerEvent.EntityA;
             var entityB = triggerEvent.EntityB;
             if (entityA == Entity.Null || entityB == Entity.Null) return;
