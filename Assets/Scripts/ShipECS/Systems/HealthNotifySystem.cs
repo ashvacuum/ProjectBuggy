@@ -33,7 +33,7 @@ namespace ShipECS.Systems
                 // Destroy Entity
                 ecb.DestroyEntity(tagEntity);
             }
-
+            
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
@@ -44,7 +44,7 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>().WithAll<PlayerTag>().WithNone<EnemyFollowTarget>())
+            foreach (var (health, entity) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
             {
                 if (health.ValueRO.CurrentNextTimeToTakeDamage > 0)
                 {
@@ -55,12 +55,21 @@ namespace ShipECS.Systems
                 if (difference < 0.1) continue;
                 
                 var eventEntity = ecb.CreateEntity();
-                ecb.AddComponent(eventEntity, new HealthChangeEvent
+                
+                if (state.EntityManager.HasComponent<PlayerTag>(entity))
                 {
-                    NewHealth = health.ValueRO.HealthPercent
-                });
+                    ecb.AddComponent(eventEntity, new HealthChangeEvent
+                    {
+                        NewHealth = health.ValueRO.HealthPercent
+                    });
+                }
 
                 health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;
+
+                if (health.ValueRO.CurrentHealth <= 0)
+                {
+                    ecb.DestroyEntity(entity);
+                }
                 
                 
                 //Debug.Log($"Created Health Change Tag: {health.ValueRO.CurrentHealth} {health.ValueRO.PreviousHealth} : {difference}");

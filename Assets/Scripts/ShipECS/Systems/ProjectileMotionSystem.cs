@@ -18,10 +18,12 @@ namespace ShipECS.Systems
             {
                 if (!projectile.IsAlive ) continue;
                 
-                projectile.Position = math.lerp(projectile.Position, projectile.Position + projectile.ForwardVector
-                    ,
+                projectile.Position = math.lerp(projectile.Position,
+                    projectile.Position + projectile.ForwardVector,
                     Time.deltaTime * projectile.Speed);
                 projectile.Lifetime -= SystemAPI.Time.DeltaTime;
+                Debug.DrawRay(projectile.Position,(projectile.Position + projectile.ForwardVector), Color.red, .1f );
+                
             }
         }
     }
@@ -32,7 +34,7 @@ namespace ShipECS.Systems
         private readonly RefRO<HealthComponent> _health;
         private readonly RefRW<LocalTransform> _transform;
         public bool IsAlive => _health.ValueRO.CurrentHealth > 0 && _motion.ValueRW.LifeTime > 0;
-        public float3 ForwardVector => math.mul(_transform.ValueRO.Rotation, math.up());
+        public float3 ForwardVector => _motion.ValueRO.Direction;
         public float Speed => _motion.ValueRO.Speed;
         
 

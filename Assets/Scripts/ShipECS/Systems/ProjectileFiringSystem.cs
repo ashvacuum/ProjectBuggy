@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems
 {
@@ -42,7 +43,7 @@ namespace ShipECS.Systems
                         Damage = weapon.ValueRO.TotalDamage
                     });
 
-                    var direction = math.normalize(transform.ValueRO.Position - enemyTrackingComponent.TrackingTargetPosition);
+                    var direction = math.normalize(enemyTrackingComponent.TrackingTargetPosition - transform.ValueRO.Position);
                     ecb.AddComponent(instance, new ProjectileMotion()
                     {
                         Direction = direction,

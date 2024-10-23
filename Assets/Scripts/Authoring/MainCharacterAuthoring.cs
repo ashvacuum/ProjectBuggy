@@ -104,7 +104,7 @@ namespace Authoring
 
     public struct PlayerTag : IComponentData { }
 
-    public struct HealthComponent : IComponentData
+    public struct HealthComponent : IComponentData, IEnableableComponent
     {
         public float CurrentHealth;
         public float MaxHealth;

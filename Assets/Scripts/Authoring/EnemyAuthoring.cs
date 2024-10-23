@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Authoring
 {
@@ -11,6 +12,7 @@ namespace Authoring
         public float damage = 1;
         public float targetRangeBounds = 50f;
         public float MaxHealth = 100f;
+        public float NextDamageDelay = .2f;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring) 
@@ -32,7 +34,7 @@ namespace Authoring
                     MaxHealth = authoring.MaxHealth,
                     CurrentHealth = authoring.MaxHealth,
                     CurrentNextTimeToTakeDamage = 0f,
-                    NextTimeToTakeDamage = 0f,
+                    NextTimeToTakeDamage = authoring.NextDamageDelay,
                     PreviousHealth = authoring.MaxHealth
                 });
             }

@@ -14,17 +14,14 @@ namespace ShipECS.Systems
         {
             state.RequireForUpdate<PlayerTag>();
             state.RequireForUpdate<EnemyTrackingComponent>();
-            
+            state.RequireForUpdate<EnemyFollowTarget>();
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            var nearestEnemyPosition = float.PositiveInfinity;
-            
-
-            var tracking = SystemAPI.GetSingleton<EnemyTrackingComponent>();
-            tracking.TrackingTargetPosition =
-                new float3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+            var tracking = SystemAPI.GetSingletonRW<EnemyTrackingComponent>();
+            tracking.ValueRW.TrackingTargetPosition =
+                new float3(100000f, 100000f, 100000f);
             foreach (var playerTransform in SystemAPI.Query<RefRO<LocalTransform>>()
                          .WithAll<PlayerTag>())
             {
@@ -33,15 +30,15 @@ namespace ShipECS.Systems
                              .WithNone<NewEnemySpawn>())
                 {
                     var distance = math.distance(enemyTransform.ValueRO.Position, playerTransform.ValueRO.Position);
-                    var pastDistance = math.distance(tracking.TrackingTargetPosition, playerTransform.ValueRO.Position);
-                    if (pastDistance < distance)
+                    var pastDistance = math.distance(tracking.ValueRO.TrackingTargetPosition, playerTransform.ValueRO.Position);
+                    if (pastDistance > distance)
                     {
-                        tracking.TrackingTargetPosition = enemyTransform.ValueRO.Position;
+                        tracking.ValueRW.TrackingTargetPosition = enemyTransform.ValueRO.Position;
                     }
                     
                 }
 
-                Debug.Log($"Tracking {tracking.TrackingTargetPosition.x},{tracking.TrackingTargetPosition.y},{tracking.TrackingTargetPosition.z}");
+                //Debug.Log($"Tracking {tracking.TrackingTargetPosition.x},{tracking.TrackingTargetPosition.y},{tracking.TrackingTargetPosition.z}");
                 break;
             }
 

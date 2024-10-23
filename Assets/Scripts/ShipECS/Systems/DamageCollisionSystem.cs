@@ -24,13 +24,13 @@ namespace ShipECS.Systems
                 DamageGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
                 HealthGroup = SystemAPI.GetComponentLookup<HealthComponent>()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
-/*
+
             var triggerEventJob = new TriggerCheckJob()
             {
-                ProjectileGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
+                DamageGroup = SystemAPI.GetComponentLookup<DamageComponent>(true),
                 EnemyGroup = SystemAPI.GetComponentLookup<HealthComponent>()
             }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), collisionCheckJob);
-            triggerEventJob.Complete();*/
+            triggerEventJob.Complete();
             
             
             collisionCheckJob.Complete();
@@ -41,17 +41,39 @@ namespace ShipECS.Systems
     public struct TriggerCheckJob : ITriggerEventsJob
     {
         
-        public ComponentLookup<DamageComponent> ProjectileGroup;
+        [ReadOnly] public ComponentLookup<DamageComponent> DamageGroup;
         public ComponentLookup<HealthComponent> EnemyGroup;
         public void Execute(TriggerEvent triggerEvent)
         {
+            
             var entityA = triggerEvent.EntityA;
             var entityB = triggerEvent.EntityB;
-
-            if (ProjectileGroup.HasComponent(entityA) && EnemyGroup.HasComponent(entityB) &&
-                EnemyGroup.HasComponent(entityA))
+            if (entityA == Entity.Null || entityB == Entity.Null) return;
+            if (DamageGroup.HasComponent(entityA) && EnemyGroup.HasComponent(entityB))
             {
-                Debug.Log("Detected Trigger Event");
+                var healthB = EnemyGroup[entityB];
+                var damageA = DamageGroup[entityA];
+                if (healthB.CurrentHealth <= 0 || !(healthB.CurrentNextTimeToTakeDamage <= 0)) return;
+                
+                healthB.PreviousHealth = healthB.CurrentHealth;
+                healthB.CurrentHealth -= damageA.Damage;
+                healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
+                Debug.Log($"Entity B took Trigger {damageA.Damage}, total Health : {healthB.CurrentHealth}, {healthB.CurrentNextTimeToTakeDamage }");
+                EnemyGroup[entityB] = healthB;
+            }
+
+            if (EnemyGroup.IsComponentEnabled(entityA) && DamageGroup.HasComponent(entityB) && EnemyGroup.HasComponent(entityA))
+            {
+                var healthA = EnemyGroup[entityA];
+                var damageB = DamageGroup[entityB];
+
+                if (healthA.CurrentHealth <= 0 &&  !(healthA.CurrentNextTimeToTakeDamage <= 0)) return;
+
+                healthA.PreviousHealth = healthA.CurrentHealth;
+                healthA.CurrentHealth -= damageB.Damage;
+                healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
+                Debug.Log($"Entity A took Trigger {damageB.Damage}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage}");
+                EnemyGroup[entityA] = healthA;
             }
         }
     }
@@ -68,7 +90,7 @@ namespace ShipECS.Systems
         {
             var entityA = collisionEvent.EntityA;
             var entityB = collisionEvent.EntityB;
-
+            if (entityA == Entity.Null || entityB == Entity.Null) return;
             if (HealthGroup.HasComponent(entityA) && DamageGroup.HasComponent(entityB))
             {
                 var healthA = HealthGroup[entityA];
@@ -79,7 +101,7 @@ namespace ShipECS.Systems
                 healthA.PreviousHealth = healthA.CurrentHealth;
                 healthA.CurrentHealth -= damageB.Damage;
                 healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
-                //Debug.Log($"Entity A took {damageB.Damage}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage}");
+                Debug.Log($"Entity A took Collision {damageB.Damage}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage}");
                 HealthGroup[entityA] = healthA;
             }
 
@@ -93,7 +115,7 @@ namespace ShipECS.Systems
                 healthB.PreviousHealth = healthB.CurrentHealth;
                 healthB.CurrentHealth -= damageA.Damage;
                 healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
-                //Debug.Log($"Entity B took {damageA.Damage}, total Health : {healthB.CurrentHealth}, {healthB.CurrentNextTimeToTakeDamage }");
+                Debug.Log($"Entity B took Collision {damageA.Damage}, total Health : {healthB.CurrentHealth}, {healthB.CurrentNextTimeToTakeDamage }");
                 HealthGroup[entityB] = healthB;
 
 
