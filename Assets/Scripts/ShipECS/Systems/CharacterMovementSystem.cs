@@ -1,3 +1,4 @@
+using Authoring;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -15,7 +16,7 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             foreach (var( data, inputs, transform) in
-                     SystemAPI.Query<RefRO<CharacterData>, RefRO<InputsData>, RefRW<LocalTransform>>())
+                     SystemAPI.Query<RefRO<CharacterData>, RefRO<InputsData>, RefRW<LocalTransform>>().WithAll<PlayerTag>())
             {
                 
                 var position = transform.ValueRO.Position;

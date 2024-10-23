@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2190746115006430570}
   - component: {fileID: 8053219744619356175}
   - component: {fileID: 453978465160928140}
+  - component: {fileID: 7368109257157206771}
   m_Layer: 0
   m_Name: Turbine.003
   m_TagString: Untagged
@@ -87,6 +88,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7368109257157206771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3047227271584277197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 325621f6b63ca3349b6aeb23a63400c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Class: 1
 --- !u!1 &5109003408130662860
 GameObject:
   m_ObjectHideFlags: 0

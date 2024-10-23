@@ -52,33 +52,25 @@ namespace ShipECS.Systems
             state.EntityManager.RemoveComponent<NewEnemySpawn>(newSpawnQuery);
             
             var totalCount = 0;
-            Debug.Log($"Max To Spawn = {count}");
             
-            foreach (var (playerTransform, playerEntity) in
-                     SystemAPI.Query<RefRO<EnemyFollowTarget>>()
-                         .WithEntityAccess())
+            foreach (var playerTransform in
+                     SystemAPI.Query<RefRO<LocalTransform>>()
+                         .WithAll<EnemyFollowTarget>())
             {
                 totalCount++;
             }
 
-            if (totalCount >= count)
-            {
-                return;
-            }
-            else
-            {
-                count -= totalCount;
-            }
+            if (totalCount >= count) return;
             
-            // Spawn the enemies
+            count -= totalCount;
+                
             var prefab = spawnData.EnemyPrefab;
             state.EntityManager.Instantiate(prefab, count, Allocator.Temp);
             seedOffset += (uint)totalCount;
             
-            foreach (var (transform, entity) in
+            foreach (var transform in
                      SystemAPI.Query<RefRO<LocalTransform>>()
-                         .WithAll<ShipComponent>()
-                         .WithEntityAccess())
+                         .WithAll<PlayerTag>())
             {
                 new RandomPositionJob
                 {
@@ -88,6 +80,10 @@ namespace ShipECS.Systems
                     MaxRadius = spawnData.MaxRadius,
                 }.ScheduleParallel();
             }
+
+
+            // Spawn the enemies
+            
 
             
         }
@@ -111,6 +107,7 @@ namespace ShipECS.Systems
             var xz = random.NextFloat2Direction() * randomRadius;
 
             transform.Position = new float3(ReferencePoint.x + xz[0], 0, ReferencePoint.z + xz[1]);
+            //Debug.Log($"Transferring Position to : {transform.Position.x}, {transform.Position.z}");
         }
     }
 }

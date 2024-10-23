@@ -27,7 +27,7 @@ namespace ShipECS.Systems
 
             foreach (var (healthTag, tagEntity) in SystemAPI.Query<RefRO<HealthChangeEvent>>().WithEntityAccess())
             {
-                Debug.Log("Updating Health");
+                //Debug.Log("Updating Health");
                 GameSceneEvents.Instance.UpdateHealth(healthTag.ValueRO.NewHealth);
 
                 // Destroy Entity
@@ -44,7 +44,7 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>().WithAll<ShipComponent>().WithNone<EnemyFollowTarget>())
+            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>().WithAll<PlayerTag>().WithNone<EnemyFollowTarget>())
             {
                 if (health.ValueRO.CurrentNextTimeToTakeDamage > 0)
                 {
@@ -63,7 +63,7 @@ namespace ShipECS.Systems
                 health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;
                 
                 
-                Debug.Log($"Created Health Change Tag: {health.ValueRO.CurrentHealth} {health.ValueRO.PreviousHealth} : {difference}");
+                //Debug.Log($"Created Health Change Tag: {health.ValueRO.CurrentHealth} {health.ValueRO.PreviousHealth} : {difference}");
             }
             ecb.Playback(state.EntityManager);
             ecb.Dispose();

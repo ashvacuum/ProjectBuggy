@@ -12,15 +12,16 @@ namespace Authoring
             public override void Bake(PlayerSpawnerAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.None);
-                AddComponent(entity, new Spawner()
+                AddComponent(entity, new PlayerSpawner()
                 {
                     Prefab = GetEntity(authoring.prefab, TransformUsageFlags.Dynamic)
                 });
+                
             }
         }
     }
 
-    struct Spawner : IComponentData
+    struct PlayerSpawner : IComponentData
     {
         public Entity Prefab;
     }

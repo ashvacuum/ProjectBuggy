@@ -3,9 +3,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace ShipECS.Systems
 {
@@ -14,6 +11,7 @@ namespace ShipECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<ProjectileSpawnerComponent>();
             state.RequireForUpdate<EnemyTrackingComponent>();
         }
         
@@ -22,9 +20,10 @@ namespace ShipECS.Systems
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             var enemyTrackingComponent = SystemAPI.GetSingleton<EnemyTrackingComponent>();
+            var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
 
             foreach (var (transform, weapon) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<ProjectileAttack>>()
-                         .WithAll<ShipComponent>())
+                         .WithAll<PlayerTag>())
             {
 
                 if (weapon.ValueRO.CurrentFireRate > 0)
@@ -37,14 +36,13 @@ namespace ShipECS.Systems
 
                 for (var i = 0; i < weapon.ValueRO.TotalCount; i++)
                 {
-                    var instance = ecb.Instantiate(weapon.ValueRO.ProjectilePrefab);
+                    var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
                         Damage = weapon.ValueRO.TotalDamage
                     });
 
-                    var direction = math.normalize(enemyTrackingComponent.TrackingTargetPosition -
-                                                   transform.ValueRO.Position);
+                    var direction = math.normalize(transform.ValueRO.Position - enemyTrackingComponent.TrackingTargetPosition);
                     ecb.AddComponent(instance, new ProjectileMotion()
                     {
                         Direction = direction,
@@ -63,7 +61,7 @@ namespace ShipECS.Systems
                     {
                         Position = transform.ValueRO.Position,
                         Rotation = quaternion.LookRotation(direction, math.up()),
-                        Scale = 1
+                        Scale = weapon.ValueRO.TotalSize
                     });
 
                 }
@@ -78,8 +76,6 @@ namespace ShipECS.Systems
     
     public struct ProjectileAttack  : IComponentData, IEnableableComponent
     {
-        public Entity ProjectilePrefab;
-        
         public float BaseFireRate;
         public float FireRateReductionBonus;
         public float TotalFireRate => BaseFireRate - FireRateReductionBonus/100f * BaseFireRate;
@@ -110,67 +106,5 @@ namespace ShipECS.Systems
 
 
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
-    }
-    
-
-    //involves stats that the player itself has that increments the bonuses on the weapons that have a stat that aligns with it, involves the upgrade system
-    public struct PlayerBonusStat : IComponentData
-    {
-        public float LifetimeBonus;
-        public int NumCountBonus; 
-        public int PenetrationBonus;
-        public float DamageBonus;
-        public float SpeedBonus;
-        public float AttackTimeReductionBonus;
-        public float SizeBonus;
-    }
-
-    public struct WeaponLifetimeStat : IComponentData
-    {
-        public float BaseUnitLifeTime;
-        public float UnitLifeTimeBonus; 
-        public float TotalLifeTime => BaseUnitLifeTime + (UnitLifeTimeBonus/100 * BaseUnitLifeTime);
-    }
-    
-    public struct WeaponCountStat : IComponentData
-    {
-        public int BaseNumCount;
-        public int NumCountBonus; 
-        public int TotalCount => BaseNumCount + NumCountBonus;
-    }
-    
-    public struct WeaponPenetrationStat : IComponentData
-    {
-        public int BaseNumCount;
-        public int NumCountBonus; 
-        public int TotalCount => math.max(1,BaseNumCount + NumCountBonus);
-    }
-    
-    public struct WeaponDamageStat : IComponentData
-    {
-        public float BaseDamage;
-        public float DamageBonus; 
-        public float TotalDamage => BaseDamage + (DamageBonus/100f * BaseDamage);
-    }
-
-    public struct WeaponSpeedStat : IComponentData
-    {
-        public float BaseSpeed;
-        public float SpeedBonus; 
-        public float TotalSpeed => BaseSpeed + SpeedBonus/100f * BaseSpeed;
-    }
-    
-    public struct WeaponFireRateStat : IComponentData
-    {
-        public float BaseInterval;
-        public float IntervalReductionBonus;
-        public float TotalFireRate => BaseInterval - IntervalReductionBonus/100f * BaseInterval;
-    }
-    
-    public struct WeaponSizeStat : IComponentData
-    {
-        public float BaseSize;
-        public float SizeBonus;
-        public float TotalSize =>  BaseSize + (SizeBonus/100f * BaseSize);
     }
 }

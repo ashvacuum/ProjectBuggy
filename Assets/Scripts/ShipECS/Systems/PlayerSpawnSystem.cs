@@ -9,15 +9,17 @@ namespace ShipECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<Spawner>();
+            state.RequireForUpdate<PlayerSpawner>();
         }
 
         public void OnUpdate(ref SystemState state)
         {
-
-            var shipQuery = SystemAPI.QueryBuilder().WithAll<ShipComponent>().Build();
+            
+            var shipQuery = SystemAPI.QueryBuilder().WithAll<PlayerTag>().Build();
             if (!shipQuery.IsEmpty) return;
-            var prefab = SystemAPI.GetSingleton<Spawner>().Prefab;
+            
+            var prefab = SystemAPI.GetSingleton<PlayerSpawner>().Prefab;
+           
             state.EntityManager.Instantiate(prefab);
         }
     }

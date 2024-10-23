@@ -9,8 +9,6 @@ namespace NonECS
         public AnimationCurve EnemySpawnCurve;
         public int MaximumEnemies = 3000;
         public float MaximumTime = 1800f;
-
-        
         public static EnemySpawnSingleton Instance { get; private set; }
 
         private void Awake()

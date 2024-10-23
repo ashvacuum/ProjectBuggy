@@ -50,8 +50,8 @@ namespace NonECS.UI
                 return;
             }
 
-            var entityQuery = _entityManager.CreateEntityQuery(typeof(ShipComponent));
-            if (entityQuery.HasSingleton<ShipComponent>())
+            var entityQuery = _entityManager.CreateEntityQuery(typeof(PlayerTag));
+            if (entityQuery.HasSingleton<PlayerTag>())
                 _targetEntity = entityQuery.GetSingletonEntity();
         }
 
@@ -77,7 +77,7 @@ namespace NonECS.UI
             if (_healthBar == null) return;
 
             _healthBar.value = newHealth;
-            Debug.Log($"New Health Value {newHealth}");
+            //Debug.Log($"New Health Value {newHealth}");
         }
         
         public void UpdateExp(float ExpValue)
@@ -85,7 +85,7 @@ namespace NonECS.UI
             if (_expBar == null) return;
 
             _expBar.value += ExpValue;
-            Debug.Log($"New Exp Value {_expBar.value}");
+            //Debug.Log($"New Exp Value {_expBar.value}");
         }
 
     }

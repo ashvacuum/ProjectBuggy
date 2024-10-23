@@ -11,25 +11,27 @@ namespace Authoring
 {
     public class ProjectileSpawnerAuthoring : MonoBehaviour
     {
-       [SerializeField]private ProjectileWeaponBase projectile;
+        [SerializeField] private GameObject projectile;
 
-       class Baker : Baker<ProjectileSpawnerAuthoring>
-       {
-           public override void Bake(ProjectileSpawnerAuthoring authoring)
-           {
-               var spawnerEntity = GetEntity(TransformUsageFlags.None);
+        class Baker : Baker<ProjectileSpawnerAuthoring>
+        {
+            public override void Bake(ProjectileSpawnerAuthoring authoring)
+            {
+                var spawnerEntity = GetEntity(TransformUsageFlags.None);
+                AddComponent(spawnerEntity, new ProjectileSpawnerComponent()
+                {
+                    ProjectileToSpawn = GetEntity(authoring.projectile, TransformUsageFlags.Dynamic)
+                });
+            }
+        }
 
-               
-               AddComponent(spawnerEntity, new ProjectileSpawnerData()
-               {
-                   ProjectileToSpawn = GetEntity(authoring.projectile.ProjectilePrefab, TransformUsageFlags.Dynamic)
-               });
-           }
-       }
 
-       private struct ProjectileSpawnerData : IComponentData
-       {
-           public Entity ProjectileToSpawn;
-       }
     }
+    
+    public struct ProjectileSpawnerComponent : IComponentData
+    {
+        public Entity ProjectileToSpawn;
+    }
+
+
 }

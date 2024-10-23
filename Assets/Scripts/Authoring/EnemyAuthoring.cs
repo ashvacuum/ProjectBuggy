@@ -13,11 +13,11 @@ namespace Authoring
         public float MaxHealth = 100f;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
-            public override void Bake(EnemyAuthoring authoring)
+            public override void Bake(EnemyAuthoring authoring) 
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new NewEnemySpawn());
-                AddComponent(entity, new EnemyFollowTarget()
+                AddSharedComponent(entity, new EnemyFollowTarget()
                 {
                     Speed = authoring.speed,
                     RotationSpeed = authoring.rotationSpeed,
@@ -35,17 +35,11 @@ namespace Authoring
                     NextTimeToTakeDamage = 0f,
                     PreviousHealth = authoring.MaxHealth
                 });
-
-                
-                /*AddComponent(entity, new ()
-                {
-                    
-                });*/
             }
         }
     }
 
-    public struct EnemyFollowTarget : IComponentData
+    public struct EnemyFollowTarget : ISharedComponentData
     {
         public float Speed;
         public float RotationSpeed;

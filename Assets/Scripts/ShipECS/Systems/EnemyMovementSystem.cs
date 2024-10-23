@@ -23,7 +23,7 @@ namespace ShipECS.Systems
             
             foreach (var (playerTransform, playerEntity) in
                      SystemAPI.Query<RefRO<LocalTransform>>()
-                         .WithAll<ShipComponent>()
+                         .WithAll<PlayerTag>()
                          .WithEntityAccess())
             {
                 new FollowPlayerJob()
@@ -43,7 +43,7 @@ namespace ShipECS.Systems
         public float3 TargetLocation;
         public float DeltaTime;
 
-        void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, ref EnemyFollowTarget followTarget)
+        void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, EnemyFollowTarget followTarget)
         {
             if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits)
             {
@@ -53,7 +53,6 @@ namespace ShipECS.Systems
             var calcExp = DeltaTime * followTarget.Speed;
             var calculatedPosition = math.lerp(
                 shipTransform.Position,
-                // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                 shipTransform.Position + shipTransform.Forward(),
                 calcExp);
             

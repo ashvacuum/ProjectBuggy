@@ -11,6 +11,7 @@ namespace NonECS.BaseWeapons
         public float BaseSpeed = 10;
         public float BaseFireRate = 3f;
         public float WeaponSize = 1f;
+        public float BaseDamage = 1f;
     }
     
     public enum WeaponClass

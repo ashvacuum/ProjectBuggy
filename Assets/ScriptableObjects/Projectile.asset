@@ -15,7 +15,8 @@ MonoBehaviour:
   BaseLifetime: 5
   BaseCount: 1
   BasePenetration: 0
-  BaseSpeed: 10
+  BaseSpeed: 500
   BaseFireRate: 3
   WeaponSize: 1
-  ProjectilePrefab: {fileID: 0}
+  BaseDamage: 1
+  ProjectilePrefab: {fileID: 6018007920840457554, guid: 1bf9ec01f3440bd4f8b56342576e0192, type: 3}
