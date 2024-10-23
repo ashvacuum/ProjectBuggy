@@ -55,7 +55,9 @@ namespace Authoring
                 {
                     BasePickupRadius = authoring.InitialPickupradius,
                     PickupRadiusBonus = 0f
-                });/*
+                });
+                
+                /*
                 var bullet = GetEntity(authoring.BulletPrefab, TransformUsageFlags.Dynamic);
                 AddComponent(bullet, new LocalTransform());
                 AddComponent(entity, new PickupRadiusComponent()

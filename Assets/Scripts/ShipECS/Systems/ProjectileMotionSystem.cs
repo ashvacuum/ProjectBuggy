@@ -14,15 +14,37 @@ namespace ShipECS.Systems
         }
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var (projectile, health,transform) in SystemAPI.Query<RefRW<ProjectileMotion>,RefRO<HealthComponent>, RefRW<LocalTransform>>())
+            foreach (var projectile in SystemAPI.Query<ProjectileAspect>())
             {
-                if (!(projectile.ValueRO.LifeTime > 0) || health.ValueRO.CurrentHealth <= 0) continue;
+                if (!projectile.IsAlive ) continue;
                 
-                transform.ValueRW.Position = math.lerp(transform.ValueRO.Position,
-                    transform.ValueRO.Position + projectile.ValueRO.Direction,
-                    Time.deltaTime * projectile.ValueRO.Speed);
-                projectile.ValueRW.LifeTime -= SystemAPI.Time.DeltaTime;
+                projectile.Position = math.lerp(projectile.Position,
+                    projectile.Position + projectile.Direction,
+                    Time.deltaTime * projectile.Speed);
+                projectile.Lifetime -= SystemAPI.Time.DeltaTime;
             }
+        }
+    }
+
+    public readonly partial struct ProjectileAspect : IAspect
+    {
+        private readonly RefRW<ProjectileMotion> _motion;
+        private readonly RefRO<HealthComponent> _health;
+        private readonly RefRW<LocalTransform> _transform;
+        public bool IsAlive => _health.ValueRO.CurrentHealth > 0 && _motion.ValueRW.LifeTime > 0;
+        public float3 Direction => _motion.ValueRO.Direction;
+        public float Speed => _motion.ValueRO.Speed;
+
+        public float Lifetime
+        {
+            get => _motion.ValueRO.LifeTime;
+            set => _motion.ValueRW.LifeTime = value;
+        }
+        
+        public float3 Position
+        {
+            get => _transform.ValueRO.Position;
+            set => _transform.ValueRW.Position = value;
         }
     }
 
@@ -31,20 +53,6 @@ namespace ShipECS.Systems
         public float3 Direction;
         public float Speed;
         public float LifeTime;
-    }
-    
-    public readonly partial struct ProjectileWeaponAspect : IAspect
-    {
-        public readonly RefRO<WeaponLifetime> Lifetime;
-        public readonly RefRO<WeaponCount> NumProjectiles;
-        public readonly RefRO<WeaponPenetration> Penetration;
-        public readonly RefRO<WeaponSpeed> Speed;
-        public readonly RefRO<WeaponDamage> Damage;
-        public readonly RefRW<WeaponFireRate> FireRate;
-        public readonly RefRO<LocalTransform> LocalTransform;
-        readonly RefRO<ProjectileAttack> _weapon;
-        public Entity Projectile => _weapon.ValueRO.ProjectilePrefab;
-
     }
 }
 

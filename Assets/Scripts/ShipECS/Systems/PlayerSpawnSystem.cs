@@ -5,12 +5,11 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
-    public partial struct SpawnSystem : ISystem
+    public partial struct PlayerSpawnSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<Spawner>();
-            
         }
 
         public void OnUpdate(ref SystemState state)
