@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.Stateful;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems
 {
@@ -18,35 +19,50 @@ namespace ShipECS.Systems
         public bool isBeingKnockedBack;
     }
 
+    public struct KnockbackSender : IComponentData
+    {
+        public float knockbackForceToSend;
+    }
+
     [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
     [UpdateAfter(typeof(DamageCollisionSystem))]
     public partial struct KnockBackSystem : ISystem
     {
+        
+        private ComponentLookup<LocalTransform> _transform;
+        private ComponentLookup<KnockBackReceiver> _knockbackReceiver;
+        private ComponentLookup<PhysicsMass> _massOverride;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
-
+            _transform = SystemAPI.GetComponentLookup<LocalTransform>();
+            _knockbackReceiver = SystemAPI.GetComponentLookup<KnockBackReceiver>();
+            _massOverride = SystemAPI.GetComponentLookup<PhysicsMass>();
         }
 
-        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            _transform.Update(ref state);
+            _knockbackReceiver.Update(ref state);
+            _massOverride.Update(ref state);
+            
             var deltaTime = SystemAPI.Time.DeltaTime;
-            foreach (var (transform, knockBack, physicsBody, physicsVelocity) in
+            foreach (var (transform, knockBack, physicsBody) in
                      SystemAPI.Query<RefRW<LocalTransform>, RefRW<KnockBackReceiver>,
-                         RefRO<PhysicsMassOverride>, RefRW<PhysicsVelocity>>())
+                         RefRO<PhysicsMass>>())
             {
                 var isKinematic = physicsBody.ValueRO.IsKinematic;
-
-                if (!(knockBack.ValueRW.currentRecoveryTime > 0)) continue;
+                Debug.Log("Knocking back");
+                if (knockBack.ValueRW.currentRecoveryTime <= 0) continue;
                 if (knockBack.ValueRW.isBeingKnockedBack)
                 {
-                    if (isKinematic == 1)
+                    if (isKinematic)
                     {
                         // Kinematic body: Update transform directly
                         transform.ValueRW.Position += knockBack.ValueRW.currentKnockbackVelocity * deltaTime;
                         knockBack.ValueRW.currentKnockbackVelocity *= math.exp(-5f * deltaTime);
-
+                        Debug.Log("Knocking back");
                         if (math.lengthsq(knockBack.ValueRW.currentKnockbackVelocity) < 0.01f)
                         {
                             knockBack.ValueRW.isBeingKnockedBack = false;
@@ -59,43 +75,39 @@ namespace ShipECS.Systems
                 knockBack.ValueRW.currentRecoveryTime -= deltaTime;
             }
             
-            
-            foreach (var (collisionBuffer, knockback, physicsBody, physicsVelocity) in 
-                     SystemAPI.Query<DynamicBuffer<StatefulCollisionEvent>, RefRW<KnockBackReceiver>, 
-                         RefRO<PhysicsMassOverride>, RefRW<PhysicsVelocity>>())
+            foreach (var (collisionBuffer,knockbackForceSent,entityA) in 
+                     SystemAPI.Query<DynamicBuffer<StatefulTriggerEvent>,RefRO<KnockbackSender>>().WithEntityAccess())
             {
-                if (collisionBuffer.Length == 0 || knockback.ValueRW.currentRecoveryTime > 0) 
+                
+                if (collisionBuffer.Length == 0 || knockbackForceSent.ValueRO.knockbackForceToSend <= 0) 
                     continue;
-
-                bool isKinematic = physicsBody.ValueRO.IsKinematic == 1;
 
                 foreach (var collisionEventBuffer in collisionBuffer)
                 {
+                    
+                    var entityB = collisionEventBuffer.GetOtherEntity(entityA);
+                    var knockback = _knockbackReceiver[entityB];
                     var collision = collisionEventBuffer;
-                    var knockbackDirection = collision.CollisionDetails.;
-                    var knockbackVelocity = knockbackDirection * knockback.ValueRW.knockbackForce * collision.impulse;
+                    if (knockback.currentRecoveryTime > 0 || collision.State != StatefulEventState.Enter) continue;
+                    
+                    var isKinematic = _massOverride[entityB].IsKinematic;
+
+                    var knockbackDirection =
+                        math.normalize(_transform[entityA].Position - _transform[entityB].Position);
+                    var knockbackVelocity = knockbackDirection * knockbackForceSent.ValueRO.knockbackForceToSend;
 
                     if (isKinematic)
                     {
                         // Kinematic body: Store velocity for transform updates
-                        knockback.ValueRW.currentKnockbackVelocity = knockbackVelocity;
-                        knockback.ValueRW.isBeingKnockedBack = true;
-                    }
-                    else
-                    {
-                        // Non-kinematic body: Apply immediate physics velocity
-                        physicsVelocity.ValueRW.Linear += knockbackVelocity;
+                        knockback.currentKnockbackVelocity = knockbackVelocity;
+                        knockback.isBeingKnockedBack = true;
                     }
 
-                    knockback.ValueRW.currentRecoveryTime = knockback.ValueRW.recoveryTime;
+                    knockback.currentRecoveryTime = knockback.recoveryTime;
+                    
+                    
                 }
             }
-
-        }
-        
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
 
         }
     }

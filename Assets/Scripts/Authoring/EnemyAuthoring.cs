@@ -1,4 +1,6 @@
+using ShipECS.Systems;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -11,8 +13,9 @@ namespace Authoring
         public float rotationSpeed = 20f;
         public float damage = 1;
         public float targetRangeBounds = 50f;
-        public float MaxHealth = 100f;
-        public float NextDamageDelay = .2f;
+        public float maxHealth = 10f;
+        public float nextDamageDelay = .2f;
+        public float knockBackRecoveryTime = .5f;
         private class EnemyBaker : Baker<EnemyAuthoring>
         {
             public override void Bake(EnemyAuthoring authoring) 
@@ -31,11 +34,19 @@ namespace Authoring
                 });
                 AddComponent(entity, new HealthComponent()
                 {
-                    MaxHealth = authoring.MaxHealth,
-                    CurrentHealth = authoring.MaxHealth,
+                    MaxHealth = authoring.maxHealth,
+                    CurrentHealth = authoring.maxHealth,
                     CurrentNextTimeToTakeDamage = 0f,
-                    NextTimeToTakeDamage = authoring.NextDamageDelay,
-                    PreviousHealth = authoring.MaxHealth
+                    NextTimeToTakeDamage = authoring.nextDamageDelay,
+                    PreviousHealth = authoring.maxHealth
+                });
+                AddComponent(entity, new KnockBackReceiver()
+                {
+                    knockbackForce = 0,
+                    currentKnockbackVelocity = float3.zero,
+                    isBeingKnockedBack = false,
+                    recoveryTime = authoring.knockBackRecoveryTime,
+                    currentRecoveryTime = 0
                 });
             }
         }

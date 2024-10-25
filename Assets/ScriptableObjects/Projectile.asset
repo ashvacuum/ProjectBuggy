@@ -19,4 +19,5 @@ MonoBehaviour:
   BaseFireRate: 3
   WeaponSize: 5
   BaseDamage: 1
+  BaseKnockback: 100
   ProjectilePrefab: {fileID: 6018007920840457554, guid: 1bf9ec01f3440bd4f8b56342576e0192, type: 3}
