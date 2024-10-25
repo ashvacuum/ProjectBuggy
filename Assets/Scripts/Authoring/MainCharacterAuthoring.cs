@@ -3,6 +3,7 @@ using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Stateful;
 using Unity.Transforms;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
@@ -98,6 +99,7 @@ namespace Authoring
                 AddComponent(entity, new InputsData() );
                 AddComponent<PlayerTag>(entity);
                 AddComponent<EnemyTrackingComponent>(entity);
+                AddBuffer<StatefulCollisionEvent>(entity);
             }
         }
     }
