@@ -52,7 +52,7 @@ public class EnemyDatabaseBaker : Baker<EnemyDatabaseAuthoring>
         }
 
         // Create a DynamicBuffer and add each EnemyData to it.
-        var buffer = AddBuffer<EnemyDataBuffer>(GetEntity());
+        var buffer = AddBuffer<EnemyDataBuffer>(GetEntity(TransformUsageFlags.None));
         foreach (var enemyData in enemyDataList)
         {
             buffer.Add(new EnemyDataBuffer

@@ -11,7 +11,7 @@ namespace ShipECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<ShipComponent>();
+            state.RequireForUpdate<PlayerTag>();
             state.RequireForUpdate<ScrapComponent>();
         }
 
@@ -19,7 +19,7 @@ namespace ShipECS.Systems
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             
-            foreach (var (targetTransform, pickupRadius) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<ShipComponent>())
+            foreach (var (targetTransform, pickupRadius) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<PlayerTag>())
             {
                 foreach (var (scrap, transform, entity) in SystemAPI
                              .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess())

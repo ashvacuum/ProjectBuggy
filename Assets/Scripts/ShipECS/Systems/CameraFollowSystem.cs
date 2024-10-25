@@ -14,7 +14,7 @@ namespace ShipECS.Systems
         private EntityQuery entityQuery;
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<ShipComponent>();
+            state.RequireForUpdate<PlayerTag>();
             entityQuery = SystemAPI.QueryBuilder().WithAll<CameraFollow>().Build();
         }
         
@@ -26,7 +26,7 @@ namespace ShipECS.Systems
 
 
                 foreach (var (transform, controller) in
-                         SystemAPI.Query<RefRW<LocalTransform>, RefRW<ShipComponent>>())
+                         SystemAPI.Query<RefRW<LocalTransform>, RefRW<PlayerTag>>())
                 {
                     var cameraTransform = Camera.main.transform;
 

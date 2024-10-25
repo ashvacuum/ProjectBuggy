@@ -27,24 +27,24 @@ namespace ShipECS.Systems
 
             foreach (var (healthTag, tagEntity) in SystemAPI.Query<RefRO<HealthChangeEvent>>().WithEntityAccess())
             {
-                Debug.Log("Updating Health");
+                //Debug.Log("Updating Health");
                 GameSceneEvents.Instance.UpdateHealth(healthTag.ValueRO.NewHealth);
 
                 // Destroy Entity
                 ecb.DestroyEntity(tagEntity);
             }
-
+            
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
     }
-    
+    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct HealthSystem : ISystem
     {
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var health in SystemAPI.Query<RefRW<HealthComponent>>().WithAll<ShipComponent>().WithNone<EnemyFollowTarget>())
+            foreach (var (health, entity) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
             {
                 if (health.ValueRO.CurrentNextTimeToTakeDamage > 0)
                 {
@@ -55,15 +55,24 @@ namespace ShipECS.Systems
                 if (difference < 0.1) continue;
                 
                 var eventEntity = ecb.CreateEntity();
-                ecb.AddComponent(eventEntity, new HealthChangeEvent
+                
+                if (state.EntityManager.HasComponent<PlayerTag>(entity))
                 {
-                    NewHealth = health.ValueRO.HealthPercent
-                });
+                    ecb.AddComponent(eventEntity, new HealthChangeEvent
+                    {
+                        NewHealth = health.ValueRO.HealthPercent
+                    });
+                }
 
                 health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;
+
+                if (health.ValueRO.CurrentHealth <= 0)
+                {
+                    ecb.DestroyEntity(entity);
+                }
                 
                 
-                Debug.Log($"Created Health Change Tag: {health.ValueRO.CurrentHealth} {health.ValueRO.PreviousHealth} : {difference}");
+                //Debug.Log($"Created Health Change Tag: {health.ValueRO.CurrentHealth} {health.ValueRO.PreviousHealth} : {difference}");
             }
             ecb.Playback(state.EntityManager);
             ecb.Dispose();

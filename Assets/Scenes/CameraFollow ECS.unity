@@ -931,7 +931,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c0e6fd4c6192d94abb0f750d7f20b18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitialNumberEnemies: 1500
+  InitialNumberEnemies: 0
   EnemySpawnCurve:
     serializedVersion: 2
     m_Curve:
@@ -944,6 +944,15 @@ MonoBehaviour:
       weightedMode: 0
       inWeight: 0
       outWeight: 0
+    - serializedVersion: 3
+      time: 0.001
+      value: 0.001
+      inSlope: 0.18286762
+      outSlope: 0.18286762
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 0.16037071
       value: 0.030062802
