@@ -26,6 +26,8 @@ namespace Unity.Physics.Stateful
         public ColliderKey ColliderKeyA { get; set; }
         public ColliderKey ColliderKeyB { get; set; }
         public StatefulEventState State { get; set; }
+        
+        public 
 
         public StatefulTriggerEvent(TriggerEvent triggerEvent)
         {
