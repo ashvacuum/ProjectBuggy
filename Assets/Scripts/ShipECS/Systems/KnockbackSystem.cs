@@ -1,4 +1,6 @@
+using Authoring;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -40,7 +42,8 @@ namespace ShipECS.Systems
             _knockbackReceiver = SystemAPI.GetComponentLookup<KnockBackReceiver>();
             _massOverride = SystemAPI.GetComponentLookup<PhysicsMass>();
         }
-
+        
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             _transform.Update(ref state);
@@ -48,12 +51,19 @@ namespace ShipECS.Systems
             _massOverride.Update(ref state);
             
             var deltaTime = SystemAPI.Time.DeltaTime;
+            var job = new KnockBackMoveJob()
+            {
+                deltaTime = deltaTime
+            };
+            job.ScheduleParallel();
+            
+            /*
             foreach (var (transform, knockBack, physicsBody) in
                      SystemAPI.Query<RefRW<LocalTransform>, RefRW<KnockBackReceiver>,
                          RefRO<PhysicsMass>>())
             {
                 var isKinematic = physicsBody.ValueRO.IsKinematic;
-                Debug.Log("Knocking back");
+                
                 if (knockBack.ValueRW.currentRecoveryTime <= 0) continue;
                 if (knockBack.ValueRW.isBeingKnockedBack)
                 {
@@ -73,8 +83,17 @@ namespace ShipECS.Systems
                 }
 
                 knockBack.ValueRW.currentRecoveryTime -= deltaTime;
-            }
-            
+            }*/
+
+            var jobUpdateKnockBack = new KnockbackSendJob()
+            {
+                Transform = SystemAPI.GetComponentLookup<LocalTransform>(),
+                KnockBackReceiver = SystemAPI.GetComponentLookup<KnockBackReceiver>(),
+                MassOverride = SystemAPI.GetComponentLookup<PhysicsMass>(true)
+            };
+
+            jobUpdateKnockBack.Schedule();
+            /*
             foreach (var (collisionBuffer,knockbackForceSent,entityA) in 
                      SystemAPI.Query<DynamicBuffer<StatefulTriggerEvent>,RefRO<KnockbackSender>>().WithEntityAccess())
             {
@@ -98,17 +117,90 @@ namespace ShipECS.Systems
 
                     if (isKinematic)
                     {
+                        Debug.Log("Knockback initiated");
                         // Kinematic body: Store velocity for transform updates
                         knockback.currentKnockbackVelocity = knockbackVelocity;
                         knockback.isBeingKnockedBack = true;
                     }
 
                     knockback.currentRecoveryTime = knockback.recoveryTime;
-                    
-                    
                 }
-            }
+            }*/
 
+        }
+    }
+    
+    [BurstCompile]
+    [WithNone(typeof(NewEnemySpawn))]
+    public partial struct KnockBackMoveJob : IJobEntity
+    {
+        public float deltaTime;
+        void Execute(ref LocalTransform transform, ref KnockBackReceiver receiver, PhysicsMass mass)
+        {
+            var isKinematic = mass.IsKinematic;
+            
+            if (receiver is { currentRecoveryTime: <= 0, isBeingKnockedBack: true } && isKinematic)
+            {
+                // Kinematic body: Update transform directly
+                transform.Position += receiver.currentKnockbackVelocity * deltaTime;
+                receiver.currentKnockbackVelocity *= math.exp(-5f * deltaTime);
+                Debug.Log($"Moving back {math.lengthsq(receiver.currentKnockbackVelocity)}");
+                
+                if (math.lengthsq(receiver.currentKnockbackVelocity) < 0.01f)
+                {
+                    receiver.isBeingKnockedBack = false;
+                    
+                    receiver.currentKnockbackVelocity = float3.zero;
+                }
+
+            }
+            // For non-kinematic bodies, the physics system handles the movement
+            
+
+            receiver.currentRecoveryTime -= deltaTime;
+        }
+    }
+    
+    [BurstCompile]
+    public partial struct KnockbackSendJob : IJobEntity
+    {
+        public ComponentLookup<LocalTransform> Transform;
+        [ReadOnly] public ComponentLookup<PhysicsMass> MassOverride;
+        public ComponentLookup<KnockBackReceiver> KnockBackReceiver;
+        
+
+        void Execute(Entity entityA, ref KnockbackSender sender, in PhysicsMass mass,
+            in DynamicBuffer<StatefulTriggerEvent> statefulTriggerEvents)
+        {
+            if (statefulTriggerEvents.Length == 0 || sender.knockbackForceToSend <= 0)
+                return;
+
+            foreach (var collisionEventBuffer in statefulTriggerEvents)
+            {
+
+                var entityB = collisionEventBuffer.GetOtherEntity(entityA);
+                var knockback = KnockBackReceiver[entityB];
+                var collision = collisionEventBuffer;
+                if (knockback.currentRecoveryTime > 0 || collision.State != StatefulEventState.Enter) continue;
+
+                var isKinematic = MassOverride[entityB].IsKinematic;
+
+                var knockbackDirection =
+                     -1f * math.normalize(Transform[entityA].Position - Transform[entityB].Position);
+                var knockbackVelocity = knockbackDirection * sender.knockbackForceToSend;
+
+                if (isKinematic)
+                {
+                    Debug.Log($"Knockback initiated");
+                    // Kinematic body: Store velocity for transform updates
+                    knockback.currentKnockbackVelocity = knockbackVelocity;
+                    knockback.isBeingKnockedBack = true;
+                }
+
+                knockback.currentRecoveryTime = knockback.recoveryTime;
+
+                KnockBackReceiver[entityB] = knockback;
+            }
         }
     }
 }
