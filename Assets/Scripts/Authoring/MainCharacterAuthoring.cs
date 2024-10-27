@@ -33,6 +33,7 @@ namespace Authoring
         public float AttackTimeReductionBonus;
         public float SizeBonus;
         public float FireRateReductionBonus;
+        public float KnockbackBonus;
         [Space(10)]
         public ProjectileWeaponBase ProjectileStats; 
     
@@ -89,7 +90,9 @@ namespace Authoring
                     SizeBonus = authoring.SizeBonus,
                     SpeedBonus = authoring.SpeedBonus,
                     NumProjectileBonus = authoring.NumCountBonus,
-                    UnitLifeTimeBonus = authoring.LifetimeBonus
+                    UnitLifeTimeBonus = authoring.LifetimeBonus,
+                    BaseKnockback = stats.BaseKnockback,
+                    KnockbackBonus = authoring.KnockbackBonus
                 });
                 AddComponent(entity, new CharacterData
                 {

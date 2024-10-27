@@ -64,6 +64,10 @@ namespace ShipECS.Systems
                         Rotation = quaternion.LookRotation(direction, math.up()),
                         Scale = weapon.ValueRO.TotalSize
                     });
+                    ecb.AddComponent(instance, new KnockbackSender()
+                    {
+                        knockbackForceToSend = weapon.ValueRO.TotalKnockback
+                    });
 
                 }
 
@@ -105,7 +109,11 @@ namespace ShipECS.Systems
         public float SpeedBonus; 
         public float TotalSpeed => BaseSpeed + SpeedBonus/100f * BaseSpeed;
 
-
+        public float BaseKnockback;
+        public float KnockbackBonus;
+        public float TotalKnockback => BaseKnockback - KnockbackBonus/100f * BaseKnockback;
+        
+        
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
     }
 }

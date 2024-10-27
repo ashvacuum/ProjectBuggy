@@ -99,8 +99,9 @@ MonoBehaviour:
   rotationSpeed: 0.3
   damage: 1
   targetRangeBounds: 200
-  MaxHealth: 100
-  NextDamageDelay: 0.2
+  maxHealth: 10
+  nextDamageDelay: 0.2
+  knockBackRecoveryTime: 0.5
 --- !u!114 &5198315014815891808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,7 +114,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccea9ea98e38942e0b0938c27ed1903e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MotionType: 0
+  m_MotionType: 1
   m_Smoothing: 0
   m_Mass: 1
   m_LinearDamping: 0.01

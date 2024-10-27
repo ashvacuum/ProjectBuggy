@@ -35,7 +35,7 @@ namespace ShipECS.Systems
         }
     }
     
-    [WithAll(typeof(EnemyFollowTarget))]
+    [WithAll(typeof(EnemyFollowTarget), typeof(KnockBackReceiver))]
     [WithNone(typeof(NewEnemySpawn))]
     [BurstCompile]
     public partial struct FollowPlayerJob : IJobEntity
@@ -43,9 +43,10 @@ namespace ShipECS.Systems
         public float3 TargetLocation;
         public float DeltaTime;
 
-        void Execute([EntityIndexInQuery] int entityIndex, Entity entity, ref LocalTransform shipTransform, EnemyFollowTarget followTarget)
+        void Execute(ref LocalTransform shipTransform, EnemyFollowTarget followTarget, KnockBackReceiver receiver)
         {
-            if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits)
+            
+            if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits || receiver.isBeingKnockedBack)
             {
                 return;
             }
