@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Projectile
   m_EditorClassIdentifier: 
   BaseLifetime: 5
-  BaseCount: 1
+  BaseCount: 2
   BasePenetration: 1
   BaseSpeed: 300
   BaseFireRate: 0.4
