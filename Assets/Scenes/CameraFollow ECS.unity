@@ -1010,7 +1010,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  MaximumEnemies: 3000
+  MaximumEnemies: 15000
   MaximumTime: 1800
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

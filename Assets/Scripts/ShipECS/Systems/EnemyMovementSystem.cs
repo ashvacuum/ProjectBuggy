@@ -3,11 +3,15 @@ using Authoring;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(AfterPhysicsSystemGroup))]
+    [UpdateAfter(typeof(KnockBackSystem))]
     public partial struct EnemyMovementSystem : ISystem
     {
         
@@ -29,7 +33,8 @@ namespace ShipECS.Systems
                 new FollowPlayerJob()
                 {
                     TargetLocation = playerTransform.ValueRO.Position,
-                    DeltaTime = SystemAPI.Time.DeltaTime
+                    DeltaTime = SystemAPI.Time.DeltaTime,
+                    ElapsedTime = (float)SystemAPI.Time.ElapsedTime
                 }.ScheduleParallel();
             }
         }
@@ -42,11 +47,38 @@ namespace ShipECS.Systems
     {
         public float3 TargetLocation;
         public float DeltaTime;
+        public float ElapsedTime;
 
-        void Execute(ref LocalTransform shipTransform, EnemyFollowTarget followTarget, KnockBackReceiver receiver)
+        void Execute(ref LocalTransform shipTransform, ref KnockBackReceiver receiver, in EnemyFollowTarget followTarget,in PhysicsMass mass)
         {
+            if (receiver.isBeingKnockedBack)
+            {
+                
+                var isKinematic = mass.IsKinematic;
             
-            if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits || receiver.isBeingKnockedBack)
+                if (receiver is { currentRecoveryTime: <= 0, isBeingKnockedBack: true } && isKinematic)
+                {
+                    // Kinematic body: Update transform directly
+                    Debug.Log($"Knockback Movement {ElapsedTime}");
+                    shipTransform.Position += receiver.currentKnockbackVelocity * DeltaTime;
+                    receiver.currentKnockbackVelocity *= math.exp(-5f * DeltaTime);
+                
+                    if (math.lengthsq(receiver.currentKnockbackVelocity) < 0.01f)
+                    {
+                        receiver.isBeingKnockedBack = false;
+                    
+                        receiver.currentKnockbackVelocity = float3.zero;
+                    }
+
+                }
+                // For non-kinematic bodies, the physics system handles the movement
+            
+
+                receiver.currentRecoveryTime -= DeltaTime;
+                return;
+            }
+            
+            if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits )
             {
                 return;
             }

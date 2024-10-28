@@ -10,7 +10,8 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
-    [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+    
+    [UpdateInGroup(typeof(AfterPhysicsSystemGroup))]
     public partial struct DamageCollisionSystem : ISystem
     {
         private ComponentLookup<DamageComponent> Damage;
