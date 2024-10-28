@@ -3,6 +3,7 @@ using NonECS.UI;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace ShipECS.Systems
@@ -44,7 +45,7 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (health, entity) in SystemAPI.Query<RefRW<HealthComponent>>().WithEntityAccess())
+            foreach (var (health, transform,entity) in SystemAPI.Query<RefRW<HealthComponent>, RefRO<LocalTransform>>().WithEntityAccess())
             {
                 if (health.ValueRO.CurrentNextTimeToTakeDamage > 0)
                 {
@@ -62,13 +63,22 @@ namespace ShipECS.Systems
                     {
                         NewHealth = health.ValueRO.HealthPercent
                     });
+                } else
+                {
+                    ecb.AddComponent(eventEntity, new DamageNumberRequest()
+                    {
+                        DamageAmount = difference,
+                        WorldPosition = transform.ValueRO.Position
+                    });
                 }
 
                 health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;
 
+                
+                
                 if (health.ValueRO.CurrentHealth <= 0)
                 {
-                    ecb.DestroyEntity(entity);
+                    ecb.AddComponent<DeadComponentTag>(entity);
                 }
                 
                 
@@ -78,4 +88,6 @@ namespace ShipECS.Systems
             ecb.Dispose();
         }
     }
+
+    public struct DeadComponentTag : IComponentData { }
 }

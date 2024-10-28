@@ -13,7 +13,6 @@ namespace ShipECS.Systems
 {
     public struct KnockBackReceiver : IComponentData
     {
-        public float knockbackForce;
         public float recoveryTime;
         public float currentRecoveryTime;
         public float3 currentKnockbackVelocity;
@@ -26,13 +25,13 @@ namespace ShipECS.Systems
     }
 
     [UpdateInGroup(typeof(AfterPhysicsSystemGroup))]
-    [UpdateBefore(typeof(EnemyMovementSystem))]
+    [UpdateAfter(typeof(DamageCollisionSystem))]
     public partial struct KnockBackSystem : ISystem
     {
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-/*
+
             var jobUpdateKnockBack = new KnockbackSendJob()
             {
                 Transform = SystemAPI.GetComponentLookup<LocalTransform>(),
@@ -41,44 +40,7 @@ namespace ShipECS.Systems
                 ElapsedTime = (float)SystemAPI.Time.ElapsedTime
             };
 
-            jobUpdateKnockBack.Schedule();*/
-
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
-
-            foreach (var (knockbackReceiver,mass,enemyTransform,entityB) in SystemAPI.Query<RefRW<KnockBackReceiver>, RefRO<PhysicsMass>, RefRO<LocalTransform>>().WithEntityAccess())
-            {
-                if (!mass.ValueRO.IsKinematic || knockbackReceiver.ValueRO.currentRecoveryTime > 0) continue;
-                foreach (var (sender,triggerEvents,projectileTransform,entityA) in SystemAPI.Query<RefRO<KnockbackSender>,DynamicBuffer<StatefulTriggerEvent>,RefRO<LocalTransform>>().WithEntityAccess())
-                {
-                    foreach (var triggerEvent in triggerEvents)
-                    {
-                        if (triggerEvent.GetOtherEntity(entityA) != entityB || triggerEvent.State != StatefulEventState.Enter) continue;
-
-                        var knockbackDirection =
-                            math.normalize(projectileTransform.ValueRO.Position - enemyTransform.ValueRO.Position) * -1;
-
-                        var knockbackVelocity = knockbackDirection * sender.ValueRO.knockbackForceToSend;
-                        
-                        ecb.SetComponent(entityB, new KnockBackReceiver()
-                        {
-                            currentKnockbackVelocity = knockbackVelocity,
-                            currentRecoveryTime = knockbackReceiver.ValueRO.recoveryTime,
-                            isBeingKnockedBack = true,
-                            knockbackForce = 1,
-                            recoveryTime = knockbackReceiver.ValueRO.recoveryTime
-                        });
-
-                    }
-                }
-            }
-            //Debug.Log($"Knockback initiated {SystemAPI.Time.ElapsedTime}");
-
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
-            
-            
-            
-
+            jobUpdateKnockBack.Schedule();
         }
     }
     
@@ -100,6 +62,7 @@ namespace ShipECS.Systems
             {
 
                 var entityB = collisionEventBuffer.GetOtherEntity(entityA);
+                if (entityB == Entity.Null) continue;
                 var knockback = KnockBackReceiver[entityB];
                 var collision = collisionEventBuffer;
                 if (knockback.currentRecoveryTime > 0 || collision.State != StatefulEventState.Enter) continue;

@@ -41,7 +41,7 @@ namespace ShipECS.Systems
     }
     
     [WithAll(typeof(EnemyFollowTarget), typeof(KnockBackReceiver))]
-    [WithNone(typeof(NewEnemySpawn))]
+    [WithNone(typeof(NewEnemySpawn), typeof(DeadComponentTag))]
     [BurstCompile]
     public partial struct FollowPlayerJob : IJobEntity
     {
@@ -49,21 +49,19 @@ namespace ShipECS.Systems
         public float DeltaTime;
         public float ElapsedTime;
 
-        void Execute(ref LocalTransform shipTransform, ref KnockBackReceiver receiver, in EnemyFollowTarget followTarget,in PhysicsMass mass)
+        void Execute(ref LocalTransform shipTransform, ref KnockBackReceiver receiver, in EnemyFollowTarget followTarget, in PhysicsMass mass)
         {
             if (receiver.isBeingKnockedBack)
             {
-                
                 var isKinematic = mass.IsKinematic;
-            
-                if (receiver is { currentRecoveryTime: <= 0, isBeingKnockedBack: true } && isKinematic)
+                if (receiver is { isBeingKnockedBack: true } && isKinematic)
                 {
                     // Kinematic body: Update transform directly
-                    Debug.Log($"Knockback Movement {ElapsedTime}");
+                    //Debug.Log($"Knockback Movement {ElapsedTime}");
                     shipTransform.Position += receiver.currentKnockbackVelocity * DeltaTime;
                     receiver.currentKnockbackVelocity *= math.exp(-5f * DeltaTime);
                 
-                    if (math.lengthsq(receiver.currentKnockbackVelocity) < 0.01f)
+                    if (math.lengthsq(receiver.currentKnockbackVelocity) < 0.01f || receiver.currentRecoveryTime <= 0)
                     {
                         receiver.isBeingKnockedBack = false;
                     
@@ -71,7 +69,6 @@ namespace ShipECS.Systems
                     }
 
                 }
-                // For non-kinematic bodies, the physics system handles the movement
             
 
                 receiver.currentRecoveryTime -= DeltaTime;

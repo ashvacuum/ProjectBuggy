@@ -1,4 +1,5 @@
 using Authoring;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -14,9 +15,14 @@ namespace ShipECS.Systems
         }
         public void OnUpdate(ref SystemState state)
         {
-            foreach (var projectile in SystemAPI.Query<ProjectileAspect>())
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            foreach (var (projectile,entity) in SystemAPI.Query<ProjectileAspect>().WithNone<DeadComponentTag>().WithEntityAccess())
             {
-                if (!projectile.IsAlive ) continue;
+                if (!projectile.IsAlive)
+                {
+                    ecb.AddComponent<DeadComponentTag>(entity);
+                    continue;
+                }
                 
                 projectile.Position = math.lerp(projectile.Position,
                     projectile.Position + projectile.ForwardVector,
@@ -25,6 +31,9 @@ namespace ShipECS.Systems
                 //Debug.DrawRay(projectile.Position,(projectile.Position + projectile.ForwardVector), Color.red, .1f );
                 
             }
+            
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
     }
 

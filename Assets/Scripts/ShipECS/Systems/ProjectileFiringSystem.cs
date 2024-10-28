@@ -13,15 +13,15 @@ namespace ShipECS.Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<ProjectileSpawnerComponent>();
-            state.RequireForUpdate<EnemyTrackingComponent>();
         }
         
         public void OnUpdate(ref SystemState state)
         {
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            var enemyTrackingComponent = SystemAPI.GetSingleton<EnemyTrackingComponent>();
             var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
+
+            var enemyTargetBuffers = SystemAPI.GetSingletonBuffer<EnemyTargetPoints>();
 
             foreach (var (transform, weapon) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<ProjectileAttack>>()
                          .WithAll<PlayerTag>())
@@ -34,16 +34,18 @@ namespace ShipECS.Systems
                 }
 
                 weapon.ValueRW.CurrentFireRate = weapon.ValueRO.TotalFireRate;
-
-                for (var i = 0; i < weapon.ValueRO.TotalCount; i++)
+                var totalCountWeapons = math.min(enemyTargetBuffers.Length, weapon.ValueRO.TotalCount);
+                for (var i = 0; i < totalCountWeapons; i++)
                 {
                     var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
                         Damage = weapon.ValueRO.TotalDamage
                     });
-
-                    var direction = math.normalize(enemyTrackingComponent.TrackingTargetPosition - transform.ValueRO.Position);
+                    
+                    var targetPos = enemyTargetBuffers[i].Position;
+                    
+                    var direction = math.normalize(targetPos - transform.ValueRO.Position);
                     ecb.AddComponent(instance, new ProjectileMotion()
                     {
                         Direction = direction,
@@ -72,7 +74,7 @@ namespace ShipECS.Systems
                 }
 
             }
-            
+            enemyTargetBuffers.Clear();
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
