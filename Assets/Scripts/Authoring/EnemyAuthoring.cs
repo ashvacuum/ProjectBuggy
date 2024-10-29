@@ -42,7 +42,6 @@ namespace Authoring
                 });
                 AddComponent(entity, new KnockBackReceiver()
                 {
-                    knockbackForce = 0,
                     currentKnockbackVelocity = float3.zero,
                     isBeingKnockedBack = false,
                     recoveryTime = authoring.knockBackRecoveryTime,
@@ -57,6 +56,7 @@ namespace Authoring
         public float Speed;
         public float RotationSpeed;
         public float FollowTargetLimits;
+        
     }
 
     public struct NewEnemySpawn : IComponentData { }

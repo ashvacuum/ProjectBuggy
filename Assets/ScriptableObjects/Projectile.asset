@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BaseLifetime: 5
   BaseCount: 1
-  BasePenetration: 0
+  BasePenetration: 1
   BaseSpeed: 300
-  BaseFireRate: 3
-  WeaponSize: 5
-  BaseDamage: 1
-  BaseKnockback: 100
+  BaseFireRate: 0.4
+  WeaponSize: 1
+  BaseDamage: 5
+  BaseKnockback: 10
   ProjectilePrefab: {fileID: 6018007920840457554, guid: 1bf9ec01f3440bd4f8b56342576e0192, type: 3}

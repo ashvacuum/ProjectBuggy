@@ -101,7 +101,7 @@ namespace Authoring
                 });
                 AddComponent(entity, new InputsData() );
                 AddComponent<PlayerTag>(entity);
-                AddComponent<EnemyTrackingComponent>(entity);
+                AddComponent<StatefulTriggerEventExclude>(entity);
                 AddBuffer<StatefulCollisionEvent>(entity);
             }
         }
