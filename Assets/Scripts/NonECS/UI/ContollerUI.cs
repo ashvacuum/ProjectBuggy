@@ -22,7 +22,7 @@ public class ContollerUI : MonoBehaviour
 
     private void Update()
     {
-        if (_timeEntity != null) {
+        if (_timeEntity != Entity.Null) {
             DisplayTime();
         }
     }

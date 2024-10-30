@@ -17,10 +17,9 @@ namespace ShipECS.Systems
         {
             // Get the game timer
             var gameTime = 0f;
-            foreach (var timer in SystemAPI.Query<RefRO<GameTimerComponent>>())
+            if (SystemAPI.TryGetSingleton<TimeManagerComponent>(out var gameTimer))
             {
-                gameTime = timer.ValueRO.TotalGameTime;
-                break;
+                gameTime = gameTimer.CurrentTime;
             }
             
             var ecb = new EntityCommandBuffer(Allocator.Temp);
