@@ -37,11 +37,13 @@ namespace ShipECS.Systems
                 var totalCountWeapons = math.min(enemyTargetBuffers.Length, weapon.ValueRO.TotalCount);
                 for (var i = 0; i < totalCountWeapons; i++)
                 {
+                    if (enemyTargetBuffers[i].Distance > weapon.ValueRO.TotalRange) continue;
                     var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
                         Damage = weapon.ValueRO.TotalDamage
                     });
+                    
                     
                     var targetPos = enemyTargetBuffers[i].Position;
                     
@@ -98,6 +100,10 @@ namespace ShipECS.Systems
         public float BaseDamage;
         public float DamageBonus; 
         public float TotalDamage => BaseDamage + (DamageBonus/100f * BaseDamage);
+        
+        public float BaseRange;
+        public float RangeBonus; 
+        public float TotalRange => BaseRange + (RangeBonus/100f * BaseDamage);
         
         public float BaseSize;
         public float SizeBonus;

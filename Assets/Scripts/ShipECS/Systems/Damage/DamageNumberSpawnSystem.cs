@@ -18,7 +18,7 @@ namespace ShipECS.Systems
             
             state.RequireForUpdate<DamageNumberUICounter>();
         }
-
+        /*
         public void OnUpdate(ref SystemState state)
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
@@ -51,6 +51,6 @@ namespace ShipECS.Systems
 
                 ecb.DestroyEntity(entity);
             }
-        }
+        }*/
     }
 }

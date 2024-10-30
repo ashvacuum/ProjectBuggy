@@ -380,22 +380,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   possibleLoots:
-  - prefab: {fileID: 1514130636198565966, guid: 91398af4f1e7f0e458455ad21b358df5, type: 3}
-    timeThresholds:
-    - timeThreshold: 0
-      dropChance: 50
-    - timeThreshold: 5
-      dropChance: 75
-    - timeThreshold: 10
-      dropChance: 100
-  - prefab: {fileID: 3998672990143488763, guid: c1574eee3dd838b48831e9e98dca9dff, type: 3}
-    timeThresholds:
-    - timeThreshold: 0
-      dropChance: 5
-    - timeThreshold: 5
-      dropChance: 20
-    - timeThreshold: 15
-      dropChance: 50
   - prefab: {fileID: 6864261028736791161, guid: 98a1cd1cc0a116d4980edde3250eda06, type: 3}
     timeThresholds:
     - timeThreshold: 0
@@ -406,6 +390,22 @@ MonoBehaviour:
       dropChance: 10
     - timeThreshold: 25
       dropChance: 25
+  - prefab: {fileID: 3998672990143488763, guid: c1574eee3dd838b48831e9e98dca9dff, type: 3}
+    timeThresholds:
+    - timeThreshold: 0
+      dropChance: 5
+    - timeThreshold: 5
+      dropChance: 20
+    - timeThreshold: 15
+      dropChance: 50
+  - prefab: {fileID: 1514130636198565966, guid: 91398af4f1e7f0e458455ad21b358df5, type: 3}
+    timeThresholds:
+    - timeThreshold: 0
+      dropChance: 50
+    - timeThreshold: 5
+      dropChance: 75
+    - timeThreshold: 10
+      dropChance: 100
 --- !u!4 &1992735455
 Transform:
   m_ObjectHideFlags: 0

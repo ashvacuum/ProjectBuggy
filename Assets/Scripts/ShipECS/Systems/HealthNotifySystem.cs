@@ -89,5 +89,5 @@ namespace ShipECS.Systems
         }
     }
 
-    public struct DeadComponentTag : IComponentData { }
+    public struct DeadComponentTag : ICleanupComponentData { }
 }

@@ -13,6 +13,7 @@ namespace NonECS.BaseWeapons
         public float WeaponSize = 1f;
         public float BaseDamage = 1f;
         public float BaseKnockback = 5f;
+        public float BaseRange = 500f;
     }
     
     public enum WeaponClass

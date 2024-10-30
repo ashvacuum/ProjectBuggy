@@ -13,7 +13,7 @@ namespace ShipECS.Systems
             state.RequireForUpdate<DeadComponentTag>();
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()

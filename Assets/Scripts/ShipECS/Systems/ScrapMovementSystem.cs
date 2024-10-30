@@ -36,7 +36,8 @@ namespace ShipECS.Systems
                     if (scrap.ValueRO.TimeLeft >=
                         scrap.ValueRO.TimeToReachTarget || math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position) < 1f) // destroy entity if it has reached target
                     {
-                        ecb.DestroyEntity(entity);
+                        ecb.AddComponent<DeadComponentTag>(entity);
+                        
                         var scrapNotifyEntity = ecb.CreateEntity();
                         ecb.AddComponent(scrapNotifyEntity, new ScrapNotify()
                         {
