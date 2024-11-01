@@ -10,8 +10,8 @@ namespace ShipECS.Systems
     public partial struct DamageNumberUpdateSystem : ISystem
     {
         private const float LIFETIME = .5f;
-        private const float RISE_HEIGHT = 0f;
-        private const float FADE_START = 0.4f;
+        private const float RISE_HEIGHT = 20f;
+        private const float FADE_START = 0.3f;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -60,7 +60,7 @@ namespace ShipECS.Systems
                 // Destroy when lifetime is over
                 if (!(damageNumber.ValueRO.TimeAlive >= LIFETIME)) continue;
                 uiManager.RemoveDamageNumber(damageNumber.ValueRO.UIElementId);
-                ecb.DestroyEntity(entity);
+                ecb.AddComponent<DeadComponentTag>(entity);
             }
         }
     }

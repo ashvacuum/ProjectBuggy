@@ -29,7 +29,8 @@ namespace ShipECS.Systems
         //[BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-
+            if (_playerQuery.IsEmpty) return;
+            
             var player = _playerQuery.GetSingletonEntity();
             var playerPos = SystemAPI.GetComponent<LocalTransform>(
                 player

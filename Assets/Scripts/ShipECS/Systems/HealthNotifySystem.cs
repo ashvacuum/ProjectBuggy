@@ -10,35 +10,7 @@ namespace ShipECS.Systems
 {
     
     public struct HealthChangedTag : IComponentData {}
-    public struct HealthChangeEvent : IComponentData
-    {
-        public float NewHealth;
-    }
-    public partial struct HealthNotifySystem : ISystem
-    {
-        public void OnCreate(ref SystemState state)
-        {
-            state.RequireForUpdate<HealthChangeEvent>();
-        }
-
-        public void OnUpdate(ref SystemState state)
-        {
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
-
-
-            foreach (var (healthTag, tagEntity) in SystemAPI.Query<RefRO<HealthChangeEvent>>().WithEntityAccess())
-            {
-                //Debug.Log("Updating Health");
-                GameSceneEvents.Instance.UpdateHealth(healthTag.ValueRO.NewHealth);
-
-                // Destroy Entity
-                ecb.DestroyEntity(tagEntity);
-            }
-            
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
-        }
-    }
+    
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct HealthSystem : ISystem
     {
@@ -59,10 +31,6 @@ namespace ShipECS.Systems
                 
                 if (state.EntityManager.HasComponent<PlayerTag>(entity))
                 {
-                    ecb.AddComponent(eventEntity, new HealthChangeEvent
-                    {
-                        NewHealth = health.ValueRO.HealthPercent
-                    });
                 } else
                 {
                     ecb.AddComponent(eventEntity, new DamageNumberRequest()
@@ -89,5 +57,5 @@ namespace ShipECS.Systems
         }
     }
 
-    public struct DeadComponentTag : IComponentData { }
+    public struct DeadComponentTag : ICleanupComponentData { }
 }

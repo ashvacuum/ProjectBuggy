@@ -18,7 +18,7 @@ namespace ShipECS.Systems
             
             state.RequireForUpdate<DamageNumberUICounter>();
         }
-
+        
         public void OnUpdate(ref SystemState state)
         {
             var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
@@ -28,7 +28,7 @@ namespace ShipECS.Systems
             if (uiManager == null) return;
             
             _random = new Unity.Mathematics.Random((uint)System.DateTime.Now.Ticks);
-            foreach (var (request, entity) in SystemAPI.Query<RefRO<DamageNumberRequest>>().WithEntityAccess())
+            foreach (var (request, entity) in SystemAPI.Query<RefRO<DamageNumberRequest>>().WithEntityAccess().WithNone<DeadComponentTag>())
             {
                 var randomOffset = _random.NextFloat2(new float2(-0.5f, 0.5f), new float2(0.5f, 1f));
             
@@ -49,7 +49,7 @@ namespace ShipECS.Systems
                     UIElementId = uiElementId
                 });
 
-                ecb.DestroyEntity(entity);
+                ecb.AddComponent<DeadComponentTag>(entity);
             }
         }
     }

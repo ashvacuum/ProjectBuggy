@@ -59,7 +59,7 @@ namespace ShipECS.Systems
                         healthA.PreviousHealth = healthA.CurrentHealth; //prevents damage system from computing any damage
                         
                         healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
-                        Debug.Log($"Entity A took Self Damage {1}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage }");
+                        //Debug.Log($"Entity A took Self Damage {1}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage }");
                         _health[entityA] = healthA;
                     }
 

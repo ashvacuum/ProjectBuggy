@@ -34,6 +34,8 @@ namespace Authoring
         public float SizeBonus;
         public float FireRateReductionBonus;
         public float KnockbackBonus;
+        public float RangeBonus;
+        public float ExpBonus;
         [Space(10)]
         public ProjectileWeaponBase ProjectileStats; 
     
@@ -92,7 +94,9 @@ namespace Authoring
                     NumProjectileBonus = authoring.NumCountBonus,
                     UnitLifeTimeBonus = authoring.LifetimeBonus,
                     BaseKnockback = stats.BaseKnockback,
-                    KnockbackBonus = authoring.KnockbackBonus
+                    KnockbackBonus = authoring.KnockbackBonus,
+                    RangeBonus = authoring.RangeBonus,
+                    BaseRange = stats.BaseRange
                 });
                 AddComponent(entity, new CharacterData
                 {
@@ -103,13 +107,20 @@ namespace Authoring
                 AddComponent<PlayerTag>(entity);
                 AddComponent<StatefulTriggerEventExclude>(entity);
                 AddBuffer<StatefulCollisionEvent>(entity);
+                AddBuffer<ExperienceBuffer>(entity);
+                AddBuffer<LevelUpBuffer>(entity);
+                AddComponent(entity, new ExperienceContainer()
+                {
+                    TotalExperience = 0,
+                    BonusExperience = authoring.ExpBonus
+                });
             }
         }
     }
 
     public struct PlayerTag : IComponentData { }
 
-    public struct HealthComponent : IComponentData, IEnableableComponent
+    public struct HealthComponent : IComponentData
     {
         public float CurrentHealth;
         public float MaxHealth;

@@ -1,41 +1,31 @@
 using System;
 using Authoring;
+using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using UnityEngine.SocialPlatforms;
 using UnityEngine.UIElements;
 
 namespace NonECS.UI
 {
-    public class GameSceneEvents : MonoBehaviour
+    public class GameUIView : MonoBehaviour
     {
         private UIDocument _document;
         private ProgressBar _healthBar;
         private ProgressBar _expBar;
+        private Label _levelLabel;
         private EntityManager _entityManager;
         private Entity _targetEntity;
-
-        public static GameSceneEvents Instance { get; private set; }
-
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                Instance = this;
-            }
-        }
 
         void Start()
         {
             _document = GetComponent<UIDocument>();
             _healthBar = _document.rootVisualElement.Q("HealthBar") as ProgressBar;
             _expBar = _document.rootVisualElement.Q("ExperienceBar") as ProgressBar;
+            _levelLabel = _document.rootVisualElement.Q("LevelData") as Label;
             if (_healthBar != null) _healthBar.value = 100;
             if (_expBar != null) _expBar.value = 0;
 
@@ -47,17 +37,19 @@ namespace NonECS.UI
             if (_targetEntity != Entity.Null)
             {
                 FollowEntity();
+                UpdateExp();
+                UpdateHealth();
                 return;
             }
 
-            var entityQuery = _entityManager.CreateEntityQuery(typeof(PlayerTag));
-            if (entityQuery.HasSingleton<PlayerTag>())
+            var entityQuery = _entityManager.CreateEntityQuery(ComponentType.ReadOnly<PlayerTag>(), ComponentType.ReadOnly<ExperienceContainer>(), ComponentType.ReadOnly<HealthComponent>(), ComponentType.ReadOnly<LocalTransform>());
+            if (!entityQuery.IsEmpty)
                 _targetEntity = entityQuery.GetSingletonEntity();
         }
 
         void FollowEntity()
         {
-            if (!_entityManager.HasComponent<LocalTransform>(_targetEntity)) return;
+            if (!_entityManager.HasComponent<PlayerTag>(_targetEntity)) return;
 
             var entityPosition = _entityManager.GetComponentData<LocalTransform>(_targetEntity).Position;
 
@@ -72,20 +64,30 @@ namespace NonECS.UI
             _healthBar.style.top = uiPosition.y;
         }
 
-        public void UpdateHealth(float newHealth)
+        private void UpdateHealth()
         {
+
+            var newHealth = _entityManager.GetComponentData<HealthComponent>(_targetEntity).HealthPercent;
             if (_healthBar == null) return;
 
             _healthBar.value = newHealth;
             //Debug.Log($"New Health Value {newHealth}");
         }
-        
-        public void UpdateExp(float ExpValue)
-        {
-            if (_expBar == null) return;
 
-            _expBar.value += ExpValue;
-            //Debug.Log($"New Exp Value {_expBar.value}");
+        private void UpdateExp()
+        {
+            var expContainer = _entityManager.GetComponentData<ExperienceContainer>(_targetEntity);
+            if (_expBar != null)
+            {
+                _expBar.value = expContainer.GetExpPercentToNextUpgrade();
+                Debug.Log($"Exp Value: {_expBar.value}, {expContainer.TotalExperience}");
+            }
+
+            if (_levelLabel != null)
+            {
+                _levelLabel.text = expContainer.GetCurrentLevel().ToString();
+                //Debug.Log($"Level Value: {_levelLabel.text}, {expContainer.TotalExperience}");
+            } 
         }
 
     }
