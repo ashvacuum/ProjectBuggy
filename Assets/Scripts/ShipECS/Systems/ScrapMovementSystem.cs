@@ -18,7 +18,8 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            
+
+            var hasExpBuffers = SystemAPI.TryGetSingletonBuffer<ExperienceBuffer>(out var expBuffers);
             foreach (var (targetTransform, pickupRadius) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<PlayerTag>())
             {
                 foreach (var (scrap, transform, entity) in SystemAPI
@@ -36,13 +37,19 @@ namespace ShipECS.Systems
                     if (scrap.ValueRO.TimeLeft >=
                         scrap.ValueRO.TimeToReachTarget || math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position) < 1f) // destroy entity if it has reached target
                     {
+                        
                         ecb.AddComponent<DeadComponentTag>(entity);
                         
-                        var scrapNotifyEntity = ecb.CreateEntity();
-                        ecb.AddComponent(scrapNotifyEntity, new ScrapNotify()
+                        if (hasExpBuffers)
                         {
-                            ScrapValue = scrap.ValueRO.ScrapToGive
-                        });
+                            expBuffers.Add(new ExperienceBuffer()
+                            {
+                                Experience = scrap.ValueRO.ScrapToGive
+                            });
+                        }
+                        
+                        
+                        
                         continue;
                     }
 
@@ -51,9 +58,9 @@ namespace ShipECS.Systems
                     lerpTime = ComputeEaseIn(lerpTime);
 
                     //Do easing here
-                    var newPos = math.lerp(transform.ValueRO.Position, targetTransform.ValueRO.Position, lerpTime);
+                    var newPosition = math.lerp(transform.ValueRO.Position, targetTransform.ValueRO.Position, lerpTime);
 
-                    transform.ValueRW.Position = newPos;
+                    transform.ValueRW.Position = newPosition;
 
                     scrap.ValueRW.TimeLeft += SystemAPI.Time.DeltaTime;
                 }
@@ -85,6 +92,6 @@ namespace ShipECS.Systems
 
     public struct ScrapNotify : IComponentData
     {
-        public float ScrapValue;
+        public float CurrentExpBarValue;
     }
 }

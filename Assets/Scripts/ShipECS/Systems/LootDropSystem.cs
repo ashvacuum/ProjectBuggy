@@ -41,13 +41,13 @@ namespace ShipECS.Systems
                         var rolledChance = UnityEngine.Random.Range(0f, 100f);
                         if (!(rolledChance <= currentChance))
                         {
-                            Debug.Log($"Failed Chance: {rolledChance} <= {currentChance}");
+                            //Debug.Log($"Failed Chance: {rolledChance} <= {currentChance}");
                             continue;
                         }
                         // Spawn loot entity
                         var lootEntity = ecb.Instantiate(lootTable[i].prefab);
                         ecb.SetComponent(lootEntity, LocalTransform.FromPosition(transform.ValueRO.Position));
-                        Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
+                        //Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
                         break;
                     }
                 }
