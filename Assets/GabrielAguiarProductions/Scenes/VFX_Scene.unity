@@ -6275,7 +6275,11 @@ Light:
   m_LightUnit: 0
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 0
+<<<<<<< Updated upstream
 --- !u!1001 &6958949371315911891
+=======
+--- !u!1001 &6878738231332182167
+>>>>>>> Stashed changes
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -6301,7 +6305,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2575518417299317786, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 2575518417299317786, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
       propertyPath: m_LocalRotation.x
@@ -6309,7 +6313,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2575518417299317786, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: 2575518417299317786, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
       propertyPath: m_LocalRotation.z
@@ -6321,7 +6325,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2575518417299317786, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 2575518417299317786, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -6331,7 +6335,11 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
+<<<<<<< Updated upstream
   m_SourcePrefab: {fileID: 100100000, guid: 509ea576707f73a4cb89c0ba41815eec, type: 3}
+=======
+  m_SourcePrefab: {fileID: 100100000, guid: f5cb56544307fc246a4aab7b4ff9c031, type: 3}
+>>>>>>> Stashed changes
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
