@@ -274,22 +274,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd3f7577657a8b24ca9ba791667bfbc7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy:
-  - prefabs: {fileID: 0}
-    level: 0
-    enemyClass: 0
-  - prefabs: {fileID: 0}
-    level: 0
-    enemyClass: 0
-  - prefabs: {fileID: 0}
-    level: 0
-    enemyClass: 0
-  - prefabs: {fileID: 0}
-    level: 0
-    enemyClass: 0
-  - prefabs: {fileID: 0}
-    level: 0
-    enemyClass: 1
+  enemyVariants:
+  - {fileID: 11400000, guid: a6d64397484d9f64eb177b2f019d3ebe, type: 2}
 --- !u!4 &627561547
 Transform:
   m_ObjectHideFlags: 0
