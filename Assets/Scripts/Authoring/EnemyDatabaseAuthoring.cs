@@ -22,7 +22,7 @@ public class EnemyDatabaseAuthoring : MonoBehaviour
                 ref var root = ref builder.ConstructRoot<EnemyVarietyBlobAsset>();
                 var array = builder.Allocate(ref root.enemyArray, initialData.Length);
 
-  
+
 
                 for (int i = 0; i < initialData.Length; i++)
                 {
@@ -45,21 +45,26 @@ public class EnemyDatabaseAuthoring : MonoBehaviour
             var blobAsset = CreateBlobAsset(authoring.enemyDataVariants);
 
 
-            AddComponent(entity, new EnemyDataComponent 
-                { EnemyVarietyBlob = blobAsset
+            AddComponent(entity, new EnemyDataComponent
+            {
+                EnemyVarietyBlob = blobAsset
             });
             blobAsset.Dispose();
 
-            NativeParallelHashMap<FixedString32Bytes, Entity> entityNameMap = new NativeParallelHashMap<FixedString32Bytes, Entity>(1, Allocator.Persistent); 
+
+            var enemyDataMap = new NativeHashMap<FixedString32Bytes, Entity>(1, Allocator.Persistent);
             foreach (var item in authoring.enemyVariants)
             {
-                entityNameMap.Add( new FixedString32Bytes(item.enemyID.ToString()), GetEntity(item.prefab, TransformUsageFlags.Dynamic));
+                enemyDataMap.Add(new FixedString32Bytes(item.enemyID.ToString()), GetEntity(item.prefab, TransformUsageFlags.Dynamic));
             }
-            AddComponent(entity, new EnemyDataMap
+
+            var enemyDataMapComponent = new EnemyDataMap
             {
-                NPHMEnemyDataMap = entityNameMap
-            });
-            entityNameMap.Dispose();
+                EnemyDataMapRef = BlobAssetReference<NativeHashMap<FixedString32Bytes, Entity>>.Create(enemyDataMap)
+            };
+            AddComponent(entity, enemyDataMapComponent);
+            enemyDataMap.Dispose();
+            
 
 
         }
@@ -74,5 +79,5 @@ public struct EnemyDataComponent : IComponentData
 }
 public struct EnemyDataMap : IComponentData
 {
-    public NativeParallelHashMap<FixedString32Bytes, Entity> NPHMEnemyDataMap;
+    public BlobAssetReference<NativeHashMap<FixedString32Bytes, Entity>> EnemyDataMapRef;
 }
