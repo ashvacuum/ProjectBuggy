@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8654b9b2be45d064dbc865f7449dd6ef, type: 3}
-  m_Name: Enemy Variant
+  m_Script: {fileID: 11500000, guid: bc464c96b0d7bd94caad2f8688f9d316, type: 3}
+  m_Name: EnemyPrefabsMap
   m_EditorClassIdentifier: 
-  enemy:
-    enemyID: 0
-    level: 0
-    enemyClass: 2
+  entries:
+  - enemyID: 0
+    prefab: {fileID: 3249313154710831440, guid: d86f80a954201624ba05738c32249da2, type: 3}

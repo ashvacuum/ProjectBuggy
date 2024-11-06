@@ -4,7 +4,8 @@ using Enemy;
 
 public struct EnemyDataContainerBlob
 {
-    public Entity prefab;
+    //public Entity enemyPrefab;
+    public EnemyPrefabID enemyID;
     public int level;
     public EnemyClass enemyClass;
 }
