@@ -24,7 +24,7 @@ namespace ShipECS.Systems
         public float knockbackForceToSend;
     }
 
-    [UpdateInGroup(typeof(AfterPhysicsSystemGroup))]
+    [UpdateInGroup(typeof(PostPhysicsPausableSystemGroup))]
     [UpdateAfter(typeof(DamageCollisionSystem))]
     public partial struct KnockBackSystem : ISystem
     {

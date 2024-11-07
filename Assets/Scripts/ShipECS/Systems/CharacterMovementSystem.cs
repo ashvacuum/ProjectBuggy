@@ -5,6 +5,7 @@ using Unity.Transforms;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct CharacterMovementSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

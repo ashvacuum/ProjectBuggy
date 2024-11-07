@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial class InputSystem : SystemBase
     {
         private InputSystem_Actions inputs = null;

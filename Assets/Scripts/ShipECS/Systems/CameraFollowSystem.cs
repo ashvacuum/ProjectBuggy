@@ -8,12 +8,13 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
-    [UpdateInGroup(typeof(LateSimulationSystemGroup))]
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct CameraFollowSystem : ISystem
     {
         private EntityQuery entityQuery;
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<TimeManagerComponent>();
             state.RequireForUpdate<PlayerTag>();
             entityQuery = SystemAPI.QueryBuilder().WithAll<CameraFollow>().Build();
         }

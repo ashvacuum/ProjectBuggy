@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct ProjectileMovementSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     [BurstCompile]
     public partial struct DamageNumberUpdateSystem : ISystem
     {

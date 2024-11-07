@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct LevelUpNotifySystem : ISystem
     {
         [BurstCompile]

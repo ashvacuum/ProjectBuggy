@@ -10,6 +10,7 @@ using Random = Unity.Mathematics.Random;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct EnemySpawnSystem : ISystem
     {
         uint seedOffset;

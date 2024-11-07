@@ -11,6 +11,7 @@ namespace ShipECS.Systems
     
     public struct HealthChangedTag : IComponentData {}
     
+    
     [UpdateInGroup(typeof(LateSimulationSystemGroup))]
     public partial struct HealthSystem : ISystem
     {

@@ -1,3 +1,4 @@
+using ShipECS.Systems;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
@@ -11,8 +12,7 @@ namespace Unity.Physics.Stateful
     //    2) Add a StatefulCollisionEventBufferAuthoring component to that entity (and select if details should be calculated or not)
     // or, if this is desired on a Character Controller:
     //    1) Tick the 'Raise Collision Events' flag on the CharacterControllerAuthoring component.
-    [UpdateInGroup(typeof(PhysicsSystemGroup))]
-    [UpdateAfter(typeof(PhysicsSimulationGroup))]
+    [UpdateInGroup(typeof(InPhysicsPausableSystemGroup))]
     public partial struct StatefulCollisionEventBufferSystem : ISystem
     {
         private StatefulSimulationEventBuffers<StatefulCollisionEvent> m_StateFulEventBuffers;
@@ -45,6 +45,7 @@ namespace Unity.Physics.Stateful
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<TimeManagerComponent>();
             m_StateFulEventBuffers = new StatefulSimulationEventBuffers<StatefulCollisionEvent>();
             m_StateFulEventBuffers.AllocateBuffers();
             state.RequireForUpdate<StatefulCollisionEvent>();
@@ -67,6 +68,9 @@ namespace Unity.Physics.Stateful
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            if (SystemAPI.GetSingleton<TimeManagerComponent>().IsPaused)
+                return;
+            
             m_Handles.Update(ref state);
 
             state.Dependency = new ClearCollisionEventDynamicBufferJob()
