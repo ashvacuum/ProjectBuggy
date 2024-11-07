@@ -1,74 +1,83 @@
 using Unity.Entities;
 using Unity.Collections;
 using UnityEngine;
+using Enemy;
+using Unity.Physics;
+using UnityEditor.PackageManager;
 
-// This struct holds the data for each enemy prefab, including its entity reference and level.
-public struct EnemyData : IComponentData
-{
-    public Entity Prefab;
-    public int Level;
-}
-[System.Serializable]
-public class EnemyDataContainer
-{
-    public enum EnemyClass{
-        Minion,
-        Tower,
-        Boss,
-       
-    }
-    public GameObject prefabs;
-    public int level;
-    public EnemyClass enemyClass;
-}
+
 // This is the authoring component that allows you to assign enemy prefabs and level in the inspector.
 public class EnemyDatabaseAuthoring : MonoBehaviour
 {
-    /*public GameObject[] prefabs;
-    public int[] level;*/
+    public EnemyPrefabMapping[] enemyVariants;
+    public EnemyVariantData[] enemyDataVariants;
 
-    public EnemyDataContainer[] enemy;
-}
-
-// This baker converts the authoring component into ECS-friendly data.
-public class EnemyDatabaseBaker : Baker<EnemyDatabaseAuthoring>
-{
-    public override void Bake(EnemyDatabaseAuthoring authoring)
+    // This baker converts the authoring component into ECS-friendly data.
+    public class EnemyDatabaseBaker : Baker<EnemyDatabaseAuthoring>
     {
-
-
-        // Create a NativeList to hold the converted enemy data.
-        var enemyDataList = new NativeList<EnemyData>(authoring.enemy.Length, Allocator.Temp);
-
-        // Convert each prefab into an entity and store it with the level.
-        for (int i = 0; i < authoring.enemy.Length; i++)
+        public BlobAssetReference<EnemyVarietyBlobAsset> CreateBlobAsset(EnemyVariantData[] initialData)
         {
-            Entity prefabEntity = GetEntity(authoring.enemy[i].prefabs, TransformUsageFlags.Renderable);
-            enemyDataList.Add(new EnemyData
+            using (var builder = new BlobBuilder(Allocator.Temp))
             {
-                Prefab = prefabEntity,
-                Level = authoring.enemy[i].level
-            });
+                ref var root = ref builder.ConstructRoot<EnemyVarietyBlobAsset>();
+                var array = builder.Allocate(ref root.enemyArray, initialData.Length);
+
+
+
+                for (int i = 0; i < initialData.Length; i++)
+                {
+                    //array[i].enemyPrefab = GetEntity(initialData[i].enemy.prefab, TransformUsageFlags.Dynamic);
+                    array[i].enemyID = initialData[i].enemy.enemyID;
+                    array[i].level = initialData[i].enemy.level;
+                    array[i].enemyClass = initialData[i].enemy.enemyClass;
+                }
+                return builder.CreateBlobAssetReference<EnemyVarietyBlobAsset>(Allocator.Persistent);
+            }
         }
 
-        // Create a DynamicBuffer and add each EnemyData to it.
-        var buffer = AddBuffer<EnemyDataBuffer>(GetEntity(TransformUsageFlags.None));
-        foreach (var enemyData in enemyDataList)
-        {
-            buffer.Add(new EnemyDataBuffer
-            {
-                Prefab = enemyData.Prefab,
-                Level = enemyData.Level
-            });
-        }
 
-        enemyDataList.Dispose();
+        public override void Bake(EnemyDatabaseAuthoring authoring)
+        {
+
+
+            var entity = GetEntity(TransformUsageFlags.None);
+
+            var blobAsset = CreateBlobAsset(authoring.enemyDataVariants);
+
+
+            AddComponent(entity, new EnemyDataComponent
+            {
+                EnemyVarietyBlob = blobAsset
+            });
+            blobAsset.Dispose();
+
+
+            var enemyDataMap = new NativeHashMap<FixedString32Bytes, Entity>(1, Allocator.Persistent);
+            foreach (var item in authoring.enemyVariants)
+            {
+                enemyDataMap.Add(new FixedString32Bytes(item.enemyID.ToString()), GetEntity(item.prefab, TransformUsageFlags.Dynamic));
+            }
+
+            var enemyDataMapComponent = new EnemyDataMap
+            {
+                EnemyDataMapRef = BlobAssetReference<NativeHashMap<FixedString32Bytes, Entity>>.Create(enemyDataMap)
+            };
+            AddComponent(entity, enemyDataMapComponent);
+            enemyDataMap.Dispose();
+            
+
+
+        }
     }
+
 }
 
-// Buffer element to store multiple EnemyData in a dynamic buffer.
-public struct EnemyDataBuffer : IBufferElementData
+
+public struct EnemyDataComponent : IComponentData
 {
-    public Entity Prefab;
-    public int Level;
+    public BlobAssetReference<EnemyVarietyBlobAsset> EnemyVarietyBlob;
+}
+public struct EnemyDataMap : IComponentData
+{
+    public BlobAssetReference<NativeHashMap<FixedString32Bytes, Entity>> EnemyDataMapRef;
 }
