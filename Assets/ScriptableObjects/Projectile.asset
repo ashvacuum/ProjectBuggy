@@ -20,4 +20,26 @@ MonoBehaviour:
   WeaponSize: 1
   BaseDamage: 5
   BaseKnockback: 10
+  BaseRange: 500
+  upgradeData:
+  - UpgradeType: -1
+    Lifetime: 5
+    Count: 1
+    Penetration: 1
+    Speed: 300
+    FireRate: 1
+    WeaponSize: 1
+    Damage: 5
+    Knockback: 200
+    Range: 500
+  - UpgradeType: -1
+    Lifetime: 5
+    Count: 1
+    Penetration: 1
+    Speed: 300
+    FireRate: 1
+    WeaponSize: 1
+    Damage: 5
+    Knockback: 200
+    Range: 500
   ProjectilePrefab: {fileID: 6018007920840457554, guid: 1bf9ec01f3440bd4f8b56342576e0192, type: 3}

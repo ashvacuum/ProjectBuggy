@@ -36,6 +36,7 @@ namespace Authoring
         public float KnockbackBonus;
         public float RangeBonus;
         public float ExpBonus;
+        public float RadiusBonus;
         [Space(10)]
         public ProjectileWeaponBase ProjectileStats; 
     
@@ -62,7 +63,7 @@ namespace Authoring
                 AddComponent(entity, new PickupRadiusComponent()
                 {
                     BasePickupRadius = authoring.InitialPickupradius,
-                    PickupRadiusBonus = 0f
+                    PickupRadiusBonus = authoring.RadiusBonus
                 });
 
                 AddComponent(entity, new PlayerBonusStat()
@@ -157,5 +158,6 @@ namespace Authoring
         public float AttackTimeReductionBonus;
         public float SizeBonus;
         public float FireRateReductionBonus;
+        public float RadiusBonus;
     }
 }
