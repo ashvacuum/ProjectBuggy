@@ -10,6 +10,7 @@ namespace Editor
     public class WeaponBaseEditor : UnityEditor.Editor
     {
         private SerializedProperty upgradeDataList;
+        private int elementToRemove = -1;
         
         protected virtual void OnEnable()
         {
@@ -29,82 +30,88 @@ namespace Editor
                 upgradeDataList.arraySize++;
             }
 
-            for (int i = 0; i < upgradeDataList.arraySize; i++)
+            elementToRemove = -1;
+
+            for (var i = 0; i < upgradeDataList.arraySize; i++)
             {
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
-                SerializedProperty data = upgradeDataList.GetArrayElementAtIndex(i);
-                SerializedProperty UpgradeType = data.FindPropertyRelative("UpgradeType");
-                SerializedProperty Lifetime = data.FindPropertyRelative("Lifetime");
-                SerializedProperty Count = data.FindPropertyRelative("Count");
-                SerializedProperty Penetration = data.FindPropertyRelative("Penetration");
-                SerializedProperty Speed = data.FindPropertyRelative("Speed");
-                SerializedProperty FireRate = data.FindPropertyRelative("FireRate");
-                SerializedProperty Size = data.FindPropertyRelative("WeaponSize");
-                SerializedProperty Damage = data.FindPropertyRelative("Damage");
-                SerializedProperty Knockback = data.FindPropertyRelative("Knockback");
-                SerializedProperty Range = data.FindPropertyRelative("Range");
+                var data = upgradeDataList.GetArrayElementAtIndex(i);
+                var upgradeType = data.FindPropertyRelative("UpgradeType");
+                var lifetime = data.FindPropertyRelative("Lifetime");
+                var count = data.FindPropertyRelative("Count");
+                var penetration = data.FindPropertyRelative("Penetration");
+                var speed = data.FindPropertyRelative("Speed");
+                var fireRate = data.FindPropertyRelative("FireRate");
+                var size = data.FindPropertyRelative("WeaponSize");
+                var damage = data.FindPropertyRelative("Damage");
+                var knockBack = data.FindPropertyRelative("Knockback");
+                var range = data.FindPropertyRelative("Range");
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.PropertyField(UpgradeType, new GUIContent($"{i}"));
+                EditorGUILayout.PropertyField(upgradeType, new GUIContent($"{i}"));
                 
                 if (GUILayout.Button("-", GUILayout.Width(60)))
                 {
-                    data.DeleteArrayElementAtIndex(i);
-                    break;
+                    elementToRemove = i;
                 }
                 EditorGUILayout.EndHorizontal();
                 
-                WeaponUpgradeType currentTypes = (WeaponUpgradeType)UpgradeType.intValue;
+                var currentTypes = (WeaponUpgradeType)upgradeType.intValue;
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.Lifetime))
                 {
-                    EditorGUILayout.PropertyField(Lifetime);
+                    EditorGUILayout.PropertyField(lifetime);
                 }
             
                 if (currentTypes.HasFlag(WeaponUpgradeType.Count))
                 {
-                    EditorGUILayout.PropertyField(Count);
+                    EditorGUILayout.PropertyField(count);
                 }
             
                 if (currentTypes.HasFlag(WeaponUpgradeType.Penetration))
                 {
-                    EditorGUILayout.PropertyField(Penetration);
+                    EditorGUILayout.PropertyField(penetration);
                 }
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.Speed))
                 {
-                    EditorGUILayout.PropertyField(Speed);
+                    EditorGUILayout.PropertyField(speed);
                 }
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.FireRate))
                 {
-                    EditorGUILayout.PropertyField(FireRate);
+                    EditorGUILayout.PropertyField(fireRate);
                 }
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.Size))
                 {
-                    EditorGUILayout.PropertyField(Size);
+                    EditorGUILayout.PropertyField(size);
                 }
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.Damage))
                 {
-                    EditorGUILayout.PropertyField(Damage);
+                    EditorGUILayout.PropertyField(damage);
                 }
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.Knockback))
                 {
-                    EditorGUILayout.PropertyField(Knockback);
+                    EditorGUILayout.PropertyField(knockBack);
                 }
                 
                 if (currentTypes.HasFlag(WeaponUpgradeType.Range))
                 {
-                    EditorGUILayout.PropertyField(Range);
+                    EditorGUILayout.PropertyField(range);
                 }
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space();
 
+            }
+
+            if (elementToRemove != -1)
+            {
+                upgradeDataList.DeleteArrayElementAtIndex(elementToRemove);
             }
 
             serializedObject.ApplyModifiedProperties();

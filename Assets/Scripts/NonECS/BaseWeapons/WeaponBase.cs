@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace NonECS.BaseWeapons
 {
-    public class WeaponBase : ScriptableObject
+    public class WeaponBase : UnityEngine.ScriptableObject
     {
         public float BaseLifetime = 5f;
         public int BaseCount = 1;

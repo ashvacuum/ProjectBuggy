@@ -30,7 +30,7 @@ namespace ShipECS.Systems
             
             foreach (var lvlUp in lvlBuffers)
             {
-                
+                //Display UI here or maybe elsewhere
             }
             lvlBuffers.Clear();
 
