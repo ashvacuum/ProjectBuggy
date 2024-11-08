@@ -10,7 +10,7 @@ public class Character : MonoBehaviour
  
 public struct CharacterData : IComponentData 
 {
-    public float speed;
+    public float moveSpeed;
     public float rotSpeed;
 }
 

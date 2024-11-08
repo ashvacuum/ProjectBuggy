@@ -1,4 +1,5 @@
-<UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
-    <ui:Label name="damage-text" text="0" style="color: white; font-size: 24px; -unity-text-outline-width: 1px; -unity-text-outline-color: rgb(0, 0, 0); -unity-font-style: bold; -unity-font-definition: url(&quot;project://database/Assets/Art/Fonts/Fonts/Kenney%20Mini.ttf?fileID=12800000&amp;guid=2deada8b63d694b479a44dc8d9607a84&amp;type=3#Kenney Mini&quot;);" />
-    <ui:VisualElement name="damage-number" style="position: absolute;" />
-</UXML>
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" editor-extension-mode="False">
+    <engine:VisualElement name="damage-container">
+        <engine:Label name="damage-text" text="0" style="-unity-text-outline-color: rgba(0, 0, 0, 0); -unity-text-outline-width: 1px; color: rgb(255, 255, 255); -unity-font-definition: url(&quot;project://database/Assets/Art/Kenney/Font/Kenney%20Future.ttf?fileID=12800000&amp;guid=cb0b1ad101a88fc4bb9859dfcd71ed4f&amp;type=3#Kenney Future&quot;);" />
+    </engine:VisualElement>
+</engine:UXML>

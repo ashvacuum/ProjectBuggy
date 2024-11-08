@@ -22,55 +22,52 @@ namespace ShipECS.Systems
             var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
 
             var enemyTargetBuffers = SystemAPI.GetSingletonBuffer<EnemyTargetPoints>();
-
-            foreach (var (transform, weapon) in SystemAPI.Query<RefRO<LocalTransform>, RefRW<ProjectileAttack>>()
-                         .WithAll<PlayerTag>())
+            
+            foreach (var projectile in SystemAPI.Query<ProjectileFiringAspect>())
             {
-
-                if (weapon.ValueRO.CurrentFireRate > 0)
+                if (projectile.CurrentFireRate > 0)
                 {
-                    weapon.ValueRW.CurrentFireRate -= SystemAPI.Time.DeltaTime;
+                    projectile.CurrentFireRate -= SystemAPI.Time.DeltaTime;
                     continue;
                 }
 
-                weapon.ValueRW.CurrentFireRate = weapon.ValueRO.TotalFireRate;
-                var totalCountWeapons = math.min(enemyTargetBuffers.Length, weapon.ValueRO.TotalCount);
+                projectile.CurrentFireRate = projectile.TotalFireRate;
+                var totalCountWeapons = math.min(enemyTargetBuffers.Length, projectile.TotalCount);
                 for (var i = 0; i < totalCountWeapons; i++)
                 {
-                    if (enemyTargetBuffers[i].Distance > weapon.ValueRO.TotalRange) continue;
+                    if (enemyTargetBuffers[i].Distance > projectile.TotalRange) continue;
                     var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
-                        Damage = weapon.ValueRO.TotalDamage
+                        Damage = projectile.TotalDamage
                     });
-                    
                     
                     var targetPos = enemyTargetBuffers[i].Position;
                     
-                    var direction = math.normalize(targetPos - transform.ValueRO.Position);
+                    var direction = math.normalize(targetPos - projectile.Position);
                     ecb.AddComponent(instance, new ProjectileMotion()
                     {
                         Direction = direction,
-                        Speed = weapon.ValueRO.TotalSpeed,
-                        LifeTime = weapon.ValueRO.TotalLifeTime
+                        Speed = projectile.TotalSpeed,
+                        LifeTime = projectile.TotalLifeTime
                     });
                     ecb.AddComponent(instance, new HealthComponent()
                     {
-                        MaxHealth = weapon.ValueRO.TotalPenetration,
-                        CurrentHealth = weapon.ValueRO.TotalPenetration,
+                        MaxHealth = projectile.TotalPenetration,
+                        CurrentHealth = projectile.TotalPenetration,
                         CurrentNextTimeToTakeDamage = 0,
                         NextTimeToTakeDamage = 0,
-                        PreviousHealth = weapon.ValueRO.TotalPenetration
+                        PreviousHealth = projectile.TotalPenetration
                     });
                     ecb.SetComponent(instance, new LocalTransform()
                     {
-                        Position = transform.ValueRO.Position,
+                        Position = projectile.Position,
                         Rotation = quaternion.LookRotation(direction, math.up()),
-                        Scale = weapon.ValueRO.TotalSize
+                        Scale = projectile.TotalSize
                     });
                     ecb.AddComponent(instance, new KnockbackSender()
                     {
-                        knockbackForceToSend = weapon.ValueRO.TotalKnockback
+                        knockbackForceToSend = projectile.TotalKnockback
                     });
 
                 }
@@ -81,47 +78,47 @@ namespace ShipECS.Systems
             ecb.Dispose();
         }
     }
-    
+
+    public readonly partial struct ProjectileFiringAspect : IAspect
+    {
+        private readonly RefRW<ProjectileAttack> _projectile;
+        private readonly RefRO<PlayerBonusStat> _bonusStats;
+        private readonly RefRW<LocalTransform> _transform;
+        private readonly RefRO<PlayerTag> _player;
+
+        public float TotalFireRate => math.max(0,
+            _projectile.ValueRW.BaseFireRate -
+            _bonusStats.ValueRO.FireRateReductionBonus / 100f * _projectile.ValueRW.BaseFireRate);
+        
+        public int TotalCount => _projectile.ValueRO.BaseNumProjectile + _bonusStats.ValueRO.NumCountBonus;
+        public int TotalPenetration => math.max(1,_projectile.ValueRO.BasePenetration + _bonusStats.ValueRO.PenetrationBonus);
+        public float TotalDamage => _projectile.ValueRO.BaseDamage + (_bonusStats.ValueRO.DamageBonus/100f * _projectile.ValueRO.BaseDamage);
+        public float TotalRange => _projectile.ValueRO.BaseRange + (_bonusStats.ValueRO.RangeBonus/100f * _projectile.ValueRO.BaseRange);
+        public float TotalSize =>  _projectile.ValueRO.BaseSize + (_bonusStats.ValueRO.SizeBonus/100f * _projectile.ValueRO.BaseSize);
+        public float TotalLifeTime => _projectile.ValueRO.BaseLifeTime + (_bonusStats.ValueRO.LifetimeBonus/100 * _projectile.ValueRO.BaseLifeTime);
+        public float TotalSpeed => _projectile.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _projectile.ValueRO.BaseSpeed;
+        public float TotalKnockback => _projectile.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _projectile.ValueRO.BaseKnockback;
+        public float3 Position => _transform.ValueRO.Position;
+        
+        public float CurrentFireRate
+        {
+            get => _projectile.ValueRO.CurrentFireRate;
+            set => _projectile.ValueRW.CurrentFireRate = value;
+        }
+
+    }
     
     public struct ProjectileAttack  : IComponentData, IEnableableComponent
     {
         public float BaseFireRate;
-        public float FireRateReductionBonus;
-        public float TotalFireRate => BaseFireRate - FireRateReductionBonus/100f * BaseFireRate;
-        
         public int BaseNumProjectile;
-        public int NumProjectileBonus; 
-        public int TotalCount => BaseNumProjectile + NumProjectileBonus;
-        
         public int BasePenetration;
-        public int PenetrationBonus; 
-        public int TotalPenetration => math.max(1,PenetrationBonus + BasePenetration);
-        
         public float BaseDamage;
-        public float DamageBonus; 
-        public float TotalDamage => BaseDamage + (DamageBonus/100f * BaseDamage);
-        
         public float BaseRange;
-        public float RangeBonus; 
-        public float TotalRange => BaseRange + (RangeBonus/100f * BaseDamage);
-        
         public float BaseSize;
-        public float SizeBonus;
-        public float TotalSize =>  BaseSize + (SizeBonus/100f * BaseSize);
-        
         public float BaseLifeTime;
-        public float UnitLifeTimeBonus;
-        public float TotalLifeTime => BaseLifeTime + (UnitLifeTimeBonus/100 * BaseLifeTime);
-        
         public float BaseSpeed;
-        public float SpeedBonus; 
-        public float TotalSpeed => BaseSpeed + SpeedBonus/100f * BaseSpeed;
-
         public float BaseKnockback;
-        public float KnockbackBonus;
-        public float TotalKnockback => BaseKnockback - KnockbackBonus/100f * BaseKnockback;
-        
-        
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
     }
 }

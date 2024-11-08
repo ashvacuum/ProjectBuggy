@@ -18,7 +18,9 @@ namespace ShipECS.Systems
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (health, transform,entity) in SystemAPI.Query<RefRW<HealthComponent>, RefRO<LocalTransform>>().WithEntityAccess())
+            var hasBuffer = SystemAPI.TryGetSingletonBuffer<DamageNumberRequest>(out var dmgBuffer, false);
+            
+            foreach (var (health, transform,entity) in SystemAPI.Query<RefRW<HealthComponent>, RefRO<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag>())
             {
                 if (health.ValueRO.CurrentNextTimeToTakeDamage > 0)
                 {
@@ -29,16 +31,19 @@ namespace ShipECS.Systems
                 if (difference < 0.1) continue;
                 
                 var eventEntity = ecb.CreateEntity();
-                
+                //we shouldnt be adding damage numbers to our player
                 if (state.EntityManager.HasComponent<PlayerTag>(entity))
                 {
                 } else
                 {
-                    ecb.AddComponent(eventEntity, new DamageNumberRequest()
+                    if (hasBuffer)
                     {
-                        DamageAmount = difference,
-                        WorldPosition = transform.ValueRO.Position
-                    });
+                        dmgBuffer.Add(new DamageNumberRequest()
+                        {
+                            DamageAmount = difference,
+                            WorldPosition = transform.ValueRO.Position
+                        });
+                    }
                 }
 
                 health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;

@@ -1,5 +1,14 @@
-.custom-label {
+.damage-text {
+    color: white;
     font-size: 20px;
-    -unity-font-style: bold;
-    color: rgb(68, 138, 255);
+    -unity-text-align: middle-center;
+    transition: all 0.5s ease-out;
+}
+
+.damage-container {
+    position: absolute;
+    width: 100px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
 }
