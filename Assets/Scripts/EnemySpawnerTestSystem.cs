@@ -11,20 +11,16 @@ using Unity.Core;
 
 public partial struct EnemySpawnerTestSystem : ISystem
 {
-
+    private EntityQuery m_PrefabEntityReferenceQuery;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<EnemyDataComponent>();
-        state.RequireForUpdate<EnemyDataMap>();
-
+        state.RequireForUpdate<EnemyPrefabEntityReference>();
+        m_PrefabEntityReferenceQuery = state.GetEntityQuery(typeof(EnemyPrefabEntityReference));
     }
 
     public void OnUpdate(ref SystemState state)
     {
         var count = 5;
-
-        var spawnData = SystemAPI.GetSingleton<EnemyDataComponent>();
-        var enemyDataMap = SystemAPI.GetSingleton<EnemyDataMap>();
 
         //Max Count
         var totalCount = 0;
@@ -38,22 +34,28 @@ public partial struct EnemySpawnerTestSystem : ISystem
         count -= totalCount;
 
 
+     EntityManager entityManager = state.EntityManager;
+        NativeArray<Entity> entities = m_PrefabEntityReferenceQuery.ToEntityArray(Allocator.Temp);
 
-        //Spawner
-        ref var blobAsset = ref spawnData.EnemyVarietyBlob.Value;
-        ref var blobArray = ref blobAsset.enemyArray;
-        ref var blobAssetHashMap = ref enemyDataMap.EnemyDataMapRef.Value;
-        if (blobAssetHashMap.TryGetValue(new FixedString32Bytes(blobArray[0].enemyID.ToString()), out Entity enemyVarietyEntity))
+        for (int i = 0; i < entities.Length; i++)
         {
-            //Debug.Log($"Entity associated with 'Player': {enemyVarietyEntity}");
-            state.EntityManager.Instantiate(enemyVarietyEntity, count, Allocator.Temp); 
+            var spawnData = entityManager.GetComponentData<EnemyPrefabEntityReference>(entities[i]);
+            Debug.Log("Enemy: " + i+" " + spawnData.PrefabEntity);
+            Debug.Log("Enemy: " + i+" Level: " + spawnData.Level);
+
+            Entity prefab = spawnData.PrefabEntity;
+            
+            var instance = entityManager.Instantiate(spawnData.PrefabEntity, count, Allocator.Persistent);
         }
-        else
+
+        /*foreach (var spawner in SystemAPI.Query<RefRW<EnemyPrefabEntityReference>>())
         {
+            var spawnData = spawner.ValueRW;
+            //timer interval
+            var instance = entityManager.Instantiate(spawnData.PrefabEntity, count, Allocator.Temp);
 
-        }
 
-
+        }*/
 
     }
 }
