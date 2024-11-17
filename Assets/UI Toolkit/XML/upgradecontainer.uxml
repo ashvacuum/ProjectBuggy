@@ -1,0 +1,4 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd">
+    <Style src="project://database/Assets/UI%20Toolkit/Style%20Sheets/upgradeui.uss?fileID=7433441132597879392&amp;guid=8db41839adff22a4d88e0e91f8244629&amp;type=3#upgradeui" />
+    <engine:VisualElement name="upgrade-container" class="upgrade-container" />
+</engine:UXML>

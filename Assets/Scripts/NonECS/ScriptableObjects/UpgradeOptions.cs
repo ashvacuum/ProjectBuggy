@@ -10,17 +10,17 @@ namespace NonECS.ScriptableObjects
     public enum UpgradeType
     {
         Projectile = 0,
-        LifetimeBonus = 1 << 1,
-        NumCountBonus = 1 << 2,
-        DamageBonus = 1 << 3,
-        SpeedBonus = 1 << 4,
-        SizeBonus = 1 << 5,
-        FireRateReductionBonus = 1 << 6,
-        KnockbackBonus = 1 << 7,
-        RangeBonus = 1 << 8,
-        ExpBonus = 1 << 9,
-        RadiusBonus = 1 << 10,
-        MaxHealth = 1 << 11
+        LifetimeBonus = 1,
+        NumCountBonus = 2,
+        DamageBonus = 3,
+        SpeedBonus = 4,
+        SizeBonus = 5,
+        FireRateReductionBonus = 6,
+        KnockbackBonus = 7,
+        RangeBonus = 8,
+        ExpBonus = 9,
+        RadiusBonus = 10,
+        MaxHealth = 11
     }
     [Serializable]
     public struct UpgradeInfo

@@ -22,6 +22,26 @@ MonoBehaviour:
   BaseKnockback: 5
   BaseRange: 500
   upgradeData:
+  - UpgradeType: -1
+    Lifetime: 0
+    Count: 0
+    Penetration: 0
+    Speed: 0
+    FireRate: 0
+    WeaponSize: 0
+    Damage: 0
+    Knockback: 0
+    Range: 0
+  - UpgradeType: 0
+    Lifetime: 0
+    Count: 0
+    Penetration: 0
+    Speed: 0
+    FireRate: 0
+    WeaponSize: 0
+    Damage: 0
+    Knockback: 0
+    Range: 0
   - UpgradeType: 0
     Lifetime: 0
     Count: 0
