@@ -35,27 +35,15 @@ public partial struct EnemySpawnerTestSystem : ISystem
 
 
      EntityManager entityManager = state.EntityManager;
-        NativeArray<Entity> entities = m_PrefabEntityReferenceQuery.ToEntityArray(Allocator.Temp);
-
-        for (int i = 0; i < entities.Length; i++)
+        foreach (var enemyVariant in SystemAPI.Query<DynamicBuffer<EnemyPrefabEntityReference>>())
         {
-            var spawnData = entityManager.GetComponentData<EnemyPrefabEntityReference>(entities[i]);
-            Debug.Log("Enemy: " + i+" " + spawnData.PrefabEntity);
-            Debug.Log("Enemy: " + i+" Level: " + spawnData.Level);
+            for (int i = 0; i < enemyVariant.Length; i++)
+            {
+                var instance = entityManager.Instantiate(enemyVariant[i].PrefabEntity, count, Allocator.Temp);
 
-            Entity prefab = spawnData.PrefabEntity;
-            
-            var instance = entityManager.Instantiate(spawnData.PrefabEntity, count, Allocator.Persistent);
+            }
         }
 
-        /*foreach (var spawner in SystemAPI.Query<RefRW<EnemyPrefabEntityReference>>())
-        {
-            var spawnData = spawner.ValueRW;
-            //timer interval
-            var instance = entityManager.Instantiate(spawnData.PrefabEntity, count, Allocator.Temp);
-
-
-        }*/
 
     }
 }
