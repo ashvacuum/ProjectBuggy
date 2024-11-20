@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct PlayerSpawnSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

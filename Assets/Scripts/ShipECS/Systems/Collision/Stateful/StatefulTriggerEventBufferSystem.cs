@@ -1,3 +1,4 @@
+using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Physics.Systems;
@@ -13,8 +14,7 @@ namespace Unity.Physics.Stateful
     // or, if this is desired on a Character Controller:
     //    1) Tick the 'Raise Trigger Events' flag on the CharacterControllerAuthoring component.
     //       Note: the Character Controller will not become a trigger, it will raise events when overlapping with one
-    [UpdateInGroup(typeof(PhysicsSystemGroup))]
-    [UpdateAfter(typeof(PhysicsSimulationGroup))]
+    [UpdateInGroup(typeof(InPhysicsPausableSystemGroup))]
     public partial struct StatefulTriggerEventBufferSystem : ISystem
     {
         private StatefulSimulationEventBuffers<StatefulTriggerEvent> m_StateFulEventBuffers;
@@ -42,6 +42,7 @@ namespace Unity.Physics.Stateful
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<TimeManagerComponent>();
             EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp)
                 .WithAllRW<StatefulTriggerEvent>()
                 .WithNone<StatefulTriggerEventExclude>();
@@ -70,6 +71,9 @@ namespace Unity.Physics.Stateful
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            if (SystemAPI.GetSingleton<TimeManagerComponent>().IsPaused)
+                return;
+            
             m_ComponentHandles.Update(ref state);
 
             state.Dependency = new ClearTriggerEventDynamicBufferJob()

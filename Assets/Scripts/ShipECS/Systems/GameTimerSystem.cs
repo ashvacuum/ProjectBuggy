@@ -4,6 +4,7 @@ using Unity.Entities;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     [BurstCompile]
     public partial struct GameTimerSystem : ISystem
     {

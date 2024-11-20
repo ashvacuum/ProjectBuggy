@@ -1,4 +1,5 @@
 using NonECS.BaseWeapons;
+using NonECS.UI;
 using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -30,12 +31,12 @@ namespace Authoring
         public int PenetrationBonus;
         public float DamageBonus;
         public float SpeedBonus;
-        public float AttackTimeReductionBonus;
         public float SizeBonus;
         public float FireRateReductionBonus;
         public float KnockbackBonus;
         public float RangeBonus;
         public float ExpBonus;
+        public float RadiusBonus;
         [Space(10)]
         public ProjectileWeaponBase ProjectileStats; 
     
@@ -62,7 +63,7 @@ namespace Authoring
                 AddComponent(entity, new PickupRadiusComponent()
                 {
                     BasePickupRadius = authoring.InitialPickupradius,
-                    PickupRadiusBonus = 0f
+                    PickupRadiusBonus = authoring.RadiusBonus
                 });
 
                 AddComponent(entity, new PlayerBonusStat()
@@ -72,8 +73,10 @@ namespace Authoring
                     PenetrationBonus = authoring.PenetrationBonus,
                     DamageBonus = authoring.DamageBonus,
                     SpeedBonus = authoring.SpeedBonus,
-                    AttackTimeReductionBonus = authoring.AttackTimeReductionBonus,
-                    SizeBonus = authoring.SizeBonus
+                    SizeBonus = authoring.SizeBonus,
+                    KnockbackBonus = authoring.KnockbackBonus,
+                    RangeBonus = authoring.RangeBonus,
+                    FireRateReductionBonus = authoring.FireRateReductionBonus
                 });
                 var stats = authoring.ProjectileStats;
                 AddComponent(entity, new ProjectileAttack()
@@ -86,21 +89,12 @@ namespace Authoring
                     BaseLifeTime = stats.BaseLifetime,
                     BaseSpeed = stats.BaseSpeed,
                     CurrentFireRate = 0,
-                    DamageBonus = authoring.DamageBonus,
-                    FireRateReductionBonus = authoring.FireRateReductionBonus,
-                    PenetrationBonus = authoring.PenetrationBonus,
-                    SizeBonus = authoring.SizeBonus,
-                    SpeedBonus = authoring.SpeedBonus,
-                    NumProjectileBonus = authoring.NumCountBonus,
-                    UnitLifeTimeBonus = authoring.LifetimeBonus,
                     BaseKnockback = stats.BaseKnockback,
-                    KnockbackBonus = authoring.KnockbackBonus,
-                    RangeBonus = authoring.RangeBonus,
                     BaseRange = stats.BaseRange
                 });
                 AddComponent(entity, new CharacterData
                 {
-                    speed = authoring.speed,
+                    moveSpeed = authoring.speed,
                     rotSpeed = authoring.rotSpeed
                 });
                 AddComponent(entity, new InputsData() );
@@ -109,6 +103,7 @@ namespace Authoring
                 AddBuffer<StatefulCollisionEvent>(entity);
                 AddBuffer<ExperienceBuffer>(entity);
                 AddBuffer<LevelUpBuffer>(entity);
+                AddBuffer<DamageNumberRequest>(entity);
                 AddComponent(entity, new ExperienceContainer()
                 {
                     TotalExperience = 0,
@@ -148,14 +143,14 @@ namespace Authoring
     /// </summary>
     public struct PlayerBonusStat : IComponentData
     {
-        public float HealthBonus;
         public float LifetimeBonus;
         public int NumCountBonus; 
         public int PenetrationBonus;
         public float DamageBonus;
         public float SpeedBonus;
-        public float AttackTimeReductionBonus;
         public float SizeBonus;
         public float FireRateReductionBonus;
+        public float RangeBonus;
+        public float KnockbackBonus;
     }
 }

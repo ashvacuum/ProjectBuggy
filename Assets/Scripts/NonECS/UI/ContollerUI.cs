@@ -29,19 +29,23 @@ public class ContollerUI : MonoBehaviour
 
     private void DisplayTime()
     {
+        timerText.text = GetTime();
+    }
+
+    public string GetTime()
+    {
         try
         {
             var curTimeEntity = _entityManager.GetComponentData<TimeManagerComponent>(_timeEntity).CurrentTime;
-            int minutes = Mathf.FloorToInt(curTimeEntity / 60); // Calculate minutes
-            int seconds = Mathf.FloorToInt(curTimeEntity % 60); // Calculate remaining seconds
+            var minutes = Mathf.FloorToInt(curTimeEntity / 60); // Calculate minutes
+            var seconds = Mathf.FloorToInt(curTimeEntity % 60); // Calculate remaining seconds
 
-            string formattedTime = string.Format("{0:00}:{1:00}", minutes, seconds);
-            timerText.text = formattedTime;  
+            return $"{minutes:00}:{seconds:00}";
+            
         }
         catch
         {
-            return;
+            return string.Empty;
         }
-
     }
 }

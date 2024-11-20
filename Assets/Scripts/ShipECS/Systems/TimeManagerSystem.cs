@@ -1,30 +1,31 @@
-using Unity.Entities;
 using Unity.Burst;
-using Unity.Core;
-using UnityEngine;
+using Unity.Entities;
 
-[BurstCompile]
-public partial struct TimeManagerSystem : ISystem
+namespace ShipECS.Systems
 {
-    public void OnCreate(ref SystemState state)
-    {
-        state.RequireForUpdate<TimeDataComponent>();
-        state.RequireForUpdate<TimeManagerComponent>();
-    }
-
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     [BurstCompile]
-    public void OnUpdate(ref SystemState state)
+    public partial struct TimeManagerSystem : ISystem
     {
-        var deltaTime = SystemAPI.Time.DeltaTime;
-        var timeData = SystemAPI.GetSingleton<TimeDataComponent>();
-        var timeManager = SystemAPI.GetSingletonRW<TimeManagerComponent>();
+        public void OnCreate(ref SystemState state)
+        {
+            state.RequireForUpdate<TimeDataComponent>();
+            state.RequireForUpdate<TimeManagerComponent>();
+        }
+
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            var deltaTime = SystemAPI.Time.DeltaTime;
+            var timeData = SystemAPI.GetSingleton<TimeDataComponent>();
+            var timeManager = SystemAPI.GetSingletonRW<TimeManagerComponent>();
 
 
             ref var blobAsset = ref timeData.TimeBlob.Value;
             
             // Update current time
             timeManager.ValueRW.CurrentTime += deltaTime;
-        var maxTimeInSeconds = blobAsset.maxTimeInMinutes * 60;
+            var maxTimeInSeconds = blobAsset.maxTimeInMinutes * 60;
             // Clamp to max time
             if (timeManager.ValueRO.CurrentTime >= maxTimeInSeconds)
             {
@@ -32,5 +33,6 @@ public partial struct TimeManagerSystem : ISystem
                 timeManager.ValueRW.IsRunning = false;
             }
         
+        }
     }
 }

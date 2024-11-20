@@ -1,112 +1,192 @@
 using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 namespace NonECS.UI
 {
     // ECS Components
-    public struct DamageNumberRequest : IComponentData
+    public struct DamageNumberRequest : IBufferElementData
     {
         public float DamageAmount;
         public float3 WorldPosition;
     }
 
-    public struct ActiveDamageNumber : IComponentData
-    {
-        public float DamageAmount;
-        public float TimeAlive;
-        public float3 WorldPosition;
-        public float2 RandomOffset;
-        public int UIElementId; // Track which UI element this corresponds to
-    }
-
-// Singleton component to track the next available ID
-    public struct DamageNumberUICounter : IComponentData
-    {
-        public int NextId;
-    }
-
-// UI Manager MonoBehaviour
+    // UI Manager MonoBehaviour
     public class DamageNumberUIManager : MonoBehaviour
     {
-        [SerializeField] private UIDocument uiDocument;
-        [SerializeField] private VisualTreeAsset damageNumberTemplate;
-    
-        private VisualElement _rootElement;
-        private readonly Dictionary<int, VisualElement> _activeDamageNumbers = new();
-
-        private void Start()
-        {
-            _rootElement = uiDocument.rootVisualElement;
-            // Create singleton entity for ID tracking
-            var world = World.DefaultGameObjectInjectionWorld;
-            var entity = world.EntityManager.CreateEntity();
-            world.EntityManager.AddComponentData(entity, new DamageNumberUICounter { NextId = 0 });
-        }
-
-        public int CreateDamageNumber(float amount, Vector3 worldPosition)
-        {
-            // Instantiate the damage number template
-            var element = damageNumberTemplate.Instantiate();
-            element.style.position = Position.Absolute;
         
-            // Set the damage text
-            var textElement = element.Q<Label>("damage-text");
-            textElement.text = amount.ToString("F0");
+    [SerializeField] private UIDocument document;
+    [SerializeField] private VisualTreeAsset damageNumberTemplate;
+    [SerializeField] private float floatSpeed = 50f;  // Reduced for top-down view
+    [SerializeField] private float lifetime = 1f;
+    [SerializeField] private float yOffset = 1f;  // Height above the entity
+    [SerializeField] private float randomOffset = 0.5f;  // Random horizontal offset
+
+    private EntityManager _entityManager;
+    private EntityQuery _damageQuery;
+    private Camera _mainCamera;
+    private VisualElement _rootElement;
+    private List<(VisualElement element, float timeLeft, Vector3 worldPos, Vector2 offset)> _activeNumbers;
+
+    private void OnEnable()
+    {
+        _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        _damageQuery = _entityManager.CreateEntityQuery(typeof(DamageNumberRequest));
+        _mainCamera = Camera.main;
         
-            // Add to root and dictionary
-            _rootElement.Add(element);
+        _rootElement = document.rootVisualElement;
+        _activeNumbers = new List<(VisualElement, float timeLeft, Vector3, Vector2)>();
 
-            var idQuery =
-                World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(new ComponentType[]
-                    { typeof(DamageNumberUICounter) });
-
-            var id = 0;
-            idQuery.TryGetSingletonEntity<DamageNumberUICounter>(out Entity EntityFromQuery);
-            if (EntityFromQuery != Entity.Null)
-            {
-                id = World.DefaultGameObjectInjectionWorld.EntityManager.GetComponentData<DamageNumberUICounter>(EntityFromQuery).NextId;
-                id++;
-                _activeDamageNumbers[id] = element;
-                return id;
-            }
-            
-            _activeDamageNumbers[id] = element;
-            return id;
-        }
-
-        public void UpdateDamageNumber(int id, Vector3 position, float alpha)
+        // Ensure camera is set up correctly
+        if (_mainCamera && !IsValidCameraSetup())
         {
-            if (!_activeDamageNumbers.TryGetValue(id, out var element))
-                return;
+            Debug.LogWarning("Camera might not be properly set up for top-down view. Ensure camera is rotated correctly (typically around X axis).");
+        }
+    }
 
-            if (Camera.main != null)
+    private bool IsValidCameraSetup()
+    {
+        // Check if camera is roughly pointing downward (between 30 and 90 degrees on X axis)
+        return _mainCamera.transform.rotation.eulerAngles.x >= 30f 
+            && _mainCamera.transform.rotation.eulerAngles.x <= 90f;
+    }
+
+    private bool IsPositionVisible(Vector3 worldPosition)
+    {
+        Vector3 viewportPoint = _mainCamera.WorldToViewportPoint(worldPosition);
+        return viewportPoint.z > 0 && viewportPoint.x >= 0 && viewportPoint.x <= 1 
+            && viewportPoint.y >= 0 && viewportPoint.y <= 1;
+    }
+
+    private void Update()
+    {
+        // Process damage buffers
+        using (var buffers = _damageQuery.ToEntityArray(Allocator.Temp))
+        {
+            foreach (var entity in buffers)
             {
-                var screenPos = Camera.main.WorldToScreenPoint(position);
-                // Don't show if behind camera
-                if (screenPos.y < 0)
+                var damageBuffer = _entityManager.GetBuffer<DamageNumberRequest>(entity);
+                
+                foreach (var damage in damageBuffer)
                 {
-                    element.style.display = DisplayStyle.None;
-                    return;
+                    SpawnDamageNumber(damage);
                 }
+                
+                damageBuffer.Clear();
+            }
+        }
 
-                element.style.display = DisplayStyle.Flex;
-                element.style.left = screenPos.x;
-                element.style.top = Screen.height - screenPos.y;
+        UpdateDamageNumbers();
+    }
+
+    private void SpawnDamageNumber(DamageNumberRequest damage)
+    {
+        // Add random offset to prevent stacking
+        Vector2 randomOffset = new Vector2(
+            Random.Range(-this.randomOffset, this.randomOffset),
+            Random.Range(-this.randomOffset, this.randomOffset)
+        );
+
+        // Apply offset to world position
+        Vector3 spawnPosition = new Vector3(
+            damage.WorldPosition.x + randomOffset.x,
+            damage.WorldPosition.y + yOffset,  // Add height offset
+            damage.WorldPosition.z + randomOffset.y
+        );
+
+        // Check if position is visible before spawning
+        if (!IsPositionVisible(spawnPosition))
+            return;
+
+        // Instantiate the damage number
+        TemplateContainer damageInstance = damageNumberTemplate.Instantiate();
+        VisualElement container = damageInstance.Q<VisualElement>("damage-container");
+        Label damageText = damageInstance.Q<Label>("damage-text");
+        
+        // Set the damage text
+        damageText.text = damage.DamageAmount.ToString("F0");  // Removed decimal places
+        
+        // Convert world position to screen position
+        Vector3 screenPos = _mainCamera.WorldToScreenPoint(spawnPosition);
+
+        // Handle case when position is behind camera
+        if (screenPos.z < 0)
+            return;
+
+        // Convert screen position to panel space
+        Vector2 elementPos = RuntimePanelUtils.ScreenToPanel(
+            _rootElement.panel,
+            new Vector2(screenPos.x, Screen.height - screenPos.y)
+        );
+
+        // Position the element
+        container.style.left = elementPos.x - container.layout.width / 2;
+        container.style.top = elementPos.y - container.layout.height / 2;
+
+        // Add scale animation
+        container.style.scale = new StyleScale(new Scale(Vector3.one * 0.8f));
+        container.schedule.Execute(() => {
+            container.style.scale = new StyleScale(new Scale(Vector3.one * 1.2f));
+        }).StartingIn(0);
+        container.schedule.Execute(() => {
+            container.style.scale = new StyleScale(new Scale(Vector3.one));
+        }).StartingIn(100);
+
+        // Add to root and active numbers list
+        _rootElement.Add(container);
+        _activeNumbers.Add((container, lifetime, spawnPosition, randomOffset));
+    }
+
+    private void UpdateDamageNumbers()
+    {
+        for (int i = _activeNumbers.Count - 1; i >= 0; i--)
+        {
+            var (element, timeLeft, worldPos, offset) = _activeNumbers[i];
+            
+            // Update position
+            worldPos.y += floatSpeed * Time.deltaTime;  // Float upward in world space
+            
+            // Convert to screen space
+            Vector3 screenPos = _mainCamera.WorldToScreenPoint(worldPos);
+            
+            // Remove if behind camera
+            if (screenPos.z < 0)
+            {
+                _rootElement.Remove(element);
+                _activeNumbers.RemoveAt(i);
+                continue;
             }
 
-            element.style.opacity = alpha;
-        }
+            // Update position
+            Vector2 elementPos = RuntimePanelUtils.ScreenToPanel(
+                _rootElement.panel,
+                new Vector2(screenPos.x, Screen.height - screenPos.y)
+            );
 
-        public void RemoveDamageNumber(int id)
-        {
-            if (!_activeDamageNumbers.TryGetValue(id, out var element))
-                return;
+            element.style.left = elementPos.x - element.layout.width / 2;
+            element.style.top = elementPos.y - element.layout.height / 2;
 
-            _rootElement.Remove(element);
-            _activeDamageNumbers.Remove(id);
+            // Update time and opacity
+            float newTime = timeLeft - Time.deltaTime;
+            if (newTime <= 0)
+            {
+                _rootElement.Remove(element);
+                _activeNumbers.RemoveAt(i);
+            }
+            else
+            {
+                // Fade out only in the last 30% of lifetime
+                if (newTime < lifetime * 0.3f)
+                {
+                    element.style.opacity = newTime / (lifetime * 0.3f);
+                }
+                _activeNumbers[i] = (element, newTime, worldPos, offset);
+            }
         }
+    }
     }
 }

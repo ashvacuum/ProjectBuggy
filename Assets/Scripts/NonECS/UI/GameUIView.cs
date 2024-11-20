@@ -32,9 +32,9 @@ namespace NonECS.UI
             _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         }
 
-        private void LateUpdate()
+        private void FixedUpdate()
         {
-            if (_targetEntity != Entity.Null)
+            if ( _entityManager.Exists(_targetEntity))
             {
                 FollowEntity();
                 UpdateExp();
@@ -48,8 +48,7 @@ namespace NonECS.UI
         }
 
         void FollowEntity()
-        {
-            if (!_entityManager.HasComponent<PlayerTag>(_targetEntity)) return;
+        {            if (!_entityManager.HasComponent<PlayerTag>(_targetEntity)) return;
 
             var entityPosition = _entityManager.GetComponentData<LocalTransform>(_targetEntity).Position;
 
@@ -86,7 +85,6 @@ namespace NonECS.UI
             if (_levelLabel != null)
             {
                 _levelLabel.text = expContainer.GetCurrentLevel().ToString();
-                //Debug.Log($"Level Value: {_levelLabel.text}, {expContainer.TotalExperience}");
             } 
         }
 

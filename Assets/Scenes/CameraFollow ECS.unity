@@ -1025,8 +1025,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f405158ed1e6a6b48b1212ef2fb41afa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiDocument: {fileID: 1497746678}
+  document: {fileID: 1497746678}
   damageNumberTemplate: {fileID: 9197481963319205126, guid: eab9599c7e32b294683c415478e9b5c8, type: 3}
+  floatSpeed: 100
+  lifetime: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

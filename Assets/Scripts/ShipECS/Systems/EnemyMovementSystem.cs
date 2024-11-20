@@ -10,12 +10,10 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
-    [UpdateInGroup(typeof(AfterPhysicsSystemGroup))]
+    [UpdateInGroup(typeof(PostPhysicsPausableSystemGroup))]
     [UpdateAfter(typeof(KnockBackSystem))]
     public partial struct EnemyMovementSystem : ISystem
     {
-        
-        
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<EnemyFollowTarget>();

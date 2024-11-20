@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     [UpdateBefore(typeof(ProjectileFiringSystem))]
     public partial struct NearbyEnemyTargetingSystem : ISystem
     {

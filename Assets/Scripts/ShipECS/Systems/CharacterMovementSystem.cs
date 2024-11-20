@@ -5,6 +5,7 @@ using Unity.Transforms;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct CharacterMovementSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -24,7 +25,7 @@ namespace ShipECS.Systems
                 var moveDirection = new float3(inputs.ValueRO.move.x, 0, inputs.ValueRO.move.y); // Assuming y is up
                 
                 if(math.length(moveDirection) <= .05f) continue;
-                position += moveDirection * data.ValueRO.speed * SystemAPI.Time.DeltaTime;
+                position += moveDirection * data.ValueRO.moveSpeed * SystemAPI.Time.DeltaTime;
             
                 transform.ValueRW.Position = new float3(position.x, 0, position.z);
 
