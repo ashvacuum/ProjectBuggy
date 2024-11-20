@@ -1012,7 +1012,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  MaximumEnemies: 1000
+  MaximumEnemies: 10000
   MaximumTime: 1800
 --- !u!114 &1497746682
 MonoBehaviour:
