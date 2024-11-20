@@ -32,6 +32,7 @@ namespace NonECS.UI
             container.Clear();
 
             var upgrades = upgradeOptions.GetRandomUpgradeType(numberRolls);
+            
             foreach (var upgrade in upgrades)
             {
                 var button = CreateUpgradeButton(upgrade);
