@@ -1,4 +1,5 @@
 using NonECS.ScriptableObjects;
+using ShipECS.Entities;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -67,8 +68,10 @@ namespace NonECS.UI
         {
             if (!entityManager.Exists(targetEntity)) return;
 
-            var aspect = entityManager.GetAspect<UpgradeAspect>(targetEntity);
-            aspect.ApplyUpgrade(upgrade);
+            var aspect = entityManager.GetAspect<UpgradeAspects>(targetEntity);
+            //TODO manage the changes for you to be able to apply the updates
+            aspect.ApplyUpgrades(upgrade.UpgradeType, upgrade.UpgradeLevels[1]);
+
 
             HideUpgradeContainer();
         }

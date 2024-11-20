@@ -24,3 +24,91 @@ MonoBehaviour:
     - 50
     - 100
     - 150
+  - UpgradeType: 1
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 3
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 4
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 4
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 5
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 6
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 7
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 8
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 9
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 9
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150
+  - UpgradeType: 9
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 30
+    - 50
+    - 100
+    - 150

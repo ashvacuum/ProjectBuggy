@@ -1,5 +1,8 @@
+using System;
 using NonECS.BaseWeapons;
+using NonECS.ScriptableObjects;
 using NonECS.UI;
+using ShipECS.Entities;
 using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -109,6 +112,16 @@ namespace Authoring
                     TotalExperience = 0,
                     BonusExperience = authoring.ExpBonus
                 });
+                var upgradeBuffer = AddBuffer<ShipUpgradeLevels>(entity);
+                foreach (UpgradeType type in Enum.GetValues(typeof(UpgradeType)))
+                {
+                    upgradeBuffer.Add(new ShipUpgradeLevels()
+                    {
+                        level = 1,
+                        type = type
+                    });
+                }
+                
             }
         }
     }
