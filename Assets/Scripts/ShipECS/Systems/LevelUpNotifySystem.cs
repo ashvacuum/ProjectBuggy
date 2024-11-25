@@ -28,11 +28,6 @@ namespace ShipECS.Systems
             
             SystemAPI.SetSingleton(pauseState);
             
-            foreach (var lvlUp in lvlBuffers)
-            {
-                //Display UI here or maybe elsewhere
-            }
-            lvlBuffers.Clear();
 
         }
     }

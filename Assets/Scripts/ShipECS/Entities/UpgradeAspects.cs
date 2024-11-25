@@ -22,9 +22,47 @@ namespace ShipECS.Entities
         private readonly RefRW<PlayerBonusStat> _bonusStats;
         private readonly RefRW<PickupRadiusComponent> _pickupRadiusComponent;
         private readonly RefRW<ExperienceContainer> _expContainer;
+        private readonly DynamicBuffer<ShipUpgradeLevels> _upgradeLevels;
+
+        public int GetUpgradeLevel(UpgradeType type)
+        {
+            foreach (var upgrade in _upgradeLevels)
+            {
+                if (upgrade.type == type)
+                {
+                    return upgrade.level;
+                }
+            }
+            return 1;
+        }
+
+        public void UpgradeShip(UpgradeType type)
+        {
+            var selectedIndex = -1;
+            for (var i = 0; i < _upgradeLevels.Length; i++)
+            {
+                if (_upgradeLevels[i].type != type) continue;
+                selectedIndex = i;
+                break;
+            }
+
+            if (selectedIndex <= 0) return;
+            
+            var upgradeLevel = _upgradeLevels[selectedIndex].level;
+            upgradeLevel++;
+
+            _upgradeLevels.RemoveAt(selectedIndex);
+            _upgradeLevels.Add(new ShipUpgradeLevels()
+            {
+                level = upgradeLevel,
+                type = type
+            });
+        }
 
         public void ApplyUpgrades(UpgradeType type, float amount)
         {
+            UpgradeShip(type);
+            
             switch (type)
             {
                 case UpgradeType.LifetimeBonus:

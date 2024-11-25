@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = System.Random;
 
 namespace NonECS.ScriptableObjects
@@ -32,7 +33,7 @@ namespace NonECS.ScriptableObjects
     [CreateAssetMenu(menuName = "Upgrade Options", fileName = "Upgrade Options")]
     public class UpgradeOptions : ScriptableObject
     {
-        public List<UpgradeInfo> UpgradeInfos;
+        [FormerlySerializedAs("UpgradeInfos")] public List<UpgradeInfo> _upgradeInfos;
         public List<UpgradeInfo> GetRandomUpgradeType(int numberRolls)
         {
             var returnedUpgrades = new List<UpgradeInfo>();
@@ -40,10 +41,10 @@ namespace NonECS.ScriptableObjects
             {
                 var min = 0f;
                 var max = 0f;
-                var totals = UpgradeInfos.Sum(upgrade => upgrade.UpgradeChance);
+                var totals = _upgradeInfos.Sum(upgrade => upgrade.UpgradeChance);
 
                 var randomRoll = UnityEngine.Random.Range(min, totals);
-                foreach (var upgrade in UpgradeInfos)
+                foreach (var upgrade in _upgradeInfos)
                 {
                     max += upgrade.UpgradeChance;
                     if (randomRoll <= max)
