@@ -62,6 +62,7 @@ namespace ShipECS.Entities
         public void ApplyUpgrades(UpgradeType type, float amount)
         {
             UpgradeShip(type);
+            Debug.Log("Upgrading Success");
             
             switch (type)
             {

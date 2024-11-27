@@ -1,79 +1,122 @@
 using System;
+using System.Collections.Generic;
 using Authoring;
 using NonECS.ScriptableObjects;
 using ShipECS.Entities;
 using ShipECS.Systems;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UIElements;
 
 namespace NonECS.UI
 {
     public class UpgradeUIDocument : MonoBehaviour
     {
-        private UIDocument document;
-        private VisualElement container;
-        private EntityManager entityManager;
-        private Entity targetEntity;
-        [SerializeField] private UpgradeOptions upgradeOptions;
+        private UIDocument _document;
+        private VisualElement _container;
+        private EntityManager _entityManager;
+        private Entity _targetEntity;
+        [FormerlySerializedAs("upgradeOptions")] [SerializeField] private UpgradeOptions _upgradeOptions;
         
-        private EntityQuery levelUpQuery;
-        private EntityQuery aspectQuery;
-        private EntityQuery timeManagerQuery;
+        private EntityQuery _levelUpQuery;
+        private EntityQuery _upgradesQuery;
+        private EntityQuery _timeManagerQuery;
         private int _currentLevelUpBuffers;
+        private bool _isShowingBuffers;
 
         private void Awake()
         {
-            document = GetComponent<UIDocument>();
-            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            _document = GetComponent<UIDocument>();
+            _entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
         }
 
         private void Start()
         {
             _currentLevelUpBuffers = 0;
-            levelUpQuery = entityManager.CreateEntityQuery(typeof(LevelUpBuffer));
-            aspectQuery = entityManager.CreateEntityQuery(typeof(PlayerTag));
-            timeManagerQuery = entityManager.CreateEntityQuery(typeof(TimeManagerComponent));
+            _levelUpQuery = _entityManager.CreateEntityQuery(typeof(LevelUpBuffer));
+            _timeManagerQuery = _entityManager.CreateEntityQuery(typeof(TimeManagerComponent));
+            _upgradesQuery = _entityManager.CreateEntityQuery(
+                ComponentType.ReadWrite<HealthComponent>(),
+                ComponentType.ReadWrite<ProjectileAttack>(),
+                ComponentType.ReadWrite<PlayerBonusStat>(),
+                ComponentType.ReadWrite<PickupRadiusComponent>(),
+                ComponentType.ReadWrite<ExperienceContainer>(),
+                ComponentType.ReadWrite<ShipUpgradeLevels>()
+            );
         }
 
         private void OnEnable()
         {
-            var root = document.rootVisualElement;
-            container = root.Q<VisualElement>("upgrade-container");
+            var root = _document.rootVisualElement;
+            _container = root.Q<VisualElement>("upgrade-container");
         }
 
         private void FixedUpdate()
         {
-            if (!levelUpQuery.TryGetSingletonBuffer<LevelUpBuffer>(out var levelUpBuffer)) return;
+            if (!_levelUpQuery.TryGetSingletonBuffer<LevelUpBuffer>(out var levelUpBuffer)) return;
             if (levelUpBuffer.IsEmpty)
             {
-                Debug.Log("Level up buffers are empty");
+                //Debug.Log("Level up buffers are empty");
                 return;
             }
-            
-            var aspectEntity = aspectQuery.GetSingletonEntity();
-            if (aspectEntity == Entity.Null) return;
-            
-            ShowUpgradeOptions(aspectEntity, 3);
-        }
 
-        private void ShowUpgradeOptions(Entity entity, int numberRolls)
-        {
-            targetEntity = entity;
-            container.Clear();
+            
 
-            var upgrades = upgradeOptions.GetRandomUpgradeType(numberRolls);
-            var aspect = entityManager.GetAspect<UpgradeAspects>(targetEntity);
-            foreach (var upgrade in upgrades)
+            _currentLevelUpBuffers = levelUpBuffer.Length;
+            levelUpBuffer.Clear();
+
+            _targetEntity = _upgradesQuery.GetSingletonEntity();
+                
+            if (_timeManagerQuery.TryGetSingletonRW(out RefRW<TimeManagerComponent> manager))
             {
-                var button = CreateUpgradeButton(upgrade, aspect);
-                container.Add(button);
+                manager.ValueRW.IsPaused = _currentLevelUpBuffers > 0;
             }
-
-            container.style.display = DisplayStyle.Flex;
+            
+            if (_currentLevelUpBuffers > 0 && !_isShowingBuffers)
+            {
+                //roll using luck stat to increase this to 4
+                ShowUpgradeOptions(3);
+            }
         }
 
-        private Button CreateUpgradeButton(UpgradeInfo upgrade, UpgradeAspects aspect)
+        private void ShowUpgradeOptions(int numberRolls)
+        {
+            _isShowingBuffers = true;
+            _currentLevelUpBuffers--;
+
+            _container.Clear();
+
+            if (!_upgradesQuery.IsEmpty)
+            {
+                if (_upgradesQuery.TryGetSingletonBuffer<ShipUpgradeLevels>(out var shipUpgradeLevels))
+                {
+
+                    List<Tuple<UpgradeType, int>> currentShipUpgradeLevels = new List<Tuple<UpgradeType, int>>(); 
+                    foreach (var upgradeLevel in shipUpgradeLevels)
+                    {
+                        currentShipUpgradeLevels.Add(new Tuple<UpgradeType, int>(upgradeLevel.type, upgradeLevel.level));
+                    }
+                    
+                    var upgrades = _upgradeOptions.GetRandomUpgradeType(numberRolls, currentShipUpgradeLevels);
+                    
+                    foreach (var upgrade in upgrades)
+                    {
+                        var button = CreateUpgradeButton(upgrade);
+                        _container.Add(button);
+                    }
+                }
+            }
+            
+            
+            
+            
+
+            _container.style.display = DisplayStyle.Flex;
+        }
+
+        private Button CreateUpgradeButton(UpgradeSelection selection)
         {
             var button = new Button();
             button.AddToClassList("upgrade-button");
@@ -81,36 +124,182 @@ namespace NonECS.UI
             var layout = new VisualElement();
             layout.AddToClassList("upgrade-layout");
 
-            var title = new Label(upgrade.UpgradeType.ToString());
+            var title = new Label(selection.UpgradeType.ToString());
             title.AddToClassList("upgrade-title");
 
-            var level = new Label($"Level: {upgrade.UpgradeLevels[0]}");
+            var level = new Label($"Level: {selection.UpgradeLevel}");
             level.AddToClassList("upgrade-level");
 
             layout.Add(title);
             layout.Add(level);
             button.Add(layout);
 
-            button.clicked += () => ApplyUpgradeAndHideContainer(upgrade, aspect);
+            button.clicked += () =>
+            {
+                ModifyEntityStats(selection.UpgradeType, selection.UpgradeValue);
+                HideUpgradeContainer();
+            };
 
             return button;
         }
-
-        private void ApplyUpgradeAndHideContainer(UpgradeInfo upgrade, UpgradeAspects aspect)
-        {
-            if (!entityManager.Exists(targetEntity)) return;
-
-            
-            var upgradeLevel = Mathf.Min(aspect.GetUpgradeLevel(upgrade.UpgradeType), upgrade.UpgradeLevels.Count - 1);
-            aspect.ApplyUpgrades(upgrade.UpgradeType, upgrade.UpgradeLevels[upgradeLevel]);
-
-
-            HideUpgradeContainer();
-        }
-
+        
         private void HideUpgradeContainer()
         {
-            container.style.display = DisplayStyle.None;
+            _isShowingBuffers = false;
+            _container.style.display = DisplayStyle.None;
+        }
+
+        private void ModifyEntityStats(UpgradeType upgradeType, float value)
+        {
+            var entities = _upgradesQuery.ToEntityArray(Allocator.Temp);
+            
+            foreach (var currentEntity in entities)
+            {
+                var buffers = _entityManager.GetBuffer<ShipUpgradeLevels>(currentEntity);
+
+                var removalIndex = -1;
+                var previousLevel = -1;
+                for (var i = 0; i < buffers.Length; i++)
+                {
+                    if (buffers[i].type != upgradeType) continue;
+                    
+                    removalIndex = i;
+                    previousLevel = buffers[i].level;
+                    break;
+                }
+
+                if (removalIndex >= 0)
+                {
+                    buffers.RemoveAt(removalIndex);
+                    buffers.Add(new ShipUpgradeLevels
+                    {
+                        type = upgradeType,
+                        level = previousLevel + 1
+                    });
+                }
+                
+                switch (upgradeType)
+                {
+                    case UpgradeType.Projectile:
+                        // Typically not modified directly
+                        break;
+
+                    case UpgradeType.MaxHealth:
+                        if (_entityManager.HasComponent<HealthComponent>(currentEntity))
+                        {
+                            var healthComponent = _entityManager.GetComponentData<HealthComponent>(currentEntity);
+                            healthComponent.MaxHealth = value;
+                            _entityManager.SetComponentData(currentEntity, healthComponent);
+                        }
+
+                        break;
+
+                    case UpgradeType.RadiusBonus:
+                        if (_entityManager.HasComponent<PickupRadiusComponent>(currentEntity))
+                        {
+                            var radiusComponent = _entityManager.GetComponentData<PickupRadiusComponent>(currentEntity);
+                            radiusComponent.PickupRadiusBonus = value;
+                            _entityManager.SetComponentData(currentEntity, radiusComponent);
+                        }
+
+                        break;
+
+                    case UpgradeType.SpeedBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.SpeedBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.ExpBonus:
+                        if (_entityManager.HasComponent<ExperienceContainer>(currentEntity))
+                        {
+                            var expContainer = _entityManager.GetComponentData<ExperienceContainer>(currentEntity);
+                            expContainer.BonusExperience = value;
+                            _entityManager.SetComponentData(currentEntity, expContainer);
+                        }
+
+                        break;
+
+                    case UpgradeType.KnockbackBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.KnockbackBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.LifetimeBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.LifetimeBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.DamageBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.DamageBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.FireRateReductionBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.FireRateReductionBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.SizeBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.SizeBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.RangeBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.RangeBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    case UpgradeType.NumCountBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.NumCountBonus = (int)value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+
+                    default:
+                        throw new ArgumentException($"Unsupported upgrade type: {upgradeType}");
+                }
+            }
+
+            entities.Dispose();
         }
     }
 }

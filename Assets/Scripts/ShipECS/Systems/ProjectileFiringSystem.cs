@@ -107,7 +107,7 @@ namespace ShipECS.Systems
 
     }
     
-    public struct ProjectileAttack  : IComponentData, IEnableableComponent
+    public struct ProjectileAttack  : IComponentData
     {
         public float BaseFireRate;
         public int BaseNumProjectile;

@@ -48,7 +48,8 @@ namespace NonECS.UI
         }
 
         void FollowEntity()
-        {            if (!_entityManager.HasComponent<PlayerTag>(_targetEntity)) return;
+        {
+            if (!_entityManager.HasComponent<PlayerTag>(_targetEntity)) return;
 
             var entityPosition = _entityManager.GetComponentData<LocalTransform>(_targetEntity).Position;
 
@@ -79,7 +80,7 @@ namespace NonECS.UI
             if (_expBar != null)
             {
                 _expBar.value = expContainer.GetExpPercentToNextUpgrade();
-                Debug.Log($"Exp Value: {_expBar.value}, {expContainer.TotalExperience}");
+                //Debug.Log($"Exp Value: {_expBar.value}, {expContainer.TotalExperience}");
             }
 
             if (_levelLabel != null)
