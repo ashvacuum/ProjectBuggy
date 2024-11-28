@@ -25,7 +25,7 @@ namespace NonECS.ScriptableObjects
         PenetrationBonus = 12
     }
     [Serializable]
-    public struct UpgradeInfo
+    public class UpgradeInfo
     {
         public UpgradeType UpgradeType;
         public float UpgradeChance;
@@ -79,29 +79,65 @@ namespace NonECS.ScriptableObjects
 
             return returnedUpgrades;
         }
-        
-        public List<UpgradeSelection> GetRandomUpgradeType(int numberRolls, List<Tuple<UpgradeType,int>> CurrentLevels)
+
+        public List<UpgradeSelection> GetRandomUpgrades(int numberRolls, List<Tuple<UpgradeType, int>> CurrentLevels,
+            bool isUnique = true)
         {
             var validUpgradeSelection = new List<UpgradeSelection>();
+            
+            var validUpgrades = _upgradeInfos.Where(upgrade =>
+            {
+                var matchingListTuple = CurrentLevels
+                    .FirstOrDefault(listTuple => listTuple.Item1 == upgrade.UpgradeType);
+
+                return matchingListTuple != null &&
+                       matchingListTuple.Item2 < upgrade.UpgradeLevels.Count;
+            }).ToList();
+            if(numberRolls <= 0)
+                return validUpgradeSelection;
+
+            if (isUnique && numberRolls > validUpgrades.Count)
+            {
+                foreach (var info in validUpgrades)
+                {
+                    var matchingUpgrade = CurrentLevels.FirstOrDefault(item => item.Item1 == info.UpgradeType);
+                    if (matchingUpgrade != null)
+                        validUpgradeSelection.Add(new UpgradeSelection(info.UpgradeType, matchingUpgrade.Item2,
+                            info.UpgradeLevels[matchingUpgrade.Item2]));
+                }
+
+                return validUpgradeSelection;
+            }
+            
+            
+            
+            
+            return validUpgradeSelection;
+        }
+        
+        public List<UpgradeSelection> GetRandomUpgradeType(int numberRolls, List<Tuple<UpgradeType,int>> CurrentLevels, bool isUnique = true)
+        {
+            var validUpgradeSelection = new List<UpgradeSelection>();
+            
+            var validUpgrades = _upgradeInfos.Where(upgrade =>
+            {
+                var matchingListTuple = CurrentLevels
+                    .FirstOrDefault(listTuple => listTuple.Item1 == upgrade.UpgradeType);
+
+                return matchingListTuple != null &&
+                       matchingListTuple.Item2 < upgrade.UpgradeLevels.Count;
+            }).ToList();
+            
             for (var i = 0; i < numberRolls; i++)
             {
                 var min = 0f;
                 var max = 0f;
 
-                var validUpgrades = _upgradeInfos.Where(upgrade =>
-                {
-                    var matchingListTuple = CurrentLevels
-                        .FirstOrDefault(listTuple => listTuple.Item1 == upgrade.UpgradeType);
-
-                    return matchingListTuple != null &&
-                           matchingListTuple.Item2 < upgrade.UpgradeLevels.Count;
-                }).ToList();
+                
                 var totals = validUpgrades.Sum(upgrade => upgrade.UpgradeChance);
-                
-                
 
                 var randomRoll = UnityEngine.Random.Range(min, totals);
-                
+                UpgradeSelection? actualItem = null;
                 foreach (var upgrade in validUpgrades)
                 {
                     max += upgrade.UpgradeChance;
@@ -113,8 +149,8 @@ namespace NonECS.ScriptableObjects
                         if (matchingUpgrade == null) continue;
                         var itemIndex = matchingUpgrade.Item2;
                         itemIndex++;
-                        itemIndex = Mathf.Min(itemIndex, upgrade.UpgradeLevels.Count - 1);
-                        validUpgradeSelection.Add(new UpgradeSelection(matchingUpgrade.Item1, itemIndex, upgrade.UpgradeLevels[itemIndex]));
+                        itemIndex = Mathf.Min(itemIndex, upgrade.UpgradeLevels.Count);
+                        actualItem = new UpgradeSelection(matchingUpgrade.Item1, itemIndex, upgrade.UpgradeLevels[itemIndex]);
                         
                         break;
                     }
@@ -124,6 +160,16 @@ namespace NonECS.ScriptableObjects
                         continue;
                     }
                 }
+
+                if (!actualItem.HasValue) continue;
+                
+                validUpgradeSelection.Add(actualItem.Value);
+                
+                var selectionToRemove = validUpgrades.FirstOrDefault(s => s.UpgradeType == actualItem.Value.UpgradeType);
+                
+                if(selectionToRemove != null && isUnique)
+                    validUpgrades.Remove(selectionToRemove);
+
             }
 
             return validUpgradeSelection;

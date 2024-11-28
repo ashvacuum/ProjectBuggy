@@ -6,12 +6,8 @@ using ShipECS.Entities;
 using ShipECS.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Physics;
 using Unity.Physics.Stateful;
-using Unity.Transforms;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Serialization;
 
 namespace Authoring

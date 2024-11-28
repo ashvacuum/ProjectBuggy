@@ -24,13 +24,13 @@ MonoBehaviour:
   upgradeData:
   - UpgradeType: -1
     Lifetime: 5
-    Count: 1
+    Count: 0
     Penetration: 1
-    Speed: 300
-    FireRate: 1
-    WeaponSize: 1
-    Damage: 5
-    Knockback: 200
+    Speed: 600
+    FireRate: 60
+    WeaponSize: 4
+    Damage: 15
+    Knockback: 3500
     Range: 500
   - UpgradeType: -1
     Lifetime: 5
