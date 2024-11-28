@@ -117,7 +117,7 @@ namespace Authoring
                 {
                     upgradeBuffer.Add(new ShipUpgradeLevels()
                     {
-                        level = 1,
+                        level = 0,
                         type = type
                     });
                 }

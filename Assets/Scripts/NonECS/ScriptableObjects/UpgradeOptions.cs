@@ -21,7 +21,8 @@ namespace NonECS.ScriptableObjects
         RangeBonus = 8,
         ExpBonus = 9,
         RadiusBonus = 10,
-        MaxHealth = 11
+        MaxHealth = 11,
+        PenetrationBonus = 12
     }
     [Serializable]
     public struct UpgradeInfo

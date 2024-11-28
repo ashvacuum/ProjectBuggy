@@ -108,10 +108,6 @@ namespace NonECS.UI
                     }
                 }
             }
-            
-            
-            
-            
 
             _container.style.display = DisplayStyle.Flex;
         }
@@ -289,6 +285,15 @@ namespace NonECS.UI
                         {
                             var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
                             bonusStats.NumCountBonus = (int)value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
+
+                        break;
+                    case UpgradeType.PenetrationBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.PenetrationBonus = (int)value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
 
