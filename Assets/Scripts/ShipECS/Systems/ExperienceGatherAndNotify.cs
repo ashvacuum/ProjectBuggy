@@ -51,12 +51,11 @@ namespace ShipECS.Systems
             var totalAccumulatedExpDuringLevel = 0;
             for (var i = 0; i < currentLevel; i++)
             {
-                if (currentLevel == 1) break;
                 totalAccumulatedExpDuringLevel += 100 + (10 * i);
             }
 
-            var expToNextLevel = 100 + 10 * (currentLevel);
-            var computedExpAmountDeducted = TotalExperience - totalAccumulatedExpDuringLevel;
+            var expToNextLevel = 100 + 10 * (currentLevel - 1);
+            var computedExpAmountDeducted = totalAccumulatedExpDuringLevel - TotalExperience;
             Debug.Log($"{computedExpAmountDeducted}/{expToNextLevel} {TotalExperience} - {totalAccumulatedExpDuringLevel} {currentLevel}");
             return computedExpAmountDeducted/expToNextLevel;
         }
@@ -90,9 +89,12 @@ namespace ShipECS.Systems
         {
 
             var hasExpContainer = SystemAPI.TryGetSingletonRW<ExperienceContainer>(out var expContainer);
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
             if (!hasExpContainer) return;
-
-            foreach (var (experienceBuffers, levelUp) in SystemAPI.Query<DynamicBuffer<ExperienceBuffer>, DynamicBuffer<LevelUpBuffer>>().WithAll<PlayerTag>())
+           
+            foreach (var (experienceBuffers, levelUp, entity) in SystemAPI.Query<DynamicBuffer<ExperienceBuffer>, DynamicBuffer<LevelUpBuffer>>()
+                         .WithAll<PlayerTag>()
+                         .WithEntityAccess())
             {
                 foreach (var buffer in experienceBuffers)
                 {
@@ -100,6 +102,7 @@ namespace ShipECS.Systems
                     if (expContainer.ValueRW.AddExperience(buffer.Experience))
                     {
                         levelUp.Add(new LevelUpBuffer());
+                        //ecb.AppendToBuffer(entity, new LevelUpBuffer());
                     }
                 }
                 

@@ -21,7 +21,7 @@ namespace ShipECS.Systems
             var ecb = new EntityCommandBuffer(Allocator.Temp);
 
             var hasExpBuffers = SystemAPI.TryGetSingletonBuffer<ExperienceBuffer>(out var expBuffers);
-            foreach (var (targetTransform, pickupRadius) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<PlayerTag>())
+            foreach (var (targetTransform, pickupRadius, target) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<PlayerTag>().WithEntityAccess())
             {
                 foreach (var (scrap, transform, entity) in SystemAPI
                              .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag>())
@@ -44,7 +44,7 @@ namespace ShipECS.Systems
                         if (hasExpBuffers)
                         {
                             Debug.Log($"Adding XP Buffer {scrap.ValueRO.ScrapToGive}");
-                            expBuffers.Add(new ExperienceBuffer()
+                            ecb.AppendToBuffer(target, new ExperienceBuffer()
                             {
                                 Experience = scrap.ValueRO.ScrapToGive
                             });

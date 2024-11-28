@@ -112,6 +112,7 @@ namespace NonECS.ScriptableObjects
                         if (matchingUpgrade == null) continue;
                         var itemIndex = matchingUpgrade.Item2;
                         itemIndex++;
+                        itemIndex = Mathf.Min(itemIndex, upgrade.UpgradeLevels.Count - 1);
                         validUpgradeSelection.Add(new UpgradeSelection(matchingUpgrade.Item1, itemIndex, upgrade.UpgradeLevels[itemIndex]));
                         
                         break;
