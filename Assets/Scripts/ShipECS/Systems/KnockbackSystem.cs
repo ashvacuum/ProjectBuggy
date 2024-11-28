@@ -63,27 +63,29 @@ namespace ShipECS.Systems
 
                 var entityB = collisionEventBuffer.GetOtherEntity(entityA);
                 if (entityB == Entity.Null) continue;
-                var knockback = KnockBackReceiver[entityB];
+                if (!KnockBackReceiver.HasComponent(entityB) || !Transform.HasComponent(entityA) || !Transform.HasComponent(entityB)) continue;
+                var knockBack = KnockBackReceiver[entityB];
+                
                 var collision = collisionEventBuffer;
-                if (knockback.currentRecoveryTime > 0 || collision.State != StatefulEventState.Enter) continue;
+                if (knockBack.currentRecoveryTime > 0 || collision.State != StatefulEventState.Enter) continue;
 
                 var isKinematic = MassOverride[entityB].IsKinematic;
-
-                var knockbackDirection =
+                
+                var knockBackDirection =
                      -1f * math.normalize(Transform[entityA].Position - Transform[entityB].Position);
-                var knockbackVelocity = knockbackDirection * sender.knockbackForceToSend;
+                var knockBackVelocity = knockBackDirection * sender.knockbackForceToSend;
 
                 if (isKinematic)
                 {
                     
                     // Kinematic body: Store velocity for transform updates
-                    knockback.currentKnockbackVelocity = knockbackVelocity;
-                    knockback.isBeingKnockedBack = true;
+                    knockBack.currentKnockbackVelocity = knockBackVelocity;
+                    knockBack.isBeingKnockedBack = true;
                 }
 
-                knockback.currentRecoveryTime = knockback.recoveryTime;
+                knockBack.currentRecoveryTime = knockBack.recoveryTime;
 
-                KnockBackReceiver[entityB] = knockback;
+                KnockBackReceiver[entityB] = knockBack;
             }
         }
     }

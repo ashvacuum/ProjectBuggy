@@ -25,9 +25,9 @@ namespace ShipECS.Systems
             
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             // Process entities with dead tag
-            foreach (var (_, transform, entity) in 
+            foreach (var (_, transform) in 
                      SystemAPI.Query<RefRO<DeadComponentTag>, RefRO<LocalTransform>>()
-                         .WithEntityAccess().WithNone<PlayerTag,ProjectileMotion>())
+                         .WithNone<PlayerTag,ProjectileMotion>())
             {
                 // Get loot table
                 foreach (var lootTable in SystemAPI.Query<DynamicBuffer<LootTableAuthoring.LootDropTable>>())
@@ -46,9 +46,10 @@ namespace ShipECS.Systems
                             continue;
                         }
                         // Spawn loot entity
+                        
                         var lootEntity = ecb.Instantiate(lootTable[i].prefab);
                         ecb.SetComponent(lootEntity, LocalTransform.FromPosition(transform.ValueRO.Position));
-                        //Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
+                        Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
                         break;
                     }
                 }

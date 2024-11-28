@@ -6,23 +6,6 @@ using UnityEngine;
 
 namespace Authoring
 {
-    // Blob data structures
-    public struct LootTimeThresholdBlob
-    {
-        public float TimeThreshold;
-        public float DropChance;
-    }
-
-    public struct LootEntryBlob
-    {
-        public BlobArray<LootTimeThresholdBlob> TimeThresholds;
-        public Entity PrefabEntity;
-    }
-
-    public struct LootTableBlob
-    {
-        public BlobArray<LootEntryBlob> PossibleLoots;
-    }
 
 // Authoring Component
     public class LootTableAuthoring : MonoBehaviour
@@ -70,13 +53,7 @@ namespace Authoring
                     }
                    
                 }
-                AddComponent<GameTimerComponent>(entity);
             }
         }
-    }
-
-    public struct GameTimerComponent : IComponentData
-    {
-        public float TotalGameTime;
     }
 }

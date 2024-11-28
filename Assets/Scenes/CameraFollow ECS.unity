@@ -502,7 +502,6 @@ GameObject:
   m_Component:
   - component: {fileID: 594703640}
   - component: {fileID: 594703641}
-  - component: {fileID: 594703642}
   m_Layer: 0
   m_Name: Physics
   m_TagString: Untagged
@@ -549,30 +548,6 @@ MonoBehaviour:
   m_SynchronizeCollisionWorld: 0
   m_IncrementalDynamicBroadphase: 0
   m_IncrementalStaticBroadphase: 0
---- !u!114 &594703642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 594703639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb54ea4f67dc17342bcd49954c53502d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DrawColliders: 0
-  DrawColliderEdges: 1
-  DrawColliderAabbs: 0
-  DrawMassProperties: 0
-  DrawBroadphase: 0
-  DrawContacts: 0
-  DrawCollisionEvents: 0
-  DrawTriggerEvents: 0
-  DrawJoints: 0
-  ColliderDisplayMode: 0
-  ColliderEdgesDisplayMode: 0
-  ColliderAabbDisplayMode: 0
 --- !u!1 &828502612
 GameObject:
   m_ObjectHideFlags: 0
@@ -1044,7 +1019,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd8bb0fa549baf94a8a3f6af4851b2fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  upgradeOptions: {fileID: 11400000, guid: f34a4fcc90274a0469fe4c11869e5117, type: 2}
+  _upgradeOptions: {fileID: 11400000, guid: f34a4fcc90274a0469fe4c11869e5117, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

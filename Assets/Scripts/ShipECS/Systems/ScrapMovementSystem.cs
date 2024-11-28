@@ -24,7 +24,7 @@ namespace ShipECS.Systems
             foreach (var (targetTransform, pickupRadius) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<PlayerTag>())
             {
                 foreach (var (scrap, transform, entity) in SystemAPI
-                             .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess())
+                             .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag>())
                 {
                     // dont move if the player is not nearby or if the scrap is not yet picked up by the player
 
@@ -43,14 +43,12 @@ namespace ShipECS.Systems
                         
                         if (hasExpBuffers)
                         {
+                            Debug.Log($"Adding XP Buffer {scrap.ValueRO.ScrapToGive}");
                             expBuffers.Add(new ExperienceBuffer()
                             {
                                 Experience = scrap.ValueRO.ScrapToGive
                             });
                         }
-                        
-                        
-                        
                         continue;
                     }
 
@@ -89,10 +87,5 @@ namespace ShipECS.Systems
             return 1 - math.pow((t - 0.5f) * 2, 3) / 2; // Scale to [0, 1] for t in [0.5, 1]
 
         }
-    }
-
-    public struct ScrapNotify : IComponentData
-    {
-        public float CurrentExpBarValue;
     }
 }

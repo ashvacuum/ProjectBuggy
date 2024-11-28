@@ -61,9 +61,7 @@ namespace NonECS.UI
                 //Debug.Log("Level up buffers are empty");
                 return;
             }
-
             
-
             _currentLevelUpBuffers = levelUpBuffer.Length;
             levelUpBuffer.Clear();
 
@@ -71,7 +69,9 @@ namespace NonECS.UI
                 
             if (_timeManagerQuery.TryGetSingletonRW(out RefRW<TimeManagerComponent> manager))
             {
+                var isPaused = _currentLevelUpBuffers > 0;
                 manager.ValueRW.IsPaused = _currentLevelUpBuffers > 0;
+                Debug.Log($"Is paused? {isPaused}");
             }
             
             if (_currentLevelUpBuffers > 0 && !_isShowingBuffers)
@@ -93,7 +93,7 @@ namespace NonECS.UI
                 if (_upgradesQuery.TryGetSingletonBuffer<ShipUpgradeLevels>(out var shipUpgradeLevels))
                 {
 
-                    List<Tuple<UpgradeType, int>> currentShipUpgradeLevels = new List<Tuple<UpgradeType, int>>(); 
+                    var currentShipUpgradeLevels = new List<Tuple<UpgradeType, int>>(); 
                     foreach (var upgradeLevel in shipUpgradeLevels)
                     {
                         currentShipUpgradeLevels.Add(new Tuple<UpgradeType, int>(upgradeLevel.type, upgradeLevel.level));

@@ -100,5 +100,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3debc6c33b441124399ea01ef0cf41ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TimeToReachTarget: 3
+  TimeToReachTarget: 2
   ScrapToGive: 5
