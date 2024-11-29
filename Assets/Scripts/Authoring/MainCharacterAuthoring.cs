@@ -80,16 +80,16 @@ namespace Authoring
                 var stats = authoring.ProjectileStats;
                 AddComponent(entity, new ProjectileAttack()
                 {
-                    BaseFireRate = stats.BaseFireRate,
-                    BasePenetration = stats.BasePenetration,
-                    BaseSize = stats.WeaponSize,
-                    BaseNumProjectile = stats.BaseCount,
-                    BaseDamage = stats.BaseDamage,
-                    BaseLifeTime = stats.BaseLifetime,
-                    BaseSpeed = stats.BaseSpeed,
+                    BaseFireRate = stats.upgradeData[0].FireRate,
+                    BasePenetration = stats.upgradeData[0].Penetration,
+                    BaseSize = stats.upgradeData[0].WeaponSize,
+                    BaseNumProjectile = stats.upgradeData[0].Count,
+                    BaseDamage = stats.upgradeData[0].Damage,
+                    BaseLifeTime = stats.upgradeData[0].Lifetime,
+                    BaseSpeed = stats.upgradeData[0].Speed,
                     CurrentFireRate = 0,
-                    BaseKnockback = stats.BaseKnockback,
-                    BaseRange = stats.BaseRange
+                    BaseKnockback = stats.upgradeData[0].Knockback,
+                    BaseRange = stats.upgradeData[0].Range
                 });
                 AddComponent(entity, new CharacterData
                 {

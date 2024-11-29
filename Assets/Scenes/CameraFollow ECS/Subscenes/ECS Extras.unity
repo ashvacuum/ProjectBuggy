@@ -361,9 +361,9 @@ MonoBehaviour:
   - prefab: {fileID: 1514130636198565966, guid: 91398af4f1e7f0e458455ad21b358df5, type: 3}
     timeThresholds:
     - timeThreshold: 0
-      dropChance: 50
-    - timeThreshold: 5
       dropChance: 75
+    - timeThreshold: 5
+      dropChance: 85
     - timeThreshold: 10
       dropChance: 100
 --- !u!4 &1992735455

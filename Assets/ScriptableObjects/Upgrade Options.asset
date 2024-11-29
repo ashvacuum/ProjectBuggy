@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49fbcefdf20b49d4d8b70d382b8db959, type: 3}
   m_Name: Upgrade Options
   m_EditorClassIdentifier: 
+  _projectileUpgradeData: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
   _upgradeInfos:
   - UpgradeType: 0
-    UpgradeChance: 0
+    UpgradeChance: 9
     UpgradeLevels: []
   - UpgradeType: 2
     UpgradeChance: 1

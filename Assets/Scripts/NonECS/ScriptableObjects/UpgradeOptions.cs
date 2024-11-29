@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NonECS.BaseWeapons;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = System.Random;
@@ -48,72 +49,9 @@ namespace NonECS.ScriptableObjects
     [CreateAssetMenu(menuName = "Upgrade Options", fileName = "Upgrade Options")]
     public class UpgradeOptions : ScriptableObject
     {
+        [SerializeField] private ProjectileWeaponBase _projectileUpgradeData;
+        
         [FormerlySerializedAs("UpgradeInfos")] public List<UpgradeInfo> _upgradeInfos;
-        public List<UpgradeInfo> GetRandomUpgradeType(int numberRolls)
-        {
-            var returnedUpgrades = new List<UpgradeInfo>();
-            
-            for (var i = 0; i < numberRolls; i++)
-            {
-                var min = 0f;
-                var max = 0f;
-                var totals = _upgradeInfos.Sum(upgrade => upgrade.UpgradeChance);
-
-                var randomRoll = UnityEngine.Random.Range(min, totals);
-                
-                foreach (var upgrade in _upgradeInfos)
-                {
-                    max += upgrade.UpgradeChance;
-                    if (randomRoll <= max)
-                    {
-                        returnedUpgrades.Add(upgrade);
-                        break;
-                    }
-                    else
-                    {
-                        min = max;
-                        continue;
-                    }
-                }
-            }
-
-            return returnedUpgrades;
-        }
-
-        public List<UpgradeSelection> GetRandomUpgrades(int numberRolls, List<Tuple<UpgradeType, int>> CurrentLevels,
-            bool isUnique = true)
-        {
-            var validUpgradeSelection = new List<UpgradeSelection>();
-            
-            var validUpgrades = _upgradeInfos.Where(upgrade =>
-            {
-                var matchingListTuple = CurrentLevels
-                    .FirstOrDefault(listTuple => listTuple.Item1 == upgrade.UpgradeType);
-
-                return matchingListTuple != null &&
-                       matchingListTuple.Item2 < upgrade.UpgradeLevels.Count;
-            }).ToList();
-            if(numberRolls <= 0)
-                return validUpgradeSelection;
-
-            if (isUnique && numberRolls > validUpgrades.Count)
-            {
-                foreach (var info in validUpgrades)
-                {
-                    var matchingUpgrade = CurrentLevels.FirstOrDefault(item => item.Item1 == info.UpgradeType);
-                    if (matchingUpgrade != null)
-                        validUpgradeSelection.Add(new UpgradeSelection(info.UpgradeType, matchingUpgrade.Item2,
-                            info.UpgradeLevels[matchingUpgrade.Item2]));
-                }
-
-                return validUpgradeSelection;
-            }
-            
-            
-            
-            
-            return validUpgradeSelection;
-        }
         
         public List<UpgradeSelection> GetRandomUpgradeType(int numberRolls, List<Tuple<UpgradeType,int>> CurrentLevels, bool isUnique = true)
         {
@@ -123,6 +61,13 @@ namespace NonECS.ScriptableObjects
             {
                 var matchingListTuple = CurrentLevels
                     .FirstOrDefault(listTuple => listTuple.Item1 == upgrade.UpgradeType);
+                
+                var isProjectile = upgrade.UpgradeType == UpgradeType.Projectile;
+                if (isProjectile)
+                {
+                    return matchingListTuple != null &&
+                           matchingListTuple.Item2 < _projectileUpgradeData.upgradeData.Count;
+                }
 
                 return matchingListTuple != null &&
                        matchingListTuple.Item2 < upgrade.UpgradeLevels.Count;
@@ -144,21 +89,30 @@ namespace NonECS.ScriptableObjects
                     if (randomRoll <= max)
                     {
                         //validUpgradeSelection.Add();
-                        
+
                         var matchingUpgrade = CurrentLevels.FirstOrDefault(item => item.Item1 == upgrade.UpgradeType);
                         if (matchingUpgrade == null) continue;
                         var itemIndex = matchingUpgrade.Item2;
                         itemIndex++;
-                        itemIndex = Mathf.Min(itemIndex, upgrade.UpgradeLevels.Count);
-                        actualItem = new UpgradeSelection(matchingUpgrade.Item1, itemIndex, upgrade.UpgradeLevels[itemIndex]);
-                        
+                        itemIndex = matchingUpgrade.Item1 == UpgradeType.Projectile
+                            ? Mathf.Min(itemIndex, _projectileUpgradeData.upgradeData.Count)
+                            : Mathf.Min(itemIndex, upgrade.UpgradeLevels.Count);
+                        try
+                        {
+                            actualItem = new UpgradeSelection(matchingUpgrade.Item1, itemIndex,
+                                upgrade.UpgradeLevels[itemIndex]);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError($"Error: {e},Type: {matchingUpgrade.Item1.ToString()}, Level {itemIndex}, Count {upgrade.UpgradeLevels.Count}");
+                        }
+
                         break;
                     }
-                    else
-                    {
-                        min = max;
-                        continue;
-                    }
+
+                    min = max;
+                    continue;
+
                 }
 
                 if (!actualItem.HasValue) continue;

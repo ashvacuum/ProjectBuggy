@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Authoring;
+using NonECS.BaseWeapons;
 using NonECS.ScriptableObjects;
 using ShipECS.Entities;
 using ShipECS.Systems;
@@ -14,6 +15,8 @@ namespace NonECS.UI
 {
     public class UpgradeUIDocument : MonoBehaviour
     {
+        [SerializeField] private ProjectileWeaponBase _projectileUpgradeData;
+        
         private UIDocument _document;
         private VisualElement _container;
         private EntityManager _entityManager;
@@ -132,7 +135,15 @@ namespace NonECS.UI
 
             button.clicked += () =>
             {
-                ModifyEntityStats(selection.UpgradeType, selection.UpgradeValue);
+                if (selection.UpgradeType == UpgradeType.Projectile)
+                {
+                    ModifyEntityStats(selection.UpgradeType, selection.UpgradeValue, selection.UpgradeLevel);
+                }
+                else
+                {
+                    ModifyEntityStats(selection.UpgradeType, selection.UpgradeValue);
+                }
+
                 HideUpgradeContainer();
             };
 
@@ -145,7 +156,7 @@ namespace NonECS.UI
             _container.style.display = DisplayStyle.None;
         }
 
-        private void ModifyEntityStats(UpgradeType upgradeType, float value)
+        private void ModifyEntityStats(UpgradeType upgradeType, float value, int level = 0)
         {
             var entities = _upgradesQuery.ToEntityArray(Allocator.Temp);
             
@@ -177,7 +188,48 @@ namespace NonECS.UI
                 switch (upgradeType)
                 {
                     case UpgradeType.Projectile:
-                        // Typically not modified directly
+                        if (_entityManager.HasComponent<HealthComponent>(currentEntity))
+                        {
+                            var projectileAttack = _entityManager.GetComponentData<ProjectileAttack>(currentEntity);
+
+                            if (level > 0)
+                            {
+                                projectileAttack.BaseDamage = _projectileUpgradeData.upgradeData[level].Damage != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Damage
+                                    : projectileAttack.BaseDamage;
+                                projectileAttack.BaseKnockback = _projectileUpgradeData.upgradeData[level].Knockback != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Knockback
+                                    : projectileAttack.BaseKnockback;
+                                projectileAttack.BasePenetration = _projectileUpgradeData.upgradeData[level].Penetration != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Penetration
+                                    : projectileAttack.BasePenetration;
+                                projectileAttack.BaseRange = _projectileUpgradeData.upgradeData[level].Range != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Range
+                                    : projectileAttack.BaseRange;
+                                projectileAttack.BaseSpeed = _projectileUpgradeData.upgradeData[level].Speed != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Speed
+                                    : projectileAttack.BaseSpeed;
+                                projectileAttack.BaseSize = _projectileUpgradeData.upgradeData[level].WeaponSize != 0
+                                    ? _projectileUpgradeData.upgradeData[level].WeaponSize
+                                    : projectileAttack.BaseSize;
+                                projectileAttack.BaseFireRate = _projectileUpgradeData.upgradeData[level].FireRate != 0
+                                    ? _projectileUpgradeData.upgradeData[level].FireRate
+                                    : projectileAttack.BaseFireRate;
+                                
+                                projectileAttack.BaseLifeTime = _projectileUpgradeData.upgradeData[level].Lifetime != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Lifetime
+                                    : projectileAttack.BaseLifeTime;
+                                
+                                projectileAttack.BaseNumProjectile = _projectileUpgradeData.upgradeData[level].Count != 0
+                                    ? _projectileUpgradeData.upgradeData[level].Count
+                                    : projectileAttack.BaseNumProjectile;
+                                
+                                
+                                
+                                _entityManager.SetComponentData(currentEntity, projectileAttack);
+                            }
+                        }
+                        
                         break;
 
                     case UpgradeType.MaxHealth:
