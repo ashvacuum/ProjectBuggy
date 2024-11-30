@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
       propertyPath: m_Name
-      value: Ship 04 Authored
+      value: Rocket Space Craft
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -87,8 +87,8 @@ MonoBehaviour:
   rotSpeed: 20
   CameraOffset:
     x: 0
-    y: 1000
-    z: 0
+    y: 750
+    z: -600
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
   MaxHealth: 400
@@ -99,10 +99,12 @@ MonoBehaviour:
   PenetrationBonus: 0
   DamageBonus: 0
   SpeedBonus: 0
-  AttackTimeReductionBonus: 0
   SizeBonus: 0
   FireRateReductionBonus: 0
   KnockbackBonus: 0
+  RangeBonus: 0
+  ExpBonus: 0
+  RadiusBonus: 0
   ProjectileStats: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
 --- !u!114 &3743403228728422599
 MonoBehaviour:
