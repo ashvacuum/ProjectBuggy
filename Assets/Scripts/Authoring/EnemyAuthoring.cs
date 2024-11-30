@@ -24,12 +24,12 @@ namespace Authoring
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new NewEnemySpawn());
-                AddComponent(entity, new DisableRendering());
                 AddSharedComponent(entity, new EnemyFollowTarget()
                 {
                     Speed = authoring.speed,
                     RotationSpeed = authoring.rotationSpeed,
-                    FollowTargetLimits = authoring.targetRangeBounds
+                    FollowTargetLimits = authoring.targetRangeBounds,
+                    hasBeenRolledExp = false
                 });
                 AddComponent(entity, new DamageComponent()
                 {
@@ -59,7 +59,8 @@ namespace Authoring
         public float Speed;
         public float RotationSpeed;
         public float FollowTargetLimits;
-        
+        public bool hasBeenRolledExp;
+
     }
 
     public struct NewEnemySpawn : IComponentData { }

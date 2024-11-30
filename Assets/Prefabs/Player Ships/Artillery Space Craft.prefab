@@ -75,12 +75,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 487cc95d51b53c44cad0978a8b6bd444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 75
-  rotSpeed: 5
+  speed: 25
+  rotSpeed: 0.5
   CameraOffset:
     x: 0
-    y: 1000
-    z: 0
+    y: 750
+    z: -600
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
   MaxHealth: 100

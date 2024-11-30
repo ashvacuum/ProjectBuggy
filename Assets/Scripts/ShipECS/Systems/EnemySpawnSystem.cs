@@ -22,13 +22,14 @@ namespace ShipECS.Systems
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<EnemySpawnerData>();
             totalTime = 0;
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            
+
             const float spawnWait = 0.05f; // 0.05 seconds
 
             spawnTimer -= SystemAPI.Time.DeltaTime;
@@ -42,25 +43,41 @@ namespace ShipECS.Systems
 
             var spawnData = SystemAPI.GetSingleton<EnemySpawnerData>();
             var count = spawnData.MaximumEnemies;
-            
+
             if (EnemySpawnSingleton.Instance != null)
             {
                 //Debug.Log($"Total Time = {totalTime}");
                 //TODO: figure out a different way of doing this, maybe scriptable objects?
                 count = EnemySpawnSingleton.Instance.GetNumEnemiesBasedOnTime(totalTime);
             }
-            
+
+            var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
             // Remove the NewSpawn and DisableRendering component from the entities spawned in the prior frame.
-            var newSpawnQuery = SystemAPI.QueryBuilder().WithAll<NewEnemySpawn,DisableRendering,RenderFilterSettings>().Build();
-            state.EntityManager.RemoveComponent<NewEnemySpawn>(newSpawnQuery);
-            state.EntityManager.RemoveComponent<DisableRendering>(newSpawnQuery);
-            state.EntityManager.SetSharedComponent(newSpawnQuery, new RenderFilterSettings()
+
+            foreach (var (spawn, children, entity) in
+                     SystemAPI.Query<RefRO<NewEnemySpawn>, DynamicBuffer<Child>>()
+                         .WithEntityAccess())
             {
-                Layer = 0
-            });
+                // Change layer for the root entity
+                if (state.EntityManager.HasComponent<RenderFilterSettings>(entity))
+                {
+                    var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(entity);
+                    renderSettings.Layer = 0; // Hardcoded to layer 3, adjust as needed
+                    ecb.SetSharedComponent(entity, renderSettings);
+                }
+
+                // Recursively change layers for all nested children
+                ChangeLayerRecursivelyDeep(ref state, ecb, entity, 0);
+                
+
+                // Remove the NewEnemySpawn tag
+                ecb.RemoveComponent<NewEnemySpawn>(entity);
+            }
             
             var totalCount = 0;
-            
+
             foreach (var playerTransform in
                      SystemAPI.Query<RefRO<LocalTransform>>()
                          .WithAll<EnemyFollowTarget>())
@@ -69,13 +86,13 @@ namespace ShipECS.Systems
             }
 
             if (totalCount >= count) return;
-            
+
             count -= totalCount;
-                
+
             var prefab = spawnData.EnemyPrefab;
             state.EntityManager.Instantiate(prefab, count, Allocator.Temp);
             seedOffset += (uint)totalCount;
-            
+
             foreach (var transform in
                      SystemAPI.Query<RefRO<LocalTransform>>()
                          .WithAll<PlayerTag>())
@@ -89,15 +106,32 @@ namespace ShipECS.Systems
                 }.ScheduleParallel();
             }
 
+        }
 
-            // Spawn the enemies
-            
+        private void ChangeLayerRecursivelyDeep(ref SystemState state, EntityCommandBuffer ecb, Entity currentEntity, int newRenderLayer)
+        {
+            if (!state.EntityManager.HasBuffer<Child>(currentEntity)) return;
+            var children = state.EntityManager.GetBuffer<Child>(currentEntity);
+            for (int i = 0; i < children.Length; i++)
+            {
+                Entity childEntity = children[i].Value;
 
-            
+                // Change render layer for this child
+                if (state.EntityManager.HasComponent<RenderFilterSettings>(childEntity))
+                {
+                    var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(childEntity);
+                    renderSettings.Layer = newRenderLayer;
+                    ecb.SetSharedComponent(childEntity, renderSettings);
+                }
+
+                // Recursively process THIS child's children (key difference)
+                // This ensures we go as deep as the hierarchy goes
+                ChangeLayerRecursivelyDeep(ref state, ecb, childEntity, newRenderLayer);
+            }
         }
     }
 
-    [WithAll(typeof(NewEnemySpawn),typeof(DisableRendering))]
+    [WithAll(typeof(NewEnemySpawn))]
     [BurstCompile]
     partial struct RandomPositionJob : IJobEntity
     {
