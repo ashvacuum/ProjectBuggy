@@ -26,7 +26,7 @@ namespace ShipECS.Systems
             _health = state.GetComponentLookup<HealthComponent>();
         }
         
-        //[BurstCompile]
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             _damage.Update(ref state);

@@ -111,9 +111,10 @@ namespace Authoring
                 var upgradeBuffer = AddBuffer<ShipUpgradeLevels>(entity);
                 foreach (UpgradeType type in Enum.GetValues(typeof(UpgradeType)))
                 {
+                    var level = type == UpgradeType.Projectile ? 1 : 0;
                     upgradeBuffer.Add(new ShipUpgradeLevels()
                     {
-                        level = 0,
+                        level = level,
                         type = type
                     });
                 }

@@ -101,4 +101,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TimeToReachTarget: 2
-  ScrapToGive: 1
+  ScrapToGive: 100

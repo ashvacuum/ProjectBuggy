@@ -1,6 +1,8 @@
 using ShipECS.Systems;
 using Unity.Entities;
+using Unity.Entities.Graphics;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -22,6 +24,7 @@ namespace Authoring
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new NewEnemySpawn());
+                AddComponent(entity, new DisableRendering());
                 AddSharedComponent(entity, new EnemyFollowTarget()
                 {
                     Speed = authoring.speed,

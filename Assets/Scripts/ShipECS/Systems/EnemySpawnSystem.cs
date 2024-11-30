@@ -3,7 +3,9 @@ using NonECS;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.Graphics;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using Random = Unity.Mathematics.Random;
@@ -48,9 +50,14 @@ namespace ShipECS.Systems
                 count = EnemySpawnSingleton.Instance.GetNumEnemiesBasedOnTime(totalTime);
             }
             
-            // Remove the NewSpawn tag component from the entities spawned in the prior frame.
-            var newSpawnQuery = SystemAPI.QueryBuilder().WithAll<NewEnemySpawn>().Build();
+            // Remove the NewSpawn and DisableRendering component from the entities spawned in the prior frame.
+            var newSpawnQuery = SystemAPI.QueryBuilder().WithAll<NewEnemySpawn,DisableRendering,RenderFilterSettings>().Build();
             state.EntityManager.RemoveComponent<NewEnemySpawn>(newSpawnQuery);
+            state.EntityManager.RemoveComponent<DisableRendering>(newSpawnQuery);
+            state.EntityManager.SetSharedComponent(newSpawnQuery, new RenderFilterSettings()
+            {
+                Layer = 0
+            });
             
             var totalCount = 0;
             
@@ -90,7 +97,7 @@ namespace ShipECS.Systems
         }
     }
 
-    [WithAll(typeof(NewEnemySpawn))]
+    [WithAll(typeof(NewEnemySpawn),typeof(DisableRendering))]
     [BurstCompile]
     partial struct RandomPositionJob : IJobEntity
     {

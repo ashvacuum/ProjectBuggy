@@ -15,7 +15,7 @@ MonoBehaviour:
   _projectileUpgradeData: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
   _upgradeInfos:
   - UpgradeType: 0
-    UpgradeChance: 9
+    UpgradeChance: 30
     UpgradeLevels: []
   - UpgradeType: 2
     UpgradeChance: 1

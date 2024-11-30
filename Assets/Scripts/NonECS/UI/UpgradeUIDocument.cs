@@ -156,7 +156,7 @@ namespace NonECS.UI
             _container.style.display = DisplayStyle.None;
         }
 
-        private void ModifyEntityStats(UpgradeType upgradeType, float value, int level = 0)
+        private void ModifyEntityStats(UpgradeType upgradeType, float value, int level = -1)
         {
             var entities = _upgradesQuery.ToEntityArray(Allocator.Temp);
             
@@ -188,40 +188,40 @@ namespace NonECS.UI
                 switch (upgradeType)
                 {
                     case UpgradeType.Projectile:
-                        if (_entityManager.HasComponent<HealthComponent>(currentEntity))
+                        if (_entityManager.HasComponent<ProjectileAttack>(currentEntity))
                         {
                             var projectileAttack = _entityManager.GetComponentData<ProjectileAttack>(currentEntity);
-
-                            if (level > 0)
+                            var actualIndex = level - 1;
+                            if (actualIndex > -1 )
                             {
-                                projectileAttack.BaseDamage = _projectileUpgradeData.upgradeData[level].Damage != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Damage
+                                projectileAttack.BaseDamage = _projectileUpgradeData.upgradeData[actualIndex].Damage != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Damage
                                     : projectileAttack.BaseDamage;
-                                projectileAttack.BaseKnockback = _projectileUpgradeData.upgradeData[level].Knockback != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Knockback
+                                projectileAttack.BaseKnockback = _projectileUpgradeData.upgradeData[actualIndex].Knockback != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Knockback
                                     : projectileAttack.BaseKnockback;
-                                projectileAttack.BasePenetration = _projectileUpgradeData.upgradeData[level].Penetration != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Penetration
+                                projectileAttack.BasePenetration = _projectileUpgradeData.upgradeData[actualIndex].Penetration != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Penetration
                                     : projectileAttack.BasePenetration;
-                                projectileAttack.BaseRange = _projectileUpgradeData.upgradeData[level].Range != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Range
+                                projectileAttack.BaseRange = _projectileUpgradeData.upgradeData[actualIndex].Range != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Range
                                     : projectileAttack.BaseRange;
-                                projectileAttack.BaseSpeed = _projectileUpgradeData.upgradeData[level].Speed != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Speed
+                                projectileAttack.BaseSpeed = _projectileUpgradeData.upgradeData[actualIndex].Speed != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Speed
                                     : projectileAttack.BaseSpeed;
-                                projectileAttack.BaseSize = _projectileUpgradeData.upgradeData[level].WeaponSize != 0
-                                    ? _projectileUpgradeData.upgradeData[level].WeaponSize
+                                projectileAttack.BaseSize = _projectileUpgradeData.upgradeData[actualIndex].WeaponSize != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].WeaponSize
                                     : projectileAttack.BaseSize;
-                                projectileAttack.BaseFireRate = _projectileUpgradeData.upgradeData[level].FireRate != 0
-                                    ? _projectileUpgradeData.upgradeData[level].FireRate
+                                projectileAttack.BaseFireRate = _projectileUpgradeData.upgradeData[actualIndex].FireRate != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].FireRate
                                     : projectileAttack.BaseFireRate;
                                 
-                                projectileAttack.BaseLifeTime = _projectileUpgradeData.upgradeData[level].Lifetime != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Lifetime
+                                projectileAttack.BaseLifeTime = _projectileUpgradeData.upgradeData[actualIndex].Lifetime != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Lifetime
                                     : projectileAttack.BaseLifeTime;
                                 
-                                projectileAttack.BaseNumProjectile = _projectileUpgradeData.upgradeData[level].Count != 0
-                                    ? _projectileUpgradeData.upgradeData[level].Count
+                                projectileAttack.BaseNumProjectile = _projectileUpgradeData.upgradeData[actualIndex].Count != 0
+                                    ? _projectileUpgradeData.upgradeData[actualIndex].Count
                                     : projectileAttack.BaseNumProjectile;
                                 
                                 

@@ -97,14 +97,24 @@ namespace NonECS.ScriptableObjects
                         itemIndex = matchingUpgrade.Item1 == UpgradeType.Projectile
                             ? Mathf.Min(itemIndex, _projectileUpgradeData.upgradeData.Count)
                             : Mathf.Min(itemIndex, upgrade.UpgradeLevels.Count);
+
+
                         try
                         {
-                            actualItem = new UpgradeSelection(matchingUpgrade.Item1, itemIndex,
-                                upgrade.UpgradeLevels[itemIndex]);
+                            if (matchingUpgrade.Item1 == UpgradeType.Projectile)
+                            {
+                                actualItem = new UpgradeSelection(matchingUpgrade.Item1, itemIndex, 0);
+                            }
+                            else
+                            {
+                                actualItem = new UpgradeSelection(matchingUpgrade.Item1, itemIndex,
+                                    upgrade.UpgradeLevels[itemIndex]);
+                            }
                         }
                         catch (Exception e)
                         {
-                            Debug.LogError($"Error: {e},Type: {matchingUpgrade.Item1.ToString()}, Level {itemIndex}, Count {upgrade.UpgradeLevels.Count}");
+                            Debug.LogError(
+                                $"Error: Type: {matchingUpgrade.Item1.ToString()}, Level {itemIndex}, Count {upgrade.UpgradeLevels.Count}");
                         }
 
                         break;
