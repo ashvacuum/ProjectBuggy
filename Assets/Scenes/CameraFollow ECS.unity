@@ -502,7 +502,6 @@ GameObject:
   m_Component:
   - component: {fileID: 594703640}
   - component: {fileID: 594703641}
-  - component: {fileID: 594703642}
   m_Layer: 0
   m_Name: Physics
   m_TagString: Untagged
@@ -549,30 +548,6 @@ MonoBehaviour:
   m_SynchronizeCollisionWorld: 0
   m_IncrementalDynamicBroadphase: 0
   m_IncrementalStaticBroadphase: 0
---- !u!114 &594703642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 594703639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb54ea4f67dc17342bcd49954c53502d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DrawColliders: 0
-  DrawColliderEdges: 1
-  DrawColliderAabbs: 0
-  DrawMassProperties: 0
-  DrawBroadphase: 0
-  DrawContacts: 0
-  DrawCollisionEvents: 0
-  DrawTriggerEvents: 0
-  DrawJoints: 0
-  ColliderDisplayMode: 0
-  ColliderEdgesDisplayMode: 0
-  ColliderAabbDisplayMode: 0
 --- !u!1 &828502612
 GameObject:
   m_ObjectHideFlags: 0
@@ -688,7 +663,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -708,13 +683,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1489723222}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!114 &1489723226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -867,6 +842,7 @@ GameObject:
   - component: {fileID: 1497746680}
   - component: {fileID: 1497746681}
   - component: {fileID: 1497746682}
+  - component: {fileID: 1497746683}
   m_Layer: 5
   m_Name: MainUI
   m_TagString: Untagged
@@ -1011,7 +987,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  MaximumEnemies: 1000
+  MaximumEnemies: 2500
   MaximumTime: 1800
 --- !u!114 &1497746682
 MonoBehaviour:
@@ -1020,7 +996,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1497746677}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f405158ed1e6a6b48b1212ef2fb41afa, type: 3}
   m_Name: 
@@ -1029,6 +1005,22 @@ MonoBehaviour:
   damageNumberTemplate: {fileID: 9197481963319205126, guid: eab9599c7e32b294683c415478e9b5c8, type: 3}
   floatSpeed: 100
   lifetime: 1
+  yOffset: 1
+  randomOffset: 0.5
+--- !u!114 &1497746683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1497746677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd8bb0fa549baf94a8a3f6af4851b2fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _projectileUpgradeData: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
+  _upgradeOptions: {fileID: 11400000, guid: f34a4fcc90274a0469fe4c11869e5117, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

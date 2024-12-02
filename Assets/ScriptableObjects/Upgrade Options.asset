@@ -1,0 +1,152 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49fbcefdf20b49d4d8b70d382b8db959, type: 3}
+  m_Name: Upgrade Options
+  m_EditorClassIdentifier: 
+  _projectileUpgradeData: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
+  _upgradeInfos:
+  - UpgradeType: 0
+    UpgradeChance: 30
+    UpgradeLevels: []
+  - UpgradeType: 2
+    UpgradeChance: 1
+    UpgradeLevels:
+    - 1
+    - 2
+  - UpgradeType: 1
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 9
+    - 12
+    - 17
+    - 21
+    - 25
+    - 30
+    - 35
+    - 39
+    - 44
+    - 50
+  - UpgradeType: 3
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 10
+    - 15
+    - 22.5
+    - 30
+    - 36
+    - 43
+    - 50
+    - 62
+    - 70
+    - 79
+    - 90
+  - UpgradeType: 4
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 30
+    - 36
+    - 42
+    - 50
+    - 57
+    - 65
+    - 78
+    - 90
+    - 109
+    - 120
+  - UpgradeType: 5
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 50
+    - 100
+    - 150
+    - 200
+    - 250
+    - 300
+    - 350
+    - 400
+  - UpgradeType: 6
+    UpgradeChance: 5
+    UpgradeLevels:
+    - 5
+    - 12
+    - 18
+    - 25
+    - 32
+    - 40
+    - 50
+    - 65
+  - UpgradeType: 7
+    UpgradeChance: 15
+    UpgradeLevels:
+    - 50
+    - 80
+    - 110
+    - 135
+    - 160
+    - 190
+    - 220
+    - 250
+  - UpgradeType: 8
+    UpgradeChance: 25
+    UpgradeLevels:
+    - 30
+    - 45
+    - 60
+    - 75
+    - 90
+    - 115
+    - 140
+    - 165
+    - 200
+  - UpgradeType: 9
+    UpgradeChance: 6
+    UpgradeLevels:
+    - 7
+    - 14
+    - 21
+    - 28
+    - 35
+    - 42
+    - 49
+    - 56
+  - UpgradeType: 10
+    UpgradeChance: 10
+    UpgradeLevels:
+    - 25
+    - 35
+    - 45
+    - 55
+    - 65
+    - 75
+    - 85
+  - UpgradeType: 11
+    UpgradeChance: 15
+    UpgradeLevels:
+    - 3
+    - 6
+    - 9
+    - 12
+    - 15
+    - 18
+    - 21
+    - 24
+  - UpgradeType: 12
+    UpgradeChance: 2
+    UpgradeLevels:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8

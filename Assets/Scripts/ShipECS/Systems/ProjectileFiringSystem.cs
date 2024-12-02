@@ -84,7 +84,6 @@ namespace ShipECS.Systems
         private readonly RefRW<ProjectileAttack> _projectile;
         private readonly RefRO<PlayerBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
-        private readonly RefRO<PlayerTag> _player;
 
         public float TotalFireRate => math.max(0,
             _projectile.ValueRW.BaseFireRate -
@@ -108,7 +107,7 @@ namespace ShipECS.Systems
 
     }
     
-    public struct ProjectileAttack  : IComponentData, IEnableableComponent
+    public struct ProjectileAttack  : IComponentData
     {
         public float BaseFireRate;
         public int BaseNumProjectile;

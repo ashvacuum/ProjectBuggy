@@ -174,7 +174,6 @@ GameObject:
   m_Component:
   - component: {fileID: 594703640}
   - component: {fileID: 594703641}
-  - component: {fileID: 594703642}
   m_Layer: 0
   m_Name: Physics
   m_TagString: Untagged
@@ -221,30 +220,6 @@ MonoBehaviour:
   m_SynchronizeCollisionWorld: 0
   m_IncrementalDynamicBroadphase: 0
   m_IncrementalStaticBroadphase: 0
---- !u!114 &594703642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 594703639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb54ea4f67dc17342bcd49954c53502d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DrawColliders: 0
-  DrawColliderEdges: 1
-  DrawColliderAabbs: 0
-  DrawMassProperties: 0
-  DrawBroadphase: 0
-  DrawContacts: 0
-  DrawCollisionEvents: 0
-  DrawTriggerEvents: 0
-  DrawJoints: 0
-  ColliderDisplayMode: 0
-  ColliderEdgesDisplayMode: 0
-  ColliderAabbDisplayMode: 0
 --- !u!1 &1006646394
 GameObject:
   m_ObjectHideFlags: 0
@@ -301,7 +276,7 @@ GameObject:
   - component: {fileID: 1238276653}
   - component: {fileID: 1238276652}
   m_Layer: 0
-  m_Name: Spawner
+  m_Name: MainCharacterSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -319,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c7e3ed5c0f34e9479a24b9a43a958ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6569234968048207877, guid: 2f9c545047a710143807b8df53b50d10, type: 3}
+  prefab: {fileID: 8304749839029204831, guid: 71d5fa7d6d386f8419b8426a1923b181, type: 3}
 --- !u!4 &1238276653
 Transform:
   m_ObjectHideFlags: 0
@@ -386,9 +361,9 @@ MonoBehaviour:
   - prefab: {fileID: 1514130636198565966, guid: 91398af4f1e7f0e458455ad21b358df5, type: 3}
     timeThresholds:
     - timeThreshold: 0
-      dropChance: 50
-    - timeThreshold: 5
       dropChance: 75
+    - timeThreshold: 5
+      dropChance: 85
     - timeThreshold: 10
       dropChance: 100
 --- !u!4 &1992735455

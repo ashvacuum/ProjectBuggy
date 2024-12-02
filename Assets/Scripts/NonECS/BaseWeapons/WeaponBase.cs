@@ -6,18 +6,8 @@ using UnityEngine.Serialization;
 
 namespace NonECS.BaseWeapons
 {
-    public class WeaponBase : ScriptableObject
+    public class WeaponBase : UnityEngine.ScriptableObject
     {
-        public float BaseLifetime = 5f;
-        public int BaseCount = 1;
-        public int BasePenetration = 0;
-        public float BaseSpeed = 10;
-        public float BaseFireRate = 3f;
-        public float WeaponSize = 1f;
-        public float BaseDamage = 1f;
-        public float BaseKnockback = 5f;
-        public float BaseRange = 500f;
-
         public List<UpgradeInfo> upgradeData = new List<UpgradeInfo>();
     }
 

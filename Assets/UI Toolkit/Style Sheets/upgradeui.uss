@@ -1,0 +1,46 @@
+.upgrade-container {
+    flex-grow: 1;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    padding: 20px;
+}
+
+.upgrade-button {
+    width: 200px;
+    height: 100px;
+    margin: 10px;
+    padding: 10px;
+    background-color: rgb(42, 42, 42);
+    border-width: 2px;
+    border-color: rgb(82, 82, 82);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.upgrade-button:hover {
+    background-color: rgb(62, 62, 62);
+    border-color: rgb(102, 102, 102);
+    scale: 1.05;
+}
+
+.upgrade-layout {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.upgrade-title {
+    -unity-font-style: bold;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    margin-bottom: 5px;
+}
+
+.upgrade-level {
+    font-size: 14px;
+    color: rgb(200, 200, 200);
+}

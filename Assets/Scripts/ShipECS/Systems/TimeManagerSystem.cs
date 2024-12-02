@@ -13,7 +13,7 @@ namespace ShipECS.Systems
             state.RequireForUpdate<TimeManagerComponent>();
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             var deltaTime = SystemAPI.Time.DeltaTime;

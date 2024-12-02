@@ -12,15 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a44acef1b232774982df2485eb3a96b, type: 3}
   m_Name: Projectile
   m_EditorClassIdentifier: 
-  BaseLifetime: 5
-  BaseCount: 2
-  BasePenetration: 1
-  BaseSpeed: 300
-  BaseFireRate: 0.4
-  WeaponSize: 1
-  BaseDamage: 5
-  BaseKnockback: 10
-  BaseRange: 500
   upgradeData:
   - UpgradeType: -1
     Lifetime: 5
@@ -29,17 +20,67 @@ MonoBehaviour:
     Speed: 300
     FireRate: 1
     WeaponSize: 1
-    Damage: 5
-    Knockback: 200
+    Damage: 7
+    Knockback: 150
     Range: 500
-  - UpgradeType: -1
-    Lifetime: 5
-    Count: 1
-    Penetration: 1
-    Speed: 300
-    FireRate: 1
-    WeaponSize: 1
-    Damage: 5
-    Knockback: 200
-    Range: 500
+  - UpgradeType: 328
+    Lifetime: 0
+    Count: 0
+    Penetration: 0
+    Speed: 450
+    FireRate: 0
+    WeaponSize: 0
+    Damage: 10
+    Knockback: 0
+    Range: 650
+  - UpgradeType: 52
+    Lifetime: 0
+    Count: 0
+    Penetration: 3
+    Speed: 0
+    FireRate: 0.9
+    WeaponSize: 2
+    Damage: 0
+    Knockback: 0
+    Range: 0
+  - UpgradeType: 82
+    Lifetime: 0
+    Count: 2
+    Penetration: 0
+    Speed: 0
+    FireRate: 0.8
+    WeaponSize: 0
+    Damage: 12
+    Knockback: 0
+    Range: 0
+  - UpgradeType: 392
+    Lifetime: 0
+    Count: 0
+    Penetration: 0
+    Speed: 700
+    FireRate: 0
+    WeaponSize: 0
+    Damage: 0
+    Knockback: 250
+    Range: 800
+  - UpgradeType: 66
+    Lifetime: 0
+    Count: 3
+    Penetration: 0
+    Speed: 0
+    FireRate: 0
+    WeaponSize: 0
+    Damage: 19
+    Knockback: 0
+    Range: 0
+  - UpgradeType: 504
+    Lifetime: 0
+    Count: 0
+    Penetration: 0
+    Speed: 600
+    FireRate: 0.6
+    WeaponSize: 3
+    Damage: 25
+    Knockback: 350
+    Range: 950
   ProjectilePrefab: {fileID: 6018007920840457554, guid: 1bf9ec01f3440bd4f8b56342576e0192, type: 3}

@@ -1,6 +1,8 @@
 using ShipECS.Systems;
 using Unity.Entities;
+using Unity.Entities.Graphics;
 using Unity.Mathematics;
+using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -26,7 +28,8 @@ namespace Authoring
                 {
                     Speed = authoring.speed,
                     RotationSpeed = authoring.rotationSpeed,
-                    FollowTargetLimits = authoring.targetRangeBounds
+                    FollowTargetLimits = authoring.targetRangeBounds,
+                    hasBeenRolledExp = false
                 });
                 AddComponent(entity, new DamageComponent()
                 {
@@ -56,7 +59,8 @@ namespace Authoring
         public float Speed;
         public float RotationSpeed;
         public float FollowTargetLimits;
-        
+        public bool hasBeenRolledExp;
+
     }
 
     public struct NewEnemySpawn : IComponentData { }

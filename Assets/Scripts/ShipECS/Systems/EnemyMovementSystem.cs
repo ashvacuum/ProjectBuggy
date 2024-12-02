@@ -31,8 +31,7 @@ namespace ShipECS.Systems
                 new FollowPlayerJob()
                 {
                     TargetLocation = playerTransform.ValueRO.Position,
-                    DeltaTime = SystemAPI.Time.DeltaTime,
-                    ElapsedTime = (float)SystemAPI.Time.ElapsedTime
+                    DeltaTime = SystemAPI.Time.DeltaTime
                 }.ScheduleParallel();
             }
         }
@@ -45,7 +44,6 @@ namespace ShipECS.Systems
     {
         public float3 TargetLocation;
         public float DeltaTime;
-        public float ElapsedTime;
 
         void Execute(ref LocalTransform shipTransform, ref KnockBackReceiver receiver, in EnemyFollowTarget followTarget, in PhysicsMass mass)
         {
