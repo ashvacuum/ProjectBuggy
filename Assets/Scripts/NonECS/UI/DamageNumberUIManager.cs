@@ -112,20 +112,17 @@ namespace NonECS.UI
         
         // Convert world position to screen position
         Vector3 screenPos = _mainCamera.WorldToScreenPoint(spawnPosition);
+        var CalculatedPosition =
+            RuntimePanelUtils.CameraTransformWorldToPanel(document.rootVisualElement.panel, damage.WorldPosition,
+                Camera.main);
+        CalculatedPosition += randomOffset;
+        
 
-        // Handle case when position is behind camera
-        if (screenPos.z < 0)
-            return;
-
-        // Convert screen position to panel space
-        Vector2 elementPos = RuntimePanelUtils.ScreenToPanel(
-            _rootElement.panel,
-            new Vector2(screenPos.x, Screen.height - screenPos.y)
-        );
+        
 
         // Position the element
-        container.style.left = elementPos.x - container.layout.width / 2;
-        container.style.top = elementPos.y - container.layout.height / 2;
+        container.style.left = CalculatedPosition.x - container.layout.width / 2;
+        container.style.top = CalculatedPosition.y - container.layout.height / 2;
 
         // Add scale animation
         container.style.scale = new StyleScale(new Scale(Vector3.one * 0.8f));
