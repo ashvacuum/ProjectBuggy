@@ -24,6 +24,7 @@ namespace NonECS.BaseWeapons
         public float Damage;
         public float Knockback;
         public float Range;
+        public float Critical;
     }
     
     public enum WeaponClass

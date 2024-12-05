@@ -5,6 +5,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.Content;
+using Unity.Jobs;
 using Unity.Physics;
 using Unity.Physics.Stateful;
 using Unity.Physics.Systems;
@@ -29,6 +30,7 @@ namespace ShipECS.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            
             _damage.Update(ref state);
             _health.Update(ref state);
 
@@ -48,11 +50,9 @@ namespace ShipECS.Systems
                     var damageComponent = _damage[entityA];
                     var healthA = _health[entityA];
                     if (healthB.CurrentHealth <= 0 || !(healthB.CurrentNextTimeToTakeDamage <= 0)) return;
-                    //healthA.CurrentHealth <= 0 || 
                     healthB.PreviousHealth = healthB.CurrentHealth;
                     healthB.CurrentHealth -= damageComponent.Damage;
                     healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
-                    //Debug.Log($"Entity B took Trigger {damageComponent.Damage}, total Health : {healthB.CurrentHealth}, {healthB.CurrentNextTimeToTakeDamage }");
                     _health[entityB] = healthB;
                     
                     healthA.CurrentHealth -= 1;
@@ -60,7 +60,6 @@ namespace ShipECS.Systems
                         healthA.CurrentHealth; //prevents damage system from computing any damage
 
                     healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
-                    //Debug.Log($"Entity A took Self Damage {1}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage }");
                     _health[entityA] = healthA;
 
 
@@ -85,10 +84,10 @@ namespace ShipECS.Systems
                     healthA.PreviousHealth = healthA.CurrentHealth;
                     healthA.CurrentHealth -= damageComponent.Damage;
                     healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
-                    //Debug.Log($"Entity A took Collision {damageComponent.Damage}, total Health : {healthA.CurrentHealth}, {healthA.CurrentNextTimeToTakeDamage }");
                     _health[entityA] = healthA;
                 }
             }
+            
         }
     }
 

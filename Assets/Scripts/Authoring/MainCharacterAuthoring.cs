@@ -36,6 +36,7 @@ namespace Authoring
         public float RangeBonus;
         public float ExpBonus;
         public float RadiusBonus;
+        public float CriticalBonus;
         [Space(10)]
         public ProjectileWeaponBase ProjectileStats; 
     
@@ -57,7 +58,8 @@ namespace Authoring
                     NextTimeToTakeDamage = authoring.NextTimeCanTakeDamage,
                     CurrentNextTimeToTakeDamage = 0,
                     CurrentHealth = authoring.MaxHealth,
-                    PreviousHealth = authoring.MaxHealth
+                    PreviousHealth = authoring.MaxHealth,
+                    WasDamagedCritical = false
                 });
                 AddComponent(entity, new PickupRadiusComponent()
                 {
@@ -132,6 +134,7 @@ namespace Authoring
         public float PreviousHealth;
         public float NextTimeToTakeDamage;
         public float CurrentNextTimeToTakeDamage;
+        public bool WasDamagedCritical;
 
         public float HealthPercent => CurrentHealth / MaxHealth * 100;
     }
@@ -142,10 +145,12 @@ namespace Authoring
         public float PickupRadiusBonus; //add to this value over time but starts at 0;
         public float TotalPickupRadius => BasePickupRadius + (PickupRadiusBonus/100 * PickupRadiusBonus);
     }
+    
 
     public struct DamageComponent : IComponentData
     {
         public float Damage;
+        public float CriticalChance;
     }
     
     /// <summary>
@@ -162,5 +167,6 @@ namespace Authoring
         public float FireRateReductionBonus;
         public float RangeBonus;
         public float KnockbackBonus;
+        public float CriticalBonus;
     }
 }

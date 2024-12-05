@@ -39,7 +39,8 @@ namespace ShipECS.Systems
                     var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
-                        Damage = projectile.TotalDamage
+                        Damage = projectile.TotalDamage,
+                        CriticalChance = projectile.TotalCritical
                     });
                     
                     var targetPos = enemyTargetBuffers[i].Position;
@@ -98,6 +99,8 @@ namespace ShipECS.Systems
         public float TotalSpeed => _projectile.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _projectile.ValueRO.BaseSpeed;
         public float TotalKnockback => _projectile.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _projectile.ValueRO.BaseKnockback;
         public float3 Position => _transform.ValueRO.Position;
+
+        public float TotalCritical => _projectile.ValueRO.BaseCritical + (_bonusStats.ValueRO.CriticalBonus / 100f * _projectile.ValueRO.BaseCritical);
         
         public float CurrentFireRate
         {
@@ -118,6 +121,7 @@ namespace ShipECS.Systems
         public float BaseLifeTime;
         public float BaseSpeed;
         public float BaseKnockback;
+        public float BaseCritical;
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
     }
 }

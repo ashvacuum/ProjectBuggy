@@ -56,7 +56,7 @@ namespace ShipECS.Systems
 
             var expToNextLevel = 100 + 10 * (currentLevel - 1);
             var computedExpAmountDeducted = totalAccumulatedExpDuringLevel - TotalExperience;
-            Debug.Log($"{computedExpAmountDeducted}/{expToNextLevel} {TotalExperience} - {totalAccumulatedExpDuringLevel} {currentLevel}");
+            //Debug.Log($"{computedExpAmountDeducted}/{expToNextLevel} {TotalExperience} - {totalAccumulatedExpDuringLevel} {currentLevel}");
             return computedExpAmountDeducted/expToNextLevel;
         }
 
