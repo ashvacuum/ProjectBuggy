@@ -62,7 +62,7 @@ namespace ShipECS.Systems
                 if (state.EntityManager.HasComponent<RenderFilterSettings>(entity))
                 {
                     var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(entity);
-                    renderSettings.Layer = 0; // Hardcoded to layer 3, adjust as needed
+                    renderSettings.Layer = 0; // Hardcoded to layer 0, adjust as needed
                     ecb.SetSharedComponent(entity, renderSettings);
                 }
 

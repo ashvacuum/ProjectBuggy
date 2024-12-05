@@ -1,6 +1,7 @@
 using Authoring;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.Graphics;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
@@ -22,6 +23,8 @@ namespace ShipECS.Systems
             var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
 
             var enemyTargetBuffers = SystemAPI.GetSingletonBuffer<EnemyTargetPoints>();
+            
+            
             
             foreach (var projectile in SystemAPI.Query<ProjectileFiringAspect>())
             {
@@ -78,6 +81,8 @@ namespace ShipECS.Systems
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
+        
+        
     }
 
     public readonly partial struct ProjectileFiringAspect : IAspect

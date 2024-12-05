@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 2190746115006430570}
   - component: {fileID: 8053219744619356175}
   - component: {fileID: 453978465160928140}
-  - component: {fileID: 7368109257157206771}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Turbine.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -88,19 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7368109257157206771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3047227271584277197}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 325621f6b63ca3349b6aeb23a63400c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Class: 1
 --- !u!1 &5109003408130662860
 GameObject:
   m_ObjectHideFlags: 0
@@ -112,7 +98,7 @@ GameObject:
   - component: {fileID: 1231488454151114220}
   - component: {fileID: 2172583666459438684}
   - component: {fileID: 6638198138648804107}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: jet.014
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -201,7 +187,7 @@ GameObject:
   - component: {fileID: 1952201959638075611}
   - component: {fileID: 8880163335049526486}
   - component: {fileID: -4862502507685996296}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: RocketProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
