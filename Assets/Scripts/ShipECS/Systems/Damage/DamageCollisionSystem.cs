@@ -1,19 +1,16 @@
 using Authoring;
-using Authoring.Projectiles;
-using NonECS.BaseWeapons;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.Content;
-using Unity.Jobs;
 using Unity.Physics;
 using Unity.Physics.Stateful;
-using Unity.Physics.Systems;
 using UnityEngine;
-
-namespace ShipECS.Systems
+using Random = Unity.Mathematics.Random;
+namespace ShipECS.Systems.Damage
 {
-    
+    public class DamageConstants
+    {
+        public const float CritMultiplier = 1.5f;
+    }
     [UpdateInGroup(typeof(PostPhysicsPausableSystemGroup))]
     public partial struct DamageCollisionSystem : ISystem
     {
@@ -49,9 +46,25 @@ namespace ShipECS.Systems
                     var healthB = _health[entityB];
                     var damageComponent = _damage[entityA];
                     var healthA = _health[entityA];
+
+                    var random = Random.CreateFromIndex((uint)SystemAPI.Time.ElapsedTime * 1000);
                     if (healthB.CurrentHealth <= 0 || !(healthB.CurrentNextTimeToTakeDamage <= 0)) return;
                     healthB.PreviousHealth = healthB.CurrentHealth;
                     healthB.CurrentHealth -= damageComponent.Damage;
+                    var rolledChance = random.NextFloat(0, 100);
+                    
+                    if (damageComponent.CriticalChance > 0 && rolledChance < damageComponent.CriticalChance)
+                    {
+                        Debug.Log($"Rolled {rolledChance}/{damageComponent.CriticalChance} ");
+                        healthB.CurrentHealth -= damageComponent.Damage * DamageConstants.CritMultiplier;
+                        healthB.WasDamagedCritical = true;
+                    }
+                    else
+                    {
+                        healthB.CurrentHealth -= damageComponent.Damage;
+                        healthB.WasDamagedCritical = false;
+                    }
+                    
                     healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
                     _health[entityB] = healthB;
                     

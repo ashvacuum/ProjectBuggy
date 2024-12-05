@@ -44,7 +44,8 @@ namespace NonECS.BaseWeapons
         Size = 1 << 5,
         Damage = 1 << 6,
         Knockback = 1 << 7,
-        Range = 1 << 8
+        Range = 1 << 8,
+        Critical = 1 << 9
     }
 
     public struct ProjectileTag : IComponentData { }

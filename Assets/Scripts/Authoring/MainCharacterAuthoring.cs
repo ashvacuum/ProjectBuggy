@@ -77,7 +77,8 @@ namespace Authoring
                     SizeBonus = authoring.SizeBonus,
                     KnockbackBonus = authoring.KnockbackBonus,
                     RangeBonus = authoring.RangeBonus,
-                    FireRateReductionBonus = authoring.FireRateReductionBonus
+                    FireRateReductionBonus = authoring.FireRateReductionBonus,
+                    CriticalBonus = authoring.CriticalBonus
                 });
                 var stats = authoring.ProjectileStats;
                 AddComponent(entity, new ProjectileAttack()
@@ -91,7 +92,8 @@ namespace Authoring
                     BaseSpeed = stats.upgradeData[0].Speed,
                     CurrentFireRate = 0,
                     BaseKnockback = stats.upgradeData[0].Knockback,
-                    BaseRange = stats.upgradeData[0].Range
+                    BaseRange = stats.upgradeData[0].Range,
+                    BaseCritical = stats.upgradeData[0].Critical
                 });
                 AddComponent(entity, new CharacterData
                 {

@@ -26,7 +26,7 @@ namespace ShipECS.Systems
             var current = GetCurrentLevel();
             TotalExperience += inExp + (BonusExperience / 100 * inExp);
             var newLevel = GetCurrentLevel();
-            Debug.Log($"New Level Detected {current} {newLevel} {TotalExperience}");
+            //Debug.Log($"New Level Detected {current} {newLevel} {TotalExperience}");
             return current != newLevel;
         }
 
@@ -98,7 +98,7 @@ namespace ShipECS.Systems
             {
                 foreach (var buffer in experienceBuffers)
                 {
-                    Debug.Log($"Adding Exp: {buffer.Experience}");
+                    //Debug.Log($"Adding Exp: {buffer.Experience}");
                     if (expContainer.ValueRW.AddExperience(buffer.Experience))
                     {
                         levelUp.Add(new LevelUpBuffer());

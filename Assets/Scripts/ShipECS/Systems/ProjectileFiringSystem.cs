@@ -99,7 +99,6 @@ namespace ShipECS.Systems
         public float TotalSpeed => _projectile.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _projectile.ValueRO.BaseSpeed;
         public float TotalKnockback => _projectile.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _projectile.ValueRO.BaseKnockback;
         public float3 Position => _transform.ValueRO.Position;
-
         public float TotalCritical => _projectile.ValueRO.BaseCritical + (_bonusStats.ValueRO.CriticalBonus / 100f * _projectile.ValueRO.BaseCritical);
         
         public float CurrentFireRate

@@ -49,7 +49,7 @@ namespace ShipECS.Systems
                         
                         var lootEntity = ecb.Instantiate(lootTable[i].prefab);
                         ecb.SetComponent(lootEntity, LocalTransform.FromPosition(transform.ValueRO.Position));
-                        Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
+                        //Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
                         break;
                     }
                 }

@@ -23,7 +23,8 @@ namespace NonECS.ScriptableObjects
         ExpBonus = 9,
         RadiusBonus = 10,
         MaxHealth = 11,
-        PenetrationBonus = 12
+        PenetrationBonus = 12,
+        CriticalBonus = 13
     }
     [Serializable]
     public class UpgradeInfo

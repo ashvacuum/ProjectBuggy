@@ -43,7 +43,7 @@ namespace ShipECS.Systems
                         
                         if (hasExpBuffers)
                         {
-                            Debug.Log($"Adding XP Buffer {scrap.ValueRO.ScrapToGive}");
+                            //Debug.Log($"Adding XP Buffer {scrap.ValueRO.ScrapToGive}");
                             ecb.AppendToBuffer(target, new ExperienceBuffer()
                             {
                                 Experience = scrap.ValueRO.ScrapToGive

@@ -1,8 +1,5 @@
-using NonECS.UI;
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using UnityEngine;
 
 namespace ShipECS.Systems
 {

@@ -13,6 +13,7 @@ namespace NonECS.UI
     {
         public float DamageAmount;
         public float3 WorldPosition;
+        public bool IsCritical;
     }
 
     // UI Manager MonoBehaviour
@@ -107,6 +108,13 @@ namespace NonECS.UI
         VisualElement container = damageInstance.Q<VisualElement>("damage-container");
         Label damageText = damageInstance.Q<Label>("damage-text");
         
+        if (damage.IsCritical)
+        {
+            Debug.Log("Critical Detected");
+            damageText.AddToClassList("critical-damage-text");
+            damageText.style.color = Color.red;
+            damageText.style.fontSize = 23f;
+        }
         // Set the damage text
         damageText.text = damage.DamageAmount.ToString("F0");  // Removed decimal places
         

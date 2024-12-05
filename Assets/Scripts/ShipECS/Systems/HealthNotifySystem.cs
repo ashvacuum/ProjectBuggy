@@ -41,11 +41,14 @@ namespace ShipECS.Systems
                         dmgBuffer.Add(new DamageNumberRequest()
                         {
                             DamageAmount = difference,
-                            WorldPosition = transform.ValueRO.Position
+                            WorldPosition = transform.ValueRO.Position,
+                            IsCritical = health.ValueRO.WasDamagedCritical
+                            
                         });
                     }
                 }
 
+                health.ValueRW.WasDamagedCritical = false;
                 health.ValueRW.PreviousHealth = health.ValueRO.CurrentHealth;
 
                 
