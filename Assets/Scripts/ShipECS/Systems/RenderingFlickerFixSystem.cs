@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.Graphics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems
 {
@@ -35,12 +36,13 @@ namespace ShipECS.Systems
                     var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(entity);
                     renderSettings.Layer = 0; // Hardcoded to layer 0, adjust as needed
                     ecb.SetSharedComponent(entity, renderSettings);
+                    Debug.Log("Resetting Entity Render Settings");
                 }
-
+                
                 // Recursively change layers for all nested children
                 ChangeLayerRecursivelyDeep(ref state, ecb, entity, 0);
                 
-
+                
                 // Remove the NewEnemySpawn tag
                 ecb.RemoveComponent<NewSpawnRenderInvisibleTag>(entity);
             }
@@ -60,6 +62,7 @@ namespace ShipECS.Systems
                     var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(childEntity);
                     renderSettings.Layer = newRenderLayer;
                     ecb.SetSharedComponent(childEntity, renderSettings);
+                    Debug.Log("Resetting Entity Render Settings");
                 }
 
                 // Recursively process THIS child's children (key difference)

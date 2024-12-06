@@ -8,7 +8,7 @@ namespace Authoring
     public class ScrapAuthoringComponent : MonoBehaviour
     {
         public float TimeToReachTarget = .5f;
-        public float ScrapToGive = 1f;
+        public float ScrapToGive = 1f;  
     
         class Baker : Baker<ScrapAuthoringComponent>
         {
