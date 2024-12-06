@@ -1,3 +1,4 @@
+using Authoring.Projectiles;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Authoring
                     ScrapToGive = authoring.ScrapToGive
                 });
                 AddComponent<LocalTransform>(entity);
+                AddComponent<NewSpawnRenderInvisibleTag>(entity);
             }
         }
     }

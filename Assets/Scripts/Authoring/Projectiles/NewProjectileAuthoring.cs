@@ -17,13 +17,13 @@ namespace Authoring.Projectiles
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent<ProjectileTag>(entity);
                 AddComponent<ProjectileMotion>(entity);
-                AddComponent<NewSpawnProjectile>(entity);
+                AddComponent<NewSpawnRenderInvisibleTag>(entity);
                 AddBuffer<StatefulTriggerEvent>(entity);
             }
         }
     }
 
-    public struct NewSpawnProjectile : IComponentData
+    public struct NewSpawnRenderInvisibleTag : IComponentData
     {
     };
 }

@@ -130,6 +130,7 @@ namespace ShipECS.Systems
     }
 
     [WithAll(typeof(NewEnemySpawn))]
+    [WithNone(typeof(DeadComponentTag))]
     [BurstCompile]
     partial struct RandomPositionJob : IJobEntity
     {

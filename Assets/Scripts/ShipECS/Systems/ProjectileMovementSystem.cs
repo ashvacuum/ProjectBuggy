@@ -17,31 +17,15 @@ namespace ShipECS.Systems
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<ProjectileMotion>();
-            _query = state.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NewSpawnProjectile>(), ComponentType.Exclude<DeadComponentTag>());
+            _query = state.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NewSpawnRenderInvisibleTag>(), ComponentType.Exclude<DeadComponentTag>());
         }
 
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            //TODO: replace with an entity query
-            foreach (var entity in _query.ToEntityArray(Allocator.Temp))
-            {
-                if (state.EntityManager.HasComponent<RenderFilterSettings>(entity))
-                {
-                    var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(entity);
-                    renderSettings.Layer = 0; // Hardcoded to layer 0, adjust as needed
-                    ecb.SetSharedComponent(entity, renderSettings);
-                }
-
-                // Recursively change layers for all nested children
-                ChangeLayerRecursivelyDeep(ref state, ecb, entity, 0);
-                
-
-                // Remove the NewEnemySpawn tag
-                ecb.RemoveComponent<NewSpawnProjectile>(entity);
-            }
             
-            foreach (var (projectile,entity) in SystemAPI.Query<ProjectileAspect>().WithNone<DeadComponentTag, NewSpawnProjectile>().WithEntityAccess())
+            
+            foreach (var (projectile,entity) in SystemAPI.Query<ProjectileAspect>().WithNone<DeadComponentTag, NewSpawnRenderInvisibleTag>().WithEntityAccess())
             {
                 if (!projectile.IsAlive)
                 {
