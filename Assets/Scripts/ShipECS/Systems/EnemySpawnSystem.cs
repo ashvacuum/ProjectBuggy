@@ -57,21 +57,8 @@ namespace ShipECS.Systems
             foreach (var (spawn, children, entity) in
                      SystemAPI.Query<RefRO<NewEnemySpawn>, DynamicBuffer<Child>>()
                          .WithEntityAccess())
-            {
-                // Change layer for the root entity
-                if (state.EntityManager.HasComponent<RenderFilterSettings>(entity))
-                {
-                    var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(entity);
-                    renderSettings.Layer = 0; // Hardcoded to layer 0, adjust as needed
-                    ecb.SetSharedComponent(entity, renderSettings);
-                }
-
-                // Recursively change layers for all nested children
-                ChangeLayerRecursivelyDeep(ref state, ecb, entity, 0);
-                
-
-                // Remove the NewEnemySpawn tag
-                ecb.RemoveComponent<NewEnemySpawn>(entity);
+            { // Change layer for the root entity
+                RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewEnemySpawn>(ref state, entity, ecb);
             }
             
             var totalCount = 0;
@@ -105,6 +92,8 @@ namespace ShipECS.Systems
             }
 
         }
+
+        
 
         private void ChangeLayerRecursivelyDeep(ref SystemState state, EntityCommandBuffer ecb, Entity currentEntity, int newRenderLayer)
         {

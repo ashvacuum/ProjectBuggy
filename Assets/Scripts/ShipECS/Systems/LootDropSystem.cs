@@ -1,4 +1,5 @@
 using Authoring;
+using Authoring.Projectiles;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -25,6 +26,13 @@ namespace ShipECS.Systems
             
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             // Process entities with dead tag
+            
+            foreach (var (_,scrap, e) in SystemAPI.Query<RefRO<NewSpawnRenderInvisibleTag>, RefRO<ScrapComponent>>().WithEntityAccess().WithNone<DeadComponentTag>())
+            {
+                RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, e, ecb);
+            }
+            
+            
             foreach (var (_, transform) in 
                      SystemAPI.Query<RefRO<DeadComponentTag>, RefRO<LocalTransform>>()
                          .WithNone<PlayerTag,ProjectileMotion>())
@@ -50,6 +58,7 @@ namespace ShipECS.Systems
                         var lootEntity = ecb.Instantiate(lootTable[i].prefab);
                         ecb.SetComponent(lootEntity, LocalTransform.FromPosition(transform.ValueRO.Position));
                         //Debug.Log($"Success Chance: {rolledChance} <= {currentChance}");
+                        
                         break;
                     }
                 }

@@ -350,8 +350,19 @@ namespace NonECS.UI
                         }
 
                         break;
+                    
+                    case UpgradeType.CriticalBonus:
+                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        {
+                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            bonusStats.CriticalBonus = value;
+                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                        }
 
+                        break;
                     default:
+                        
+                        
                         throw new ArgumentException($"Unsupported upgrade type: {upgradeType}");
                 }
             }

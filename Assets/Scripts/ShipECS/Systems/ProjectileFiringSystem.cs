@@ -1,4 +1,5 @@
 using Authoring;
+using Authoring.Projectiles;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.Graphics;
@@ -23,6 +24,13 @@ namespace ShipECS.Systems
             var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
 
             var enemyTargetBuffers = SystemAPI.GetSingletonBuffer<EnemyTargetPoints>();
+
+            foreach (var contents in SystemAPI.Query<RefRO<ProjectileMotion>, RefRO<NewSpawnRenderInvisibleTag>>().WithEntityAccess()
+                         .WithNone<DeadComponentTag>())
+            {
+                Debug.Log("Fixing Flicker issue");
+                RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, contents.Item3, ecb);
+            }
             
             
             
@@ -73,6 +81,8 @@ namespace ShipECS.Systems
                     {
                         knockbackForceToSend = projectile.TotalKnockback
                     });
+                    
+                    //RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, instance, ecb);
 
                 }
 
