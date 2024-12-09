@@ -1,3 +1,4 @@
+using Authoring.Projectiles;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace Authoring
     public class ScrapAuthoringComponent : MonoBehaviour
     {
         public float TimeToReachTarget = .5f;
-        public float ScrapToGive = 1f;
+        public float ScrapToGive = 1f;  
     
         class Baker : Baker<ScrapAuthoringComponent>
         {
@@ -22,6 +23,7 @@ namespace Authoring
                     ScrapToGive = authoring.ScrapToGive
                 });
                 AddComponent<LocalTransform>(entity);
+                AddComponent<NewSpawnRenderInvisibleTag>(entity);
             }
         }
     }

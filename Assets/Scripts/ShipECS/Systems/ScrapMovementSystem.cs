@@ -1,4 +1,5 @@
 using Authoring;
+using Authoring.Projectiles;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -10,6 +11,8 @@ namespace ShipECS.Systems
     [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct ScrapMovementSystem : ISystem
     {
+        private EntityQuery _query;
+
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PlayerTag>();
@@ -24,7 +27,7 @@ namespace ShipECS.Systems
             foreach (var (targetTransform, pickupRadius, target) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<PickupRadiusComponent>>().WithAll<PlayerTag>().WithEntityAccess())
             {
                 foreach (var (scrap, transform, entity) in SystemAPI
-                             .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag>())
+                             .Query<RefRW<ScrapComponent>, RefRW<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag, NewSpawnRenderInvisibleTag>())
                 {
                     // dont move if the player is not nearby or if the scrap is not yet picked up by the player
 
@@ -43,7 +46,7 @@ namespace ShipECS.Systems
                         
                         if (hasExpBuffers)
                         {
-                            Debug.Log($"Adding XP Buffer {scrap.ValueRO.ScrapToGive}");
+                            //Debug.Log($"Adding XP Buffer {scrap.ValueRO.ScrapToGive}");
                             ecb.AppendToBuffer(target, new ExperienceBuffer()
                             {
                                 Experience = scrap.ValueRO.ScrapToGive

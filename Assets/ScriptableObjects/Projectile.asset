@@ -23,6 +23,7 @@ MonoBehaviour:
     Damage: 7
     Knockback: 150
     Range: 500
+    Critical: 5
   - UpgradeType: 328
     Lifetime: 0
     Count: 0
@@ -33,7 +34,8 @@ MonoBehaviour:
     Damage: 10
     Knockback: 0
     Range: 650
-  - UpgradeType: 52
+    Critical: 0
+  - UpgradeType: 564
     Lifetime: 0
     Count: 0
     Penetration: 3
@@ -43,6 +45,7 @@ MonoBehaviour:
     Damage: 0
     Knockback: 0
     Range: 0
+    Critical: 15
   - UpgradeType: 82
     Lifetime: 0
     Count: 2
@@ -53,6 +56,7 @@ MonoBehaviour:
     Damage: 12
     Knockback: 0
     Range: 0
+    Critical: 0
   - UpgradeType: 392
     Lifetime: 0
     Count: 0
@@ -63,6 +67,7 @@ MonoBehaviour:
     Damage: 0
     Knockback: 250
     Range: 800
+    Critical: 0
   - UpgradeType: 66
     Lifetime: 0
     Count: 3
@@ -73,7 +78,8 @@ MonoBehaviour:
     Damage: 19
     Knockback: 0
     Range: 0
-  - UpgradeType: 504
+    Critical: 0
+  - UpgradeType: 1016
     Lifetime: 0
     Count: 0
     Penetration: 0
@@ -83,4 +89,5 @@ MonoBehaviour:
     Damage: 25
     Knockback: 350
     Range: 950
+    Critical: 30
   ProjectilePrefab: {fileID: 6018007920840457554, guid: 1bf9ec01f3440bd4f8b56342576e0192, type: 3}

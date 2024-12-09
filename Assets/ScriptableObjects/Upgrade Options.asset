@@ -150,3 +150,17 @@ MonoBehaviour:
     - 6
     - 7
     - 8
+  - UpgradeType: 13
+    UpgradeChance: 5
+    UpgradeLevels:
+    - 10
+    - 15
+    - 20
+    - 25
+    - 30
+    - 40
+    - 50
+    - 65
+    - 80
+    - 95
+    - 120

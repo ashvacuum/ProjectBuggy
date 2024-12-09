@@ -19,6 +19,7 @@ namespace NonECS.UI
         private Label _levelLabel;
         private EntityManager _entityManager;
         private Entity _targetEntity;
+        private float yOffsetHealthBar = 50;
 
         void Start()
         {
@@ -55,13 +56,17 @@ namespace NonECS.UI
 
             if (Camera.main == null) return;
             var screenPosition = Camera.main.WorldToScreenPoint(entityPosition);
-
+            
             var uiPosition = new Vector2(screenPosition.x, Screen.height - screenPosition.y);
 
             if (_healthBar == null) return;
+            var panelPos =
+                RuntimePanelUtils.CameraTransformWorldToPanel(_document.rootVisualElement.panel, entityPosition,
+                    Camera.main);
+           
+           _healthBar.style.left = panelPos.x - _healthBar.resolvedStyle.width * .5f;
+           _healthBar.style.top = panelPos.y + yOffsetHealthBar;
 
-            _healthBar.style.left = uiPosition.x - _healthBar.resolvedStyle.width / 2;
-            _healthBar.style.top = uiPosition.y;
         }
 
         private void UpdateHealth()

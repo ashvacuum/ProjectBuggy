@@ -13,6 +13,7 @@ namespace NonECS.UI
     {
         public float DamageAmount;
         public float3 WorldPosition;
+        public bool IsCritical;
     }
 
     // UI Manager MonoBehaviour
@@ -107,25 +108,29 @@ namespace NonECS.UI
         VisualElement container = damageInstance.Q<VisualElement>("damage-container");
         Label damageText = damageInstance.Q<Label>("damage-text");
         
+        if (damage.IsCritical)
+        {
+            Debug.Log("Critical Detected");
+            damageText.AddToClassList("critical-damage-text");
+            damageText.style.color = Color.red;
+            damageText.style.fontSize = 23f;
+        }
         // Set the damage text
         damageText.text = damage.DamageAmount.ToString("F0");  // Removed decimal places
         
         // Convert world position to screen position
         Vector3 screenPos = _mainCamera.WorldToScreenPoint(spawnPosition);
+        var CalculatedPosition =
+            RuntimePanelUtils.CameraTransformWorldToPanel(document.rootVisualElement.panel, damage.WorldPosition,
+                Camera.main);
+        CalculatedPosition += randomOffset;
+        
 
-        // Handle case when position is behind camera
-        if (screenPos.z < 0)
-            return;
-
-        // Convert screen position to panel space
-        Vector2 elementPos = RuntimePanelUtils.ScreenToPanel(
-            _rootElement.panel,
-            new Vector2(screenPos.x, Screen.height - screenPos.y)
-        );
+        
 
         // Position the element
-        container.style.left = elementPos.x - container.layout.width / 2;
-        container.style.top = elementPos.y - container.layout.height / 2;
+        container.style.left = CalculatedPosition.x - container.layout.width / 2;
+        container.style.top = CalculatedPosition.y - container.layout.height / 2;
 
         // Add scale animation
         container.style.scale = new StyleScale(new Scale(Vector3.one * 0.8f));

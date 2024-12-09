@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1701644771307529815}
   - component: {fileID: 4996033458804692583}
   - component: {fileID: 1316033009584761869}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Rare Scrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,4 +101,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TimeToReachTarget: 2
-  ScrapToGive: 100
+  ScrapToGive: 30

@@ -1,6 +1,8 @@
 using Authoring;
+using Authoring.Projectiles;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.Graphics;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
@@ -22,6 +24,15 @@ namespace ShipECS.Systems
             var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
 
             var enemyTargetBuffers = SystemAPI.GetSingletonBuffer<EnemyTargetPoints>();
+
+            foreach (var contents in SystemAPI.Query<RefRO<ProjectileMotion>, RefRO<NewSpawnRenderInvisibleTag>>().WithEntityAccess()
+                         .WithNone<DeadComponentTag>())
+            {
+                Debug.Log("Fixing Flicker issue");
+                RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, contents.Item3, ecb);
+            }
+            
+            
             
             foreach (var projectile in SystemAPI.Query<ProjectileFiringAspect>())
             {
@@ -39,7 +50,8 @@ namespace ShipECS.Systems
                     var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
-                        Damage = projectile.TotalDamage
+                        Damage = projectile.TotalDamage,
+                        CriticalChance = projectile.TotalCritical
                     });
                     
                     var targetPos = enemyTargetBuffers[i].Position;
@@ -69,6 +81,8 @@ namespace ShipECS.Systems
                     {
                         knockbackForceToSend = projectile.TotalKnockback
                     });
+                    
+                    //RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, instance, ecb);
 
                 }
 
@@ -77,6 +91,8 @@ namespace ShipECS.Systems
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
+        
+        
     }
 
     public readonly partial struct ProjectileFiringAspect : IAspect
@@ -98,6 +114,7 @@ namespace ShipECS.Systems
         public float TotalSpeed => _projectile.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _projectile.ValueRO.BaseSpeed;
         public float TotalKnockback => _projectile.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _projectile.ValueRO.BaseKnockback;
         public float3 Position => _transform.ValueRO.Position;
+        public float TotalCritical => _projectile.ValueRO.BaseCritical + (_bonusStats.ValueRO.CriticalBonus / 100f * _projectile.ValueRO.BaseCritical);
         
         public float CurrentFireRate
         {
@@ -118,6 +135,7 @@ namespace ShipECS.Systems
         public float BaseLifeTime;
         public float BaseSpeed;
         public float BaseKnockback;
+        public float BaseCritical;
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
     }
 }

@@ -1,6 +1,8 @@
 using Authoring;
+using Authoring.Projectiles;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.Graphics;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
@@ -10,14 +12,20 @@ namespace ShipECS.Systems
     [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct ProjectileMovementSystem : ISystem
     {
+        private EntityQuery _query;
+
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<ProjectileMotion>();
+            _query = state.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NewSpawnRenderInvisibleTag>(), ComponentType.Exclude<DeadComponentTag>());
         }
+
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var (projectile,entity) in SystemAPI.Query<ProjectileAspect>().WithNone<DeadComponentTag>().WithEntityAccess())
+            
+            
+            foreach (var (projectile,entity) in SystemAPI.Query<ProjectileAspect>().WithNone<DeadComponentTag, NewSpawnRenderInvisibleTag>().WithEntityAccess())
             {
                 if (!projectile.IsAlive)
                 {
@@ -35,6 +43,28 @@ namespace ShipECS.Systems
             
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
+        }
+        
+        private void ChangeLayerRecursivelyDeep(ref SystemState state, EntityCommandBuffer ecb, Entity currentEntity, int newRenderLayer)
+        {
+            if (!state.EntityManager.HasBuffer<Child>(currentEntity)) return;
+            var children = state.EntityManager.GetBuffer<Child>(currentEntity);
+            for (int i = 0; i < children.Length; i++)
+            {
+                Entity childEntity = children[i].Value;
+
+                // Change render layer for this child
+                if (state.EntityManager.HasComponent<RenderFilterSettings>(childEntity))
+                {
+                    var renderSettings = state.EntityManager.GetSharedComponent<RenderFilterSettings>(childEntity);
+                    renderSettings.Layer = newRenderLayer;
+                    ecb.SetSharedComponent(childEntity, renderSettings);
+                }
+
+                // Recursively process THIS child's children (key difference)
+                // This ensures we go as deep as the hierarchy goes
+                ChangeLayerRecursivelyDeep(ref state, ecb, childEntity, newRenderLayer);
+            }
         }
     }
 

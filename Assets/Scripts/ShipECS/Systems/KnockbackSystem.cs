@@ -25,7 +25,7 @@ namespace ShipECS.Systems
     }
 
     [UpdateInGroup(typeof(PostPhysicsPausableSystemGroup))]
-    [UpdateAfter(typeof(DamageCollisionSystem))]
+    [UpdateAfter(typeof(Damage.DamageCollisionSystem))]
     public partial struct KnockBackSystem : ISystem
     {
         [BurstCompile]

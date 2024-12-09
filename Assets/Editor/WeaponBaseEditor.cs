@@ -47,6 +47,7 @@ namespace Editor
                 var damage = data.FindPropertyRelative("Damage");
                 var knockBack = data.FindPropertyRelative("Knockback");
                 var range = data.FindPropertyRelative("Range");
+                var critical = data.FindPropertyRelative("Critical");
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PropertyField(upgradeType, new GUIContent($"{i}"));
@@ -103,6 +104,11 @@ namespace Editor
                 {
                     EditorGUILayout.PropertyField(range);
                 }
+                
+                if (currentTypes.HasFlag(WeaponUpgradeType.Critical))
+                {
+                    EditorGUILayout.PropertyField(critical);
+                }   
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.Space();

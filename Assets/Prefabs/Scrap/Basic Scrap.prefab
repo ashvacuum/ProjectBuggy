@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5184824739888916153}
   - component: {fileID: 423444738391477845}
   - component: {fileID: 2004746646542581273}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Basic Scrap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,4 +101,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TimeToReachTarget: 2
-  ScrapToGive: 100
+  ScrapToGive: 1
