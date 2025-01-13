@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Authoring.Projectiles;
 using NonECS.BaseWeapons;
 using ShipECS.Systems;
 using Unity.Collections;
@@ -11,26 +12,33 @@ namespace Authoring
 {
     public class ProjectileSpawnerAuthoring : MonoBehaviour
     {
-        [SerializeField] private GameObject projectile;
+        [SerializeField] private NewProjectileAuthoring[] projectile;
 
         class Baker : Baker<ProjectileSpawnerAuthoring>
         {
             public override void Bake(ProjectileSpawnerAuthoring authoring)
             {
                 var spawnerEntity = GetEntity(TransformUsageFlags.None);
-                AddComponent(spawnerEntity, new ProjectileSpawnerComponent()
+                var weapons = AddBuffer<ProjectileSpawnerComponent>(spawnerEntity);
+                foreach (var projectile in authoring.projectile)
                 {
-                    ProjectileToSpawn = GetEntity(authoring.projectile, TransformUsageFlags.Dynamic)
-                });
+                    weapons.Add(new ProjectileSpawnerComponent()
+                    {
+                        ProjectileToSpawn = GetEntity(projectile.gameObject, TransformUsageFlags.Dynamic),
+                        Class = projectile.Class
+                    });
+                }
+                
             }
         }
 
 
     }
     
-    public struct ProjectileSpawnerComponent : IComponentData
+    public struct ProjectileSpawnerComponent : IBufferElementData
     {
         public Entity ProjectileToSpawn;
+        public WeaponClass Class;
     }
 
 

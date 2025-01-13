@@ -15,10 +15,20 @@ namespace Authoring.Projectiles
             public override void Bake(NewProjectileAuthoring authoring)
             {
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
-                AddComponent<ProjectileTag>(entity);
-                AddComponent<ProjectileMotion>(entity);
+                switch (authoring.Class)
+                {
+                    case WeaponClass.Projectile:
+                        
+                        AddComponent<ProjectileTag>(entity);
+                        AddComponent<ProjectileMotion>(entity);
+                        AddBuffer<StatefulTriggerEvent>(entity);
+                        break;
+                    case WeaponClass.Artillery:
+                        //add motion and artillery tag
+                        break;
+                };
                 AddComponent<NewSpawnRenderInvisibleTag>(entity);
-                AddBuffer<StatefulTriggerEvent>(entity);
+                
             }
         }
     }

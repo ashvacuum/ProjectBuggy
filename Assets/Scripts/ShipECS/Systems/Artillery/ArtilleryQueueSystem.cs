@@ -16,8 +16,6 @@ namespace ShipECS.Systems.Artillery
         private int _artilleryLeftToFire;
         private EntityQuery _playerQuery;
 
-
-        [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             _queueDelay = .1f;
@@ -65,6 +63,7 @@ namespace ShipECS.Systems.Artillery
     
     //an item in this existing means that there is an artillery item that should be fired by the firing system
     public struct ArtilleryQueue : IBufferElementData { }
+    
     public struct ArtilleryAttack  : IComponentData
     {
         public float BaseFireRate;
@@ -111,7 +110,7 @@ namespace ShipECS.Systems.Artillery
             set => _artillery.ValueRW.CurrentFireRate = value;
         }
 
-        public float3 GetPosition(int number)
+        public float3 GetPosition(ref int number)
         {
             number = math.max(0, number % (_targets.Length - 1));  
             return _targets[number].TargetLocation;

@@ -1,3 +1,5 @@
+using Authoring;
+using NonECS.BaseWeapons;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -8,10 +10,11 @@ namespace ShipECS.Systems.Artillery
     [UpdateInGroup(typeof(PausableSystemGroup))]
     partial struct ArtilleryTargetingAndFiringSystem : ISystem
     {
-        
+        private int currentTargetedLocationIndex;
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            currentTargetedLocationIndex = 0;
         }
 
         [BurstCompile]
@@ -20,11 +23,31 @@ namespace ShipECS.Systems.Artillery
             new CalculatePositionsJob().ScheduleParallel();
             
             var hasBuffer = SystemAPI.TryGetSingletonBuffer<ArtilleryQueue>(out var artilleryQueue);
+            var hasSpawnBuffer = SystemAPI.TryGetSingletonBuffer<ProjectileSpawnerComponent>(out var projectileSpawner);
+            var ecb = new EntityCommandBuffer(Allocator.Temp);
             if (hasBuffer)
             {
-                foreach (var artillery in artilleryQueue)
+                foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
                 {
-                    //state.EntityManager.Instantiate() TODO: 
+
+                    foreach (var artillery in artilleryQueue)
+                    {
+                        if (!ProjectileHelper.TryGetEntityFromWeaponClass(projectileSpawner, WeaponClass.Artillery,
+                                out var artilleryPrefab)) break;
+                        var newEntity = ecb.Instantiate(artilleryPrefab);
+
+                        var computedSpeed = CalculateLerpT(artilleryFiringAspect.TotalSpeed, 100, 1000);
+                        var computedDuration = GetScaledDuration(computedSpeed, 2.0f);
+                        ecb.AddComponent(newEntity, new ArtilleryMotion()
+                        {
+                            OriginalPosition = artilleryFiringAspect.Position,
+                            TargetPosition = artilleryFiringAspect.GetPosition(ref currentTargetedLocationIndex),
+                            TimeLeft = 0,
+                            TotalTimeToReachTarget =  computedDuration
+                        });
+                        currentTargetedLocationIndex++;
+
+                    }
                 }
             }
         }
@@ -33,6 +56,18 @@ namespace ShipECS.Systems.Artillery
         public void OnDestroy(ref SystemState state)
         {
 
+        }
+
+        private float CalculateLerpT(float value, float minValue, float maxValue)
+        {
+            // Simple formula: (value - min) / (max - min)
+            return (value - minValue) / (maxValue - minValue);
+        }
+
+        private float GetScaledDuration(float t, float baseDuration)
+        {
+            if (t == 0) return float.MaxValue; // Prevent division by zero
+            return baseDuration / t;
         }
     }
     
@@ -50,8 +85,11 @@ namespace ShipECS.Systems.Artillery
         public float3 TargetLocation;
     }
     
-    public static class PositionCalculator
+    public struct ArtilleryMotion : IComponentData
     {
-        
+        public float3 TargetPosition;
+        public float3 OriginalPosition;
+        public float TimeLeft;
+        public float TotalTimeToReachTarget;
     }
 }

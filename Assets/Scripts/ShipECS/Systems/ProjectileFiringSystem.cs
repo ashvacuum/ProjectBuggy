@@ -1,5 +1,6 @@
 using Authoring;
 using Authoring.Projectiles;
+using NonECS.BaseWeapons;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.Graphics;
@@ -21,8 +22,9 @@ namespace ShipECS.Systems
         {
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            var projectileSpawnerData = SystemAPI.GetSingleton<ProjectileSpawnerComponent>();
-
+            var projectileSpawnerData = SystemAPI.GetSingletonBuffer<ProjectileSpawnerComponent>();
+            
+            
             var enemyTargetBuffers = SystemAPI.GetSingletonBuffer<EnemyTargetPoints>();
 
             foreach (var contents in SystemAPI.Query<RefRO<ProjectileMotion>, RefRO<NewSpawnRenderInvisibleTag>>().WithEntityAccess()
@@ -32,7 +34,10 @@ namespace ShipECS.Systems
                 RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, contents.Item3, ecb);
             }
             
-            
+            if (!ProjectileHelper.TryGetEntityFromWeaponClass(projectileSpawnerData, WeaponClass.Projectile, out var entityToSpawn))
+            {
+                return;
+            }
             
             foreach (var projectile in SystemAPI.Query<ProjectileFiringAspect>())
             {
@@ -47,7 +52,7 @@ namespace ShipECS.Systems
                 for (var i = 0; i < totalCountWeapons; i++)
                 {
                     if (enemyTargetBuffers[i].Distance > projectile.TotalRange) continue;
-                    var instance = ecb.Instantiate(projectileSpawnerData.ProjectileToSpawn);
+                    var instance = ecb.Instantiate(entityToSpawn);
                     ecb.AddComponent(instance, new DamageComponent()
                     {
                         Damage = projectile.TotalDamage,
@@ -91,6 +96,9 @@ namespace ShipECS.Systems
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
+
+        
+        
         
         
     }
@@ -137,5 +145,23 @@ namespace ShipECS.Systems
         public float BaseKnockback;
         public float BaseCritical;
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
+    }
+
+     static class ProjectileHelper
+    {
+        public static bool TryGetEntityFromWeaponClass(DynamicBuffer<ProjectileSpawnerComponent> spawner, WeaponClass weapon, out Entity projectileToSpawn)
+        {
+            foreach (var data in spawner)
+            {
+                if (data.Class == weapon)
+                {
+                    projectileToSpawn = data.ProjectileToSpawn;
+                    return true;
+                }
+            }
+            
+            projectileToSpawn = Entity.Null;
+            return false;
+        }
     }
 }
