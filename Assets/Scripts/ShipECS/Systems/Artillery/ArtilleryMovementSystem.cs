@@ -6,12 +6,14 @@ using Unity.Transforms;
 
 namespace ShipECS.Systems.Artillery
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
+    [UpdateAfter(typeof(ArtilleryTargetingAndFiringSystem))]
     public partial struct ArtilleryMovementSystem : ISystem
     {
         public int yScalar;
         public void OnCreate(ref SystemState state)
-        {
-            yScalar = 20;
+        { 
+            yScalar = 200;
         }
         
         [BurstCompile]
@@ -36,6 +38,8 @@ namespace ShipECS.Systems.Artillery
                 transform.ValueRW.Position = GetPointOnCurve(normalizedDuration, originalPos, targetPos, controlPoint);
                 artillery.ValueRW.TimeLeft += SystemAPI.Time.DeltaTime;
             }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
         
         public float3 GetPointOnCurve(float t, float3 start, float3 end, float3 control)

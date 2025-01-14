@@ -8,6 +8,7 @@ using Unity.Mathematics;
 namespace ShipECS.Systems.Artillery
 {
     [UpdateInGroup(typeof(PausableSystemGroup))]
+    [UpdateAfter(typeof(ArtilleryQueueSystem))]
     partial struct ArtilleryTargetingAndFiringSystem : ISystem
     {
         private int currentTargetedLocationIndex;
@@ -25,30 +26,32 @@ namespace ShipECS.Systems.Artillery
             var hasBuffer = SystemAPI.TryGetSingletonBuffer<ArtilleryQueue>(out var artilleryQueue);
             var hasSpawnBuffer = SystemAPI.TryGetSingletonBuffer<ProjectileSpawnerComponent>(out var projectileSpawner);
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            if (hasBuffer)
+            if (!hasBuffer || !hasSpawnBuffer) return;
+            
+            
+            foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
             {
-                foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
+
+                foreach (var artillery in artilleryQueue)
                 {
+                    if (!ProjectileHelper.TryGetEntityFromWeaponClass(projectileSpawner, WeaponClass.Artillery,
+                            out var artilleryPrefab)) break;
+                    var newEntity = ecb.Instantiate(artilleryPrefab);
 
-                    foreach (var artillery in artilleryQueue)
+                    var computedSpeed = CalculateLerpT(artilleryFiringAspect.TotalSpeed, 100, 1000);
+                    var computedDuration = GetScaledDuration(computedSpeed, 2.0f);
+                    ecb.AddComponent(newEntity, new ArtilleryMotion()
                     {
-                        if (!ProjectileHelper.TryGetEntityFromWeaponClass(projectileSpawner, WeaponClass.Artillery,
-                                out var artilleryPrefab)) break;
-                        var newEntity = ecb.Instantiate(artilleryPrefab);
+                        OriginalPosition = artilleryFiringAspect.Position,
+                        TargetPosition = artilleryFiringAspect.GetPosition(ref currentTargetedLocationIndex),
+                        TimeLeft = 0,
+                        TotalTimeToReachTarget =  computedDuration
+                    });
+                    currentTargetedLocationIndex++;
 
-                        var computedSpeed = CalculateLerpT(artilleryFiringAspect.TotalSpeed, 100, 1000);
-                        var computedDuration = GetScaledDuration(computedSpeed, 2.0f);
-                        ecb.AddComponent(newEntity, new ArtilleryMotion()
-                        {
-                            OriginalPosition = artilleryFiringAspect.Position,
-                            TargetPosition = artilleryFiringAspect.GetPosition(ref currentTargetedLocationIndex),
-                            TimeLeft = 0,
-                            TotalTimeToReachTarget =  computedDuration
-                        });
-                        currentTargetedLocationIndex++;
-
-                    }
                 }
+                
+                artilleryQueue.Clear();
             }
         }
 

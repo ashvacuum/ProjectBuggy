@@ -8,6 +8,7 @@ namespace ShipECS.Systems.Artillery
 {
 
     [UpdateInGroup(typeof(PausableSystemGroup))]
+    [UpdateBefore(typeof(ArtilleryTargetingAndFiringSystem))]
     partial struct ArtilleryQueueSystem : ISystem
     {
         //Goals create a buffer list of targets 

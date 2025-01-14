@@ -37,7 +37,7 @@ namespace ShipECS.Systems
             m_HitResults.Dispose();
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             // Define capsule cast parameters
