@@ -4,6 +4,7 @@ using NonECS.ScriptableObjects;
 using NonECS.UI;
 using ShipECS.Entities;
 using ShipECS.Systems;
+using ShipECS.Systems.Artillery;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics.Stateful;
@@ -38,13 +39,15 @@ namespace Authoring
         public float RadiusBonus;
         public float CriticalBonus;
         [Space(10)]
-        public ProjectileWeaponBase ProjectileStats; 
+        public WeaponBase ProjectileStats; 
     
         
         public class Baker : Baker<MainCharacterAuthoring>
         {
             public override void Bake(MainCharacterAuthoring authoring)
             {
+                var projectileLevel = 0;
+                var artilleryLevel = 0;
                 var entity = GetEntity(TransformUsageFlags.Dynamic);
                 AddComponent(entity, new CameraFollow()
                 {
@@ -81,20 +84,43 @@ namespace Authoring
                     CriticalBonus = authoring.CriticalBonus
                 });
                 var stats = authoring.ProjectileStats;
-                AddComponent(entity, new ProjectileAttack()
+
+                if (authoring.ProjectileStats is ProjectileWeaponBase)
                 {
-                    BaseFireRate = stats.upgradeData[0].FireRate,
-                    BasePenetration = stats.upgradeData[0].Penetration,
-                    BaseSize = stats.upgradeData[0].WeaponSize,
-                    BaseNumProjectile = stats.upgradeData[0].Count,
-                    BaseDamage = stats.upgradeData[0].Damage,
-                    BaseLifeTime = stats.upgradeData[0].Lifetime,
-                    BaseSpeed = stats.upgradeData[0].Speed,
-                    CurrentFireRate = 0,
-                    BaseKnockback = stats.upgradeData[0].Knockback,
-                    BaseRange = stats.upgradeData[0].Range,
-                    BaseCritical = stats.upgradeData[0].Critical
-                });
+                    projectileLevel = 1;
+                    AddComponent(entity, new ProjectileAttack()
+                    {
+                        BaseFireRate = stats.upgradeData[0].FireRate,
+                        BasePenetration = stats.upgradeData[0].Penetration,
+                        BaseSize = stats.upgradeData[0].WeaponSize,
+                        BaseNumProjectile = stats.upgradeData[0].Count,
+                        BaseDamage = stats.upgradeData[0].Damage,
+                        BaseLifeTime = stats.upgradeData[0].Lifetime,
+                        BaseSpeed = stats.upgradeData[0].Speed,
+                        CurrentFireRate = 0,
+                        BaseKnockback = stats.upgradeData[0].Knockback,
+                        BaseRange = stats.upgradeData[0].Range,
+                        BaseCritical = stats.upgradeData[0].Critical
+                    });
+                } else if (authoring.ProjectileStats is ArtilleryWeaponBase)
+                {
+                    artilleryLevel = 1;
+                    AddComponent(entity, new ArtilleryAttack()
+                    {
+                        BaseFireRate = stats.upgradeData[0].FireRate,
+                        BasePenetration = stats.upgradeData[0].Penetration,
+                        BaseSize = stats.upgradeData[0].WeaponSize,
+                        BaseNumProjectile = stats.upgradeData[0].Count,
+                        BaseDamage = stats.upgradeData[0].Damage,
+                        BaseLifeTime = stats.upgradeData[0].Lifetime,
+                        BaseSpeed = stats.upgradeData[0].Speed,
+                        CurrentFireRate = 0,
+                        BaseKnockback = stats.upgradeData[0].Knockback,
+                        BaseRange = stats.upgradeData[0].Range,
+                        BaseCritical = stats.upgradeData[0].Critical
+                    });
+                }
+
                 AddComponent(entity, new CharacterData
                 {
                     moveSpeed = authoring.speed,
@@ -115,10 +141,18 @@ namespace Authoring
                 var upgradeBuffer = AddBuffer<ShipUpgradeLevels>(entity);
                 foreach (UpgradeType type in Enum.GetValues(typeof(UpgradeType)))
                 {
-                    var level = type == UpgradeType.Projectile ? 1 : 0;
+                    var currentLevel = 0;
+                    if (type == UpgradeType.Artillery)
+                    {
+                        currentLevel = projectileLevel;
+                    }
+                    else if(type == UpgradeType.Projectile)
+                    {
+                        currentLevel = artilleryLevel;
+                    }
                     upgradeBuffer.Add(new ShipUpgradeLevels()
                     {
-                        level = level,
+                        level = currentLevel,
                         type = type
                     });
                 }
