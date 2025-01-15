@@ -12,6 +12,7 @@ namespace ShipECS.Systems.Artillery
     public partial struct ArtilleryExplosionSystem : ISystem
     {
         private ComponentLookup<HealthComponent> _health;
+        private ComponentLookup<KnockBackReceiver> _knockBackReceiver;
 
         public void OnCreate(ref SystemState state)
         {
@@ -24,6 +25,7 @@ namespace ShipECS.Systems.Artillery
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             _health.Update(ref state);
+            _knockBackReceiver.Update(ref state);
             // Create a CollisionWorld reference
             var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
             var collisionWorld = physicsWorldSingleton.CollisionWorld;
@@ -54,25 +56,34 @@ namespace ShipECS.Systems.Artillery
                     }
                     foreach (var hit in hitResults)
                     {
-                        if (!healthLookup.HasComponent(hit.Entity)) continue;
-                        
-                        var rolledChance = random.NextFloat(0, 100);
-                        var health = healthLookup[hit.Entity];
-                        if (health.CurrentHealth <= 0 || !(health.CurrentNextTimeToTakeDamage <= 0)) return;
-                        if (artilleryFiringAspect.TotalCritical > 0 && rolledChance < artilleryFiringAspect.TotalCritical)
+                        if (healthLookup.HasComponent(hit.Entity))
                         {
-                            Debug.Log($"Rolled {rolledChance}/{artilleryFiringAspect.TotalCritical} ");
-                            health.CurrentHealth -= artilleryFiringAspect.TotalDamage * DamageConstants.CritMultiplier;
-                            health.WasDamagedCritical = true;
-                        }
-                        else
-                        {
-                            health.CurrentHealth -= artilleryFiringAspect.TotalDamage;
-                            health.WasDamagedCritical = false;
+
+                            var rolledChance = random.NextFloat(0, 100);
+                            var health = healthLookup[hit.Entity];
+                            if (health.CurrentHealth <= 0 || !(health.CurrentNextTimeToTakeDamage <= 0)) return;
+                            if (artilleryFiringAspect.TotalCritical > 0 &&
+                                rolledChance < artilleryFiringAspect.TotalCritical)
+                            {
+                                Debug.Log($"Rolled {rolledChance}/{artilleryFiringAspect.TotalCritical} ");
+                                health.CurrentHealth -=
+                                    artilleryFiringAspect.TotalDamage * DamageConstants.CritMultiplier;
+                                health.WasDamagedCritical = true;
+                            }
+                            else
+                            {
+                                health.CurrentHealth -= artilleryFiringAspect.TotalDamage;
+                                health.WasDamagedCritical = false;
+                            }
+
+                            health.CurrentNextTimeToTakeDamage = health.NextTimeToTakeDamage;
+                            healthLookup[entity] = health;
                         }
 
-                        health.CurrentNextTimeToTakeDamage = health.NextTimeToTakeDamage;
-                        healthLookup[entity] = health;
+                        if (_knockBackReceiver.HasComponent(hit.Entity))
+                        {
+                            
+                        }
                     }
 
                     hitResults.Dispose();

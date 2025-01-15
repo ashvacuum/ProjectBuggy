@@ -46,15 +46,15 @@ MonoBehaviour:
     Knockback: 10
     Range: 300
     Critical: 10
-  - UpgradeType: 0
+  - UpgradeType: 164
     Lifetime: 5
     Count: 10
-    Penetration: 2
+    Penetration: 10
     Speed: 100
     FireRate: 5
-    WeaponSize: 50
+    WeaponSize: 100
     Damage: 1
-    Knockback: 10
+    Knockback: 50
     Range: 300
     Critical: 10
   - UpgradeType: 0
