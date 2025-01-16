@@ -119,6 +119,9 @@ namespace Authoring
                         BaseRange = stats.upgradeData[0].Range,
                         BaseCritical = stats.upgradeData[0].Critical
                     });
+                    
+                    AddBuffer<ArtilleryTarget>(entity);
+                    AddBuffer<ArtilleryQueue>(entity);
                 }
 
                 AddComponent(entity, new CharacterData
@@ -144,11 +147,11 @@ namespace Authoring
                     var currentLevel = 0;
                     if (type == UpgradeType.Artillery)
                     {
-                        currentLevel = projectileLevel;
+                        currentLevel = artilleryLevel;
                     }
                     else if(type == UpgradeType.Projectile)
                     {
-                        currentLevel = artilleryLevel;
+                        currentLevel = projectileLevel;
                     }
                     upgradeBuffer.Add(new ShipUpgradeLevels()
                     {

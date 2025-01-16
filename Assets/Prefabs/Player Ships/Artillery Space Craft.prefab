@@ -84,7 +84,7 @@ MonoBehaviour:
   CameraPitchOverride: 0
   CameraSpeedOverride: 0.2
   MaxHealth: 100
-  NextTimeCanTakeDamage: 0.1
+  NextTimeCanTakeDamage: 0.5
   InitialPickupradius: 300
   LifetimeBonus: 0
   NumCountBonus: 0
@@ -97,7 +97,8 @@ MonoBehaviour:
   RangeBonus: 0
   ExpBonus: 0
   RadiusBonus: 0
-  ProjectileStats: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
+  CriticalBonus: 0
+  ProjectileStats: {fileID: 11400000, guid: 962cf384a6391aa46a54aa3cf4245d66, type: 2}
 --- !u!114 &-7500812125144610506
 MonoBehaviour:
   m_ObjectHideFlags: 0

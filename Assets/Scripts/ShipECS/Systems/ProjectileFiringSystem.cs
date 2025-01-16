@@ -153,11 +153,9 @@ namespace ShipECS.Systems
         {
             foreach (var data in spawner)
             {
-                if (data.Class == weapon)
-                {
-                    projectileToSpawn = data.ProjectileToSpawn;
-                    return true;
-                }
+                if (data.Class != weapon) continue;
+                projectileToSpawn = data.ProjectileToSpawn;
+                return true;
             }
             
             projectileToSpawn = Entity.Null;

@@ -4,6 +4,8 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems.Artillery
 {
@@ -20,9 +22,7 @@ namespace ShipECS.Systems.Artillery
 
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
-        {
-            new CalculatePositionsJob().ScheduleParallel();
-            
+        {   
             var hasBuffer = SystemAPI.TryGetSingletonBuffer<ArtilleryQueue>(out var artilleryQueue);
             var hasSpawnBuffer = SystemAPI.TryGetSingletonBuffer<ProjectileSpawnerComponent>(out var projectileSpawner);
             var ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -31,11 +31,15 @@ namespace ShipECS.Systems.Artillery
             
             foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
             {
-
+                artilleryFiringAspect.CalculatePositions();
                 foreach (var artillery in artilleryQueue)
                 {
                     if (!ProjectileHelper.TryGetEntityFromWeaponClass(projectileSpawner, WeaponClass.Artillery,
-                            out var artilleryPrefab)) break;
+                            out var artilleryPrefab))
+                    {
+                        break;
+                    }
+                    
                     var newEntity = ecb.Instantiate(artilleryPrefab);
 
                     var computedSpeed = CalculateLerpT(artilleryFiringAspect.TotalSpeed, 100, 1000);
@@ -47,12 +51,18 @@ namespace ShipECS.Systems.Artillery
                         TimeLeft = 0,
                         TotalTimeToReachTarget =  computedDuration
                     });
-                    currentTargetedLocationIndex++;
-
+                    ecb.SetComponent(newEntity, new LocalTransform()
+                    {
+                        Position = artilleryFiringAspect.Position,
+                        Rotation = quaternion.LookRotation(artilleryFiringAspect.Direction, math.up()),
+                        Scale = 1
+                    });
                 }
                 
                 artilleryQueue.Clear();
             }
+            ecb.Playback(state.EntityManager);
+            ecb.Dispose();
         }
 
         [BurstCompile]
@@ -69,8 +79,8 @@ namespace ShipECS.Systems.Artillery
 
         private float GetScaledDuration(float t, float baseDuration)
         {
-            if (t == 0) return float.MaxValue; // Prevent division by zero
-            return baseDuration / t;
+            if (t <= 0) return baseDuration; // Prevent division by zero
+            return math.max(baseDuration - (baseDuration * t),.2f);
         }
     }
     

@@ -164,3 +164,6 @@ MonoBehaviour:
     - 80
     - 95
     - 120
+  - UpgradeType: 13
+    UpgradeChance: 5
+    UpgradeLevels: []

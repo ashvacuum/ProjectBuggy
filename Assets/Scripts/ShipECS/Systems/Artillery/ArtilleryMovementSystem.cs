@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems.Artillery
 {
@@ -13,7 +14,7 @@ namespace ShipECS.Systems.Artillery
         public int yScalar;
         public void OnCreate(ref SystemState state)
         { 
-            yScalar = 200;
+            yScalar = 500;
         }
         
         [BurstCompile]
@@ -28,14 +29,18 @@ namespace ShipECS.Systems.Artillery
                 if (artillery.ValueRO.TimeLeft >= artillery.ValueRO.TotalTimeToReachTarget)
                 {
                     ecb.AddComponent<ArtilleryExplosionTag>(entity);
-                    return;
+                    Debug.Log("Added Explosion Tag");
+                    continue;
                 }
                 var originalPos = artillery.ValueRO.OriginalPosition;
                 var targetPos = artillery.ValueRO.TargetPosition;
-                var controlPoint = math.lerp(originalPos, targetPos, .5f);
-                controlPoint = new float3(controlPoint.x, controlPoint.y * yScalar, controlPoint.z);
+                var controlPoint = math.lerp(originalPos, targetPos, .3f);
+                controlPoint = new float3(controlPoint.x, controlPoint.y + yScalar, controlPoint.z);
                 var normalizedDuration = artillery.ValueRO.TimeLeft / artillery.ValueRO.TotalTimeToReachTarget;
-                transform.ValueRW.Position = GetPointOnCurve(normalizedDuration, originalPos, targetPos, controlPoint);
+                var nextPoint = GetPointOnCurve(normalizedDuration, originalPos, targetPos, controlPoint);
+                transform.ValueRW.Rotation = quaternion.LookRotation(nextPoint - transform.ValueRO.Position, math.up());
+                transform.ValueRW.Position = nextPoint;
+                
                 artillery.ValueRW.TimeLeft += SystemAPI.Time.DeltaTime;
             }
             ecb.Playback(state.EntityManager);

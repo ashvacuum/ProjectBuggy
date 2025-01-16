@@ -9,6 +9,8 @@ using Random = Unity.Mathematics.Random;
 
 namespace ShipECS.Systems.Artillery
 {
+    [UpdateInGroup(typeof(PausableSystemGroup))]
+    [UpdateAfter(typeof(ArtilleryMovementSystem))]
     public partial struct ArtilleryExplosionSystem : ISystem
     {
         private ComponentLookup<HealthComponent> _health;
@@ -19,6 +21,7 @@ namespace ShipECS.Systems.Artillery
             state.RequireForUpdate<PhysicsWorldSingleton>();
             //stores up to 1000 hits
             _health = state.GetComponentLookup<HealthComponent>();
+            _knockBackReceiver = state.GetComponentLookup<KnockBackReceiver>();
         }
 
         public void OnUpdate(ref SystemState state)
@@ -34,31 +37,30 @@ namespace ShipECS.Systems.Artillery
             foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
             {
                 foreach (var (explosionTag, transform, entity) in
-                         SystemAPI.Query<RefRO<ArtilleryExplosionTag>, RefRO<LocalTransform>>().WithEntityAccess())
+                         SystemAPI.Query<RefRO<ArtilleryExplosionTag>, RefRO<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag>())
                 {
                     var healthLookup = _health;
                     var hitResults = new NativeList<ColliderCastHit>(Allocator.Temp);
                     var collisionFilter = new CollisionFilter()
                     {
-                        BelongsTo = 1 << 1, CollidesWith = 1 << 2, GroupIndex = 0
+                        BelongsTo = 1 << 1, CollidesWith = 1 << 2 & 1 << 3, GroupIndex = 0
                     };
                     var hasHit = collisionWorld.SphereCastAll(transform.ValueRO.Position,
                         artilleryFiringAspect.TotalRange,
                         transform.ValueRO.Forward(),
-                        artilleryFiringAspect.TotalRange,
+                        0,
                         ref hitResults,
                         collisionFilter);
 
                     if (!hasHit)
                     {
-                        
+                        Debug.Log("No Hits Detected");
                         continue;
                     }
                     foreach (var hit in hitResults)
                     {
                         if (healthLookup.HasComponent(hit.Entity))
                         {
-
                             var rolledChance = random.NextFloat(0, 100);
                             var health = healthLookup[hit.Entity];
                             if (health.CurrentHealth <= 0 || !(health.CurrentNextTimeToTakeDamage <= 0)) return;
@@ -82,11 +84,13 @@ namespace ShipECS.Systems.Artillery
 
                         if (_knockBackReceiver.HasComponent(hit.Entity))
                         {
-                            
+                            //TODO: implement knockback system
                         }
                     }
 
                     hitResults.Dispose();
+                    ecb.AddComponent<DeadComponentTag>(entity);
+
                 }
 
                 break;

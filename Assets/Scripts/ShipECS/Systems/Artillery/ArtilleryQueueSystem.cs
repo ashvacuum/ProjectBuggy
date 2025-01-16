@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ShipECS.Systems.Artillery
 {
@@ -36,19 +37,19 @@ namespace ShipECS.Systems.Artillery
                     artillery.CurrentFireRate -= SystemAPI.Time.DeltaTime;
                     continue;
                 }
-
+                
                 _artilleryLeftToFire += artillery.TotalCount;
                 artillery.CurrentFireRate = artillery.TotalFireRate;
             }
 
             if (_currentQueueDelay >= _queueDelay)
             {
-                _currentQueueDelay -= _queueDelay;
-                _artilleryLeftToFire = math.max(0, _artilleryLeftToFire - 1); //prevents artillery from going below
+                _currentQueueDelay = 0;
                 if (_artilleryLeftToFire > 0 && hasBuffer)
                 {
-                    _artilleryLeftToFire = math.max(0, _artilleryLeftToFire - 1);
+                    _artilleryLeftToFire = math.max(0, _artilleryLeftToFire - 1);  //prevents artillery from going below 0
                     artilleryQueue.Add(new ArtilleryQueue());
+
                 }
             }
             
@@ -113,8 +114,13 @@ namespace ShipECS.Systems.Artillery
 
         public float3 GetPosition(ref int number)
         {
-            number = math.max(0, number % (_targets.Length - 1));  
-            return _targets[number].TargetLocation;
+            var newPos = _targets[number].TargetLocation;
+            number += 1;
+            if (number >= _targets.Length)
+            {
+                number = 0;
+            }
+            return newPos;
         }
         
         public void CalculatePositions()
@@ -123,8 +129,8 @@ namespace ShipECS.Systems.Artillery
             buffer.Clear();
         
             float3 direction = Forward - Position;
-            float radius = math.max(TotalRange, 700) ;
-            float forwardAngle = math.atan2(direction.z, direction.x);
+            float radius = math.min(TotalRange, 700) ;
+            float forwardAngle = math.atan2(direction.z, direction.x) * math.TODEGREES;
             float angleIncrement = 2f * math.PI / TotalPenetration;
         
             for (int i = 0; i < TotalPenetration; i++)

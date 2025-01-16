@@ -196,7 +196,10 @@ namespace NonECS.UI
                         else
                         {
                             _entityManager.AddComponent<ProjectileAttack>(currentEntity);
-                            var actualIndex = 0;
+                            
+                           
+                            
+                            var actualIndex = 0; // refers to level 1
                             UpgradeProjectile(actualIndex, currentEntity);
                         }
                         
@@ -210,9 +213,14 @@ namespace NonECS.UI
                         else
                         {
                             _entityManager.AddComponent<ArtilleryAttack>(currentEntity);
+
+                            if (!_entityManager.HasBuffer<ArtilleryTarget>(currentEntity))
+                                _entityManager.AddBuffer<ArtilleryTarget>(currentEntity);
+
                             var actualIndex = 0;
                             UpgradeArtillery(actualIndex, currentEntity);
                         }
+
                         break;
 
                     case UpgradeType.MaxHealth:

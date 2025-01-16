@@ -40,6 +40,7 @@ namespace ShipECS.Systems
         //[BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             // Define capsule cast parameters
             m_StartPoint = new float3(0, 1, 0);  // Starting point of the capsule
             m_EndPoint = new float3(0, 5, 0);    // Endpoint of the capsule
