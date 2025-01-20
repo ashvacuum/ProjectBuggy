@@ -29,7 +29,6 @@ namespace ShipECS.Systems.Artillery
                 if (artillery.ValueRO.TimeLeft >= artillery.ValueRO.TotalTimeToReachTarget)
                 {
                     ecb.AddComponent<ArtilleryExplosionTag>(entity);
-                    Debug.Log("Added Explosion Tag");
                     continue;
                 }
                 var originalPos = artillery.ValueRO.OriginalPosition;
@@ -38,7 +37,10 @@ namespace ShipECS.Systems.Artillery
                 controlPoint = new float3(controlPoint.x, controlPoint.y + yScalar, controlPoint.z);
                 var normalizedDuration = artillery.ValueRO.TimeLeft / artillery.ValueRO.TotalTimeToReachTarget;
                 var nextPoint = GetPointOnCurve(normalizedDuration, originalPos, targetPos, controlPoint);
-                transform.ValueRW.Rotation = quaternion.LookRotation(nextPoint - transform.ValueRO.Position, math.up());
+                if (normalizedDuration > 1)
+                    transform.ValueRW.Rotation =
+                        quaternion.LookRotation(nextPoint - transform.ValueRO.Position, math.up());
+                
                 transform.ValueRW.Position = nextPoint;
                 
                 artillery.ValueRW.TimeLeft += SystemAPI.Time.DeltaTime;

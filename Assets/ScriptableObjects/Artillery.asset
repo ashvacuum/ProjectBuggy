@@ -15,8 +15,8 @@ MonoBehaviour:
   upgradeData:
   - UpgradeType: -1
     Lifetime: 5
-    Count: 10
-    Penetration: 4
+    Count: 4
+    Penetration: 6
     Speed: 100
     FireRate: 5
     WeaponSize: 50

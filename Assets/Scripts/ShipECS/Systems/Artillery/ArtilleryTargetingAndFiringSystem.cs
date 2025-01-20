@@ -51,6 +51,7 @@ namespace ShipECS.Systems.Artillery
                         TimeLeft = 0,
                         TotalTimeToReachTarget =  computedDuration
                     });
+                    
                     ecb.SetComponent(newEntity, new LocalTransform()
                     {
                         Position = artilleryFiringAspect.Position,
