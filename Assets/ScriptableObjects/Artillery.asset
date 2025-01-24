@@ -24,43 +24,21 @@ MonoBehaviour:
     Knockback: 10
     Range: 300
     Critical: 10
-  - UpgradeType: 10
+  - UpgradeType: -1
     Lifetime: 5
-    Count: 15
-    Penetration: 2
-    Speed: 150
+    Count: 4
+    Penetration: 6
+    Speed: 200
     FireRate: 5
     WeaponSize: 50
     Damage: 1
     Knockback: 10
     Range: 300
     Critical: 10
-  - UpgradeType: 82
+  - UpgradeType: -1
     Lifetime: 5
-    Count: 20
-    Penetration: 2
-    Speed: 100
-    FireRate: 4
-    WeaponSize: 50
-    Damage: 40
-    Knockback: 10
-    Range: 300
-    Critical: 10
-  - UpgradeType: 164
-    Lifetime: 5
-    Count: 10
-    Penetration: 10
-    Speed: 100
-    FireRate: 5
-    WeaponSize: 100
-    Damage: 1
-    Knockback: 50
-    Range: 300
-    Critical: 10
-  - UpgradeType: 0
-    Lifetime: 5
-    Count: 10
-    Penetration: 2
+    Count: 4
+    Penetration: 6
     Speed: 100
     FireRate: 5
     WeaponSize: 50
@@ -68,10 +46,10 @@ MonoBehaviour:
     Knockback: 10
     Range: 300
     Critical: 10
-  - UpgradeType: 0
+  - UpgradeType: -1
     Lifetime: 5
-    Count: 10
-    Penetration: 2
+    Count: 4
+    Penetration: 6
     Speed: 100
     FireRate: 5
     WeaponSize: 50
@@ -79,10 +57,10 @@ MonoBehaviour:
     Knockback: 10
     Range: 300
     Critical: 10
-  - UpgradeType: 0
+  - UpgradeType: -1
     Lifetime: 5
-    Count: 10
-    Penetration: 2
+    Count: 4
+    Penetration: 6
     Speed: 100
     FireRate: 5
     WeaponSize: 50
@@ -90,43 +68,10 @@ MonoBehaviour:
     Knockback: 10
     Range: 300
     Critical: 10
-  - UpgradeType: 0
+  - UpgradeType: -1
     Lifetime: 5
-    Count: 10
-    Penetration: 2
-    Speed: 100
-    FireRate: 5
-    WeaponSize: 50
-    Damage: 1
-    Knockback: 10
-    Range: 300
-    Critical: 10
-  - UpgradeType: 0
-    Lifetime: 5
-    Count: 10
-    Penetration: 2
-    Speed: 100
-    FireRate: 5
-    WeaponSize: 50
-    Damage: 1
-    Knockback: 10
-    Range: 300
-    Critical: 10
-  - UpgradeType: 0
-    Lifetime: 5
-    Count: 10
-    Penetration: 2
-    Speed: 100
-    FireRate: 5
-    WeaponSize: 50
-    Damage: 1
-    Knockback: 10
-    Range: 300
-    Critical: 10
-  - UpgradeType: 0
-    Lifetime: 5
-    Count: 10
-    Penetration: 2
+    Count: 4
+    Penetration: 6
     Speed: 100
     FireRate: 5
     WeaponSize: 50

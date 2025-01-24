@@ -1,6 +1,7 @@
 using Authoring;
 using ShipECS.Systems.Damage;
 using Unity.Burst;
+using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -65,6 +66,7 @@ namespace ShipECS.Systems.Artillery
 
                     var tempJob = new NativeList<ColliderCastHit>(Allocator.TempJob);
                     tempJob.AddRange(hitResults);
+                    
                     var job = new ProcessHitsJob
                     {
                         Hits = tempJob,
@@ -78,10 +80,10 @@ namespace ShipECS.Systems.Artillery
                         TotalDamage = artilleryFiringAspect.TotalDamage,
                         TotalCritical = artilleryFiringAspect.TotalCritical
                     };
-                    
-                    
+
+
                     var handle = job.Schedule(state.Dependency);
-                    
+
                     state.Dependency = handle;
 
                     /*
@@ -124,91 +126,96 @@ namespace ShipECS.Systems.Artillery
 
                 break;
             }
+
             hitResults.Dispose();
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }
     }
-    
+
     [BurstCompile]
-public partial struct ProcessHitsJob : IJob
-{
-    [ReadOnly] public NativeList<ColliderCastHit> Hits;
-    [ReadOnly] public Entity SourceEntity;
-    [ReadOnly] public ComponentLookup<LocalTransform> Transform;
-    [ReadOnly] public ComponentLookup<PhysicsMass> MassOverride;
-    public ComponentLookup<KnockBackReceiver> KnockBackReceiver;
-    public ComponentLookup<HealthComponent> HealthLookup;
-    public float KnockbackForce;
-    public float TotalDamage;
-    public float TotalCritical;
-    public Unity.Mathematics.Random Random;
-
-    public void Execute()
+    public struct ProcessHitsJob : IJob
     {
-        for (int i = 0; i < Hits.Length; i++)
+        [ReadOnly] public NativeList<ColliderCastHit> Hits;
+        [ReadOnly] public Entity SourceEntity;
+        [ReadOnly] public ComponentLookup<LocalTransform> Transform;
+        [ReadOnly] public ComponentLookup<PhysicsMass> MassOverride;
+        public ComponentLookup<KnockBackReceiver> KnockBackReceiver;
+        public ComponentLookup<HealthComponent> HealthLookup;
+        public float KnockbackForce;
+        public float TotalDamage;
+        public float TotalCritical;
+        public Unity.Mathematics.Random Random;
+
+        public void Execute()
         {
-            var hit = Hits[i];
-            var hitEntity = hit.Entity;
-            
-            // Skip if hit entity is invalid or is the source
-            if (hitEntity == Entity.Null || hitEntity == SourceEntity) continue;
-
-            
-
-            // Process Health/Damage
-            if (HealthLookup.HasComponent(hitEntity))
+            for (int i = 0; i < Hits.Length; i++)
             {
-                var health = HealthLookup[hitEntity];
-                
-                // Skip if already dead or on damage cooldown
-                if (health.CurrentHealth <= 0 || health.CurrentNextTimeToTakeDamage > 0) 
-                    continue;
+                var hit = Hits[i];
+                var hitEntity = hit.Entity;
 
-                // Roll for critical hit
-                var rolledChance = Random.NextFloat(0, 100);
-                if (TotalCritical > 0 && rolledChance < TotalCritical)
+                // Skip if hit entity is invalid or is the source
+                if (hitEntity == Entity.Null || hitEntity == SourceEntity) continue;
+
+
+
+                // Process Health/Damage
+                if (HealthLookup.HasComponent(hitEntity))
                 {
-                    health.CurrentHealth -= TotalDamage * DamageConstants.CritMultiplier;
-                    health.WasDamagedCritical = true;
-                }
-                else
-                {
-                    health.CurrentHealth -= TotalDamage;
-                    health.WasDamagedCritical = false;
-                }
+                    var health = HealthLookup[hitEntity];
 
-                health.CurrentNextTimeToTakeDamage = health.NextTimeToTakeDamage;
-                HealthLookup[hitEntity] = health;
-            }
-            
-            // Early exit if we don't have required components for knockback
-            if (!Transform.HasComponent(hitEntity)) continue;
+                    // Skip if already dead or on damage cooldown
+                    if (health.CurrentHealth <= 0 || health.CurrentNextTimeToTakeDamage > 0)
+                        continue;
 
-            // Process Knockback
-            if (KnockBackReceiver.HasComponent(hitEntity))
-            {
-                var knockBack = KnockBackReceiver[hitEntity];
-                
-                // Skip if still in recovery
-                if (knockBack.currentRecoveryTime > 0) continue;
+                    // Roll for critical hit
+                    var rolledChance = Random.NextFloat(0, 100);
+                    if (TotalCritical > 0 && rolledChance < TotalCritical)
+                    {
+                        health.CurrentHealth -= TotalDamage * DamageConstants.CritMultiplier;
+                        health.WasDamagedCritical = true;
+                    }
+                    else
+                    {
+                        health.CurrentHealth -= TotalDamage;
+                        health.WasDamagedCritical = false;
+                    }
 
-                var isKinematic = MassOverride.HasComponent(hitEntity) && MassOverride[hitEntity].IsKinematic;
-                
-                // Calculate knockback direction using the hit normal
-                var knockBackDirection = math.normalize(hit.SurfaceNormal);
-                var knockBackVelocity = knockBackDirection * KnockbackForce;
-
-                if (isKinematic)
-                {
-                    knockBack.currentKnockbackVelocity = knockBackVelocity;
-                    knockBack.isBeingKnockedBack = true;
+                    health.CurrentNextTimeToTakeDamage = health.NextTimeToTakeDamage;
+                    HealthLookup[hitEntity] = health;
                 }
 
-                knockBack.currentRecoveryTime = knockBack.recoveryTime;
-                KnockBackReceiver[hitEntity] = knockBack;
+                // Early exit if we don't have required components for knockback
+                if (!Transform.HasComponent(hitEntity)) continue;
+
+                // Process Knockback
+                if (KnockBackReceiver.HasComponent(hitEntity))
+                {
+                    var knockBack = KnockBackReceiver[hitEntity];
+
+                    // Skip if still in recovery
+                    if (knockBack.currentRecoveryTime > 0) continue;
+
+                    var isKinematic = MassOverride.HasComponent(hitEntity) && MassOverride[hitEntity].IsKinematic;
+
+                    // Calculate knockback direction using the hit normal
+                    var knockBackDirection = math.normalize(hit.SurfaceNormal);
+                    var knockBackVelocity = knockBackDirection * KnockbackForce;
+
+                    if (isKinematic)
+                    {
+                        knockBack.currentKnockbackVelocity = knockBackVelocity;
+                        knockBack.isBeingKnockedBack = true;
+                    }
+
+                    knockBack.currentRecoveryTime = knockBack.recoveryTime;
+                    KnockBackReceiver[hitEntity] = knockBack;
+                }
             }
         }
     }
+
+    
+
 }
-}
+
