@@ -1,5 +1,6 @@
 using Authoring;
 using Authoring.Projectiles;
+using ShipECS.Systems.Artillery;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -35,7 +36,7 @@ namespace ShipECS.Systems
             
             foreach (var (_, transform) in 
                      SystemAPI.Query<RefRO<DeadComponentTag>, RefRO<LocalTransform>>()
-                         .WithNone<PlayerTag,ProjectileMotion>())
+                         .WithNone<PlayerTag,ProjectileMotion, ArtilleryExplosionTag>())
             {
                 // Get loot table
                 foreach (var lootTable in SystemAPI.Query<DynamicBuffer<LootTableAuthoring.LootDropTable>>())

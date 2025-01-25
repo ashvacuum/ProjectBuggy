@@ -1,13 +1,17 @@
+using Authoring;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
+using Unity.Physics.Authoring;
+using Unity.Transforms;
 using UnityEditor;
 using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [UpdateInGroup(typeof(PhysicsDebugDisplayGroup))]
     public partial struct CapsuleCastSystem : ISystem
     {
         // Gizmo-related fields to store cast information
@@ -22,6 +26,7 @@ namespace ShipECS.Systems
         {
             state.RequireForUpdate<PhysicsWorldSingleton>();
             // Initialize any necessary setup
+            //ensure it will hit store a maximum of 10 collisions
             m_HitResults = new NativeArray<ColliderCastHit>(10, Allocator.Persistent);
         }
 
@@ -32,9 +37,10 @@ namespace ShipECS.Systems
             m_HitResults.Dispose();
         }
 
-        [BurstCompile]
+        //[BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            return;
             // Define capsule cast parameters
             m_StartPoint = new float3(0, 1, 0);  // Starting point of the capsule
             m_EndPoint = new float3(0, 5, 0);    // Endpoint of the capsule
@@ -45,6 +51,16 @@ namespace ShipECS.Systems
             var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
             var collisionWorld = physicsWorldSingleton.CollisionWorld;
 
+
+            foreach (var transform in
+                     SystemAPI.Query<RefRW<LocalTransform>>()
+                         .WithAll<PlayerTag>())
+            {
+                m_StartPoint = transform.ValueRO.Position;
+                m_EndPoint = transform.ValueRO.Forward() * 10;
+                m_Radius = .1f;
+                maxDistance = 20f;
+            }
 
             // Create a NativeList to store results
             var hitResults = new NativeList<ColliderCastHit>(Allocator.Temp);
