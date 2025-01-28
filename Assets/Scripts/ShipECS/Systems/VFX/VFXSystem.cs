@@ -341,9 +341,9 @@ partial struct VFXSystem : ISystem
             _requestsBufferId);
         
         _thrustersManager.Update(
-            VFXReferences.ThrustersGraph, 
-            ref VFXReferences.ThrusterRequestsBuffer, 
-            ref VFXReferences.ThrusterDatasBuffer,
+            ThrustersGraph, 
+            ref ThrusterRequestsBuffer, 
+            ref ThrusterDatasBuffer,
             rateRatio,
             _spawnBatchId, 
             _requestsCountId,
