@@ -113,10 +113,10 @@ namespace NonECS.ScriptableObjects
                                     upgrade.UpgradeLevels[itemIndex]);
                             }
                         }
-                        catch (Exception e)
+                        catch 
                         {
                             Debug.LogError(
-                                $"Error: Type: {matchingUpgrade.Item1.ToString()}, Level {itemIndex}, Count {upgrade.UpgradeLevels.Count}");
+                                $"Error : Type: {matchingUpgrade.Item1.ToString()}, Level {itemIndex}, Count {upgrade.UpgradeLevels.Count}");
                         }
 
                         break;

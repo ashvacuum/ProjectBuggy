@@ -65,7 +65,7 @@ namespace ShipECS.Systems.Artillery
                     }
 
                     var tempJob = new NativeList<ColliderCastHit>(Allocator.TempJob);
-                    tempJob.AddRange(hitResults);
+                    tempJob.AddRange(hitResults.AsArray());
                     
                     var job = new ProcessHitsJob
                     {
