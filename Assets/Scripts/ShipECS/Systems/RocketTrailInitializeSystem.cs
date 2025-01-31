@@ -1,57 +1,72 @@
 using Authoring;
-using Authoring.Projectiles;
 using Unity.Burst;
+using Unity.Burst.Intrinsics;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
-partial struct RocketTrailInitializeSystem : ISystem
+namespace ShipECS.Systems
 {
-    [BurstCompile]
-    public void OnCreate(ref SystemState state)
+    partial struct RocketTrailInitializeSystem : ISystem
     {
-        state.RequireForUpdate<VFXThrustersSingleton>();
-    }
-
-    [BurstCompile]
-    public void OnUpdate(ref SystemState state)
-    {
-        VFXThrustersSingleton vfxThrustersSingleton = SystemAPI.GetSingletonRW<VFXThrustersSingleton>().ValueRW;
-        
-        ShipInitializeJob shipInitializeJob = new ShipInitializeJob
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
         {
-            ThrustersManager = vfxThrustersSingleton.Manager,
-        };
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            state.RequireForUpdate<VFXThrustersSingleton>();
+        }
 
-        state.Dependency = shipInitializeJob.Schedule(state.Dependency);
-    }
-
-    [BurstCompile]
-    public void OnDestroy(ref SystemState state)
-    {
-        
-    }
-}
-
-[BurstCompile]
-[WithAll(typeof(NewSpawnRenderInvisibleTag))]
-public partial struct ShipInitializeJob : IJobEntity
-{
-    public VFXManagerParented<VFXRocketData> ThrustersManager;
-            
-    private void Execute(ref RocketTrailData rocket)
-    {
-        RocketData shipData = rocket.RocketData.Value;
-
-        rocket.RocketVFXIndex = ThrustersManager.Create();
-                
-        if (rocket.RocketVFXIndex >= 0)
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
         {
-            ThrustersManager.Datas[rocket.RocketVFXIndex] = new VFXRocketData()
+            VFXThrustersSingleton vfxThrustersSingleton = SystemAPI.GetSingletonRW<VFXThrustersSingleton>().ValueRW;
+        
+            ShipInitializeJob shipInitializeJob = new ShipInitializeJob
             {
-                Color = new float3(0,0,1), //blue
-                Size = shipData.ThrusterSize,
-                Length = shipData.ThrusterLength,
+                ThrustersManager = vfxThrustersSingleton.Manager,
+                ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
+                    .CreateCommandBuffer(state.WorldUnmanaged)
             };
+
+            state.Dependency = shipInitializeJob.Schedule(state.Dependency);
+        }
+
+        [BurstCompile]
+        public void OnDestroy(ref SystemState state)
+        {
+        
         }
     }
+
+    [BurstCompile]
+    [WithAll(typeof(RocketInitTag))]
+    [WithNone(typeof(DeadComponentTag))]
+    public partial struct ShipInitializeJob : IJobEntity
+    {
+        public VFXManagerParented<VFXRocketData> ThrustersManager;
+        
+        public EntityCommandBuffer ECB;
+ 
+        private void Execute(in Entity entity, ref RocketTrailData rocket)
+        {
+            RocketData shipData = rocket.RocketData.Value;
+
+            rocket.RocketVFXIndex = ThrustersManager.Create();
+                
+            if (rocket.RocketVFXIndex >= 0)
+            {
+                ThrustersManager.Datas[rocket.RocketVFXIndex] = new VFXRocketData()
+                {
+                    Color = new float3(0,0,1), //blue
+                    Size = shipData.ThrusterSize,
+                    Length = shipData.ThrusterLength,
+                };
+            };
+
+            Debug.Log("Initialized");
+            
+            ECB.RemoveComponent<RocketInitTag>(entity);
+        }
+    }
+    
 }

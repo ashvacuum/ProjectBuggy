@@ -44,8 +44,6 @@ public partial struct RocketTrailPostTransformSystem : ISystem
             if (ship.RocketVFXIndex >= 0)
             {
                 ref RocketData shipData = ref ship.RocketData.Value;
-                    
-                Debug.Log("UPDATING LOCATION");
                 VFXRocketData thrusterData = ThrustersData[ship.RocketVFXIndex];
                 thrusterData.Position =
                     transform.Position + math.mul(transform.Rotation, shipData.ThrusterLocalPosition);
