@@ -57,7 +57,7 @@ namespace ShipECS.Systems
             {
                 ThrustersManager.Datas[rocket.RocketVFXIndex] = new VFXRocketData()
                 {
-                    Color = new float3(0,0,1), //blue
+                    Color = new float3(255,255,0), //blue
                     Size = shipData.ThrusterSize,
                     Length = shipData.ThrusterLength,
                 };
