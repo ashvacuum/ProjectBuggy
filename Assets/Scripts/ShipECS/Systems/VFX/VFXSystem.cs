@@ -197,7 +197,6 @@ public struct VFXManagerParented<T> where T : unmanaged, IKillableVFX
                 
                 vfxGraph.SetInt(requestsCountId, math.min(RequestsCount.Value, Requests.Length));
                 vfxGraph.SendEvent(spawnBatchId);
-                
                 RequestsCount.Value = 0;
             }
         }
@@ -279,7 +278,7 @@ partial struct VFXSystem : ISystem
 
     private const int HitSparksCapacity = 1000;
     private const int ExplosionsCapacity = 1000;
-    public const int ThrustersCapacity = 100000;
+    private const int ThrustersCapacity = 100000;
 
 
     public void OnCreate(ref SystemState state)

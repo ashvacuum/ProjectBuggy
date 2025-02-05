@@ -41,17 +41,15 @@ public partial struct RocketTrailPostTransformSystem : ISystem
             
         private void Execute(in LocalTransform transform, in RocketTrailData ship)
         {
-            if (ship.RocketVFXIndex >= 0)
-            {
-                ref RocketData shipData = ref ship.RocketData.Value;
+            if (ship.RocketVFXIndex < 0) return;
+            ref var shipData = ref ship.RocketData.Value;
                     
-                Debug.Log("UPDATING LOCATION");
-                VFXRocketData thrusterData = ThrustersData[ship.RocketVFXIndex];
-                thrusterData.Position =
-                    transform.Position + math.mul(transform.Rotation, shipData.ThrusterLocalPosition);
-                thrusterData.Direction = math.mul(transform.Rotation, -math.forward());
-                ThrustersData[ship.RocketVFXIndex] = thrusterData;
-            }
+                
+            var thrusterData = ThrustersData[ship.RocketVFXIndex];
+            thrusterData.Position =
+                transform.Position + math.mul(transform.Rotation, shipData.ThrusterLocalPosition);
+            thrusterData.Direction = math.mul(transform.Rotation, -math.forward());
+            ThrustersData[ship.RocketVFXIndex] = thrusterData;
         }
     }
 }
