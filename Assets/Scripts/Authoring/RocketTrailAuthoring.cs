@@ -19,6 +19,7 @@ namespace Authoring
                 {
                     RocketData = BlobAuthoringUtility.BakeToBlob(this, authoring.rocketData)
                 });
+                AddComponent(entity, new RocketInitTag());
             }
         }
     
@@ -29,6 +30,8 @@ namespace Authoring
         public int RocketVFXIndex;
         public BlobAssetReference<RocketData> RocketData;
     }
+    
+    public struct RocketInitTag : IComponentData { }
     
     [Serializable]
     public struct RocketData
