@@ -32,6 +32,11 @@ namespace ShipECS.Systems
                 ThrustersManager = vfxThrustersSingleton.Manager
             };
             state.Dependency = shipRocketDeathJob.Schedule(state.Dependency);
+            RocketDeathJob rocketDeathJob = new RocketDeathJob
+            {
+                ThrustersManager = vfxThrustersSingleton.Manager
+            };
+            state.Dependency = rocketDeathJob.Schedule(state.Dependency);
             
             NormalShipDeathJob normalShipDeathJob = new NormalShipDeathJob
             {
@@ -70,6 +75,20 @@ namespace ShipECS.Systems
                 });
             }
         }
+        
+        [BurstCompile]
+        [WithNone(typeof(EnemyFollowTarget))]
+        public partial struct RocketDeathJob : IJobEntity
+        {
+            public VFXManagerParented<VFXRocketData> ThrustersManager;
+            
+            public void Execute(Entity entity, in LocalTransform transform, in DeadComponentTag tag, in RocketTrailData rocket)
+            {
+                ThrustersManager.Kill(rocket.RocketVFXIndex);
+            }
+        }
+        
+        
         
         [BurstCompile]
         public partial struct ShipRocketDeathJob : IJobEntity
