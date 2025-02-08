@@ -26,12 +26,6 @@ namespace ShipECS.Systems
             VFXExplosionsSingleton vfxExplosionSingleton = SystemAPI.GetSingletonRW<VFXExplosionsSingleton>().ValueRW;
             VFXThrustersSingleton vfxThrustersSingleton = SystemAPI.GetSingletonRW<VFXThrustersSingleton>().ValueRW;
             
-            ShipRocketDeathJob shipRocketDeathJob = new ShipRocketDeathJob
-            {
-                ExplosionsManager = vfxExplosionSingleton.Manager,
-                ThrustersManager = vfxThrustersSingleton.Manager
-            };
-            state.Dependency = shipRocketDeathJob.Schedule(state.Dependency);
             RocketDeathJob rocketDeathJob = new RocketDeathJob
             {
                 ThrustersManager = vfxThrustersSingleton.Manager
@@ -56,7 +50,6 @@ namespace ShipECS.Systems
         
         
         [BurstCompile]
-        [WithNone(typeof(RocketTrailData))]
         public partial struct NormalShipDeathJob : IJobEntity
         {
             public VFXManager<VFXExplosionRequest> ExplosionsManager;
@@ -77,38 +70,12 @@ namespace ShipECS.Systems
         }
         
         [BurstCompile]
-        [WithNone(typeof(EnemyFollowTarget))]
         public partial struct RocketDeathJob : IJobEntity
         {
             public VFXManagerParented<VFXRocketData> ThrustersManager;
             
             public void Execute(Entity entity, in LocalTransform transform, in DeadComponentTag tag, in RocketTrailData rocket)
             {
-                ThrustersManager.Kill(rocket.RocketVFXIndex);
-            }
-        }
-        
-        
-        
-        [BurstCompile]
-        public partial struct ShipRocketDeathJob : IJobEntity
-        {
-            public VFXManager<VFXExplosionRequest> ExplosionsManager;
-            public VFXManagerParented<VFXRocketData> ThrustersManager;
-            
-            public void Execute(Entity entity, in LocalTransform transform, in DeadComponentTag tag,
-                in EnemyFollowTarget enemyTag, in RocketTrailData rocket)
-            {
-                // Explosion
-                Random random = Random.CreateFromIndex((uint)entity.Index);
-                float explosionSize =
-                    random.NextFloat(100, 150f);
-                ExplosionsManager.AddRequest(new VFXExplosionRequest
-                {
-                    Position = transform.Position,
-                    Scale = explosionSize,
-                });
-                
                 ThrustersManager.Kill(rocket.RocketVFXIndex);
             }
         }

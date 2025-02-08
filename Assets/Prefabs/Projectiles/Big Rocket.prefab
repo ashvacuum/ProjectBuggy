@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6673500442897949193}
   - component: {fileID: 6718635722791027027}
   - component: {fileID: 7229998477706802086}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Turbine.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 3524133541324451952}
   - component: {fileID: 4146277494672239683}
   - component: {fileID: 3124871090727849432}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: jet.014
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -184,7 +184,7 @@ GameObject:
   - component: {fileID: 6769866241405845500}
   - component: {fileID: 6136039910410910936}
   - component: {fileID: 1564731912176242359}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Component_115
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -272,7 +272,7 @@ GameObject:
   - component: {fileID: 2134098852730268843}
   - component: {fileID: 8572394171716720863}
   - component: {fileID: 6061830395274930108}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Detail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +358,7 @@ GameObject:
   - component: {fileID: 9200605229528074618}
   - component: {fileID: 3975381238329385150}
   - component: {fileID: 8801678618998839989}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Detail.014
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -446,7 +446,7 @@ GameObject:
   - component: {fileID: 6933350873860904170}
   - component: {fileID: 5918157064991059491}
   - component: {fileID: 1041467433200903420}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Big Rocket
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -697,7 +697,11 @@ MonoBehaviour:
         y: 0
         z: -5
       ThrusterSize: 2
-      ThrusterLength: 6
+      ThrusterLength: 9
+      RocketColor:
+        x: 50
+        y: 255
+        z: 50
 --- !u!1 &7756394462487906592
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,7 +713,7 @@ GameObject:
   - component: {fileID: 668631979237022061}
   - component: {fileID: 6733063265247402202}
   - component: {fileID: 9012242201164528822}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Component_126
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -796,7 +800,7 @@ GameObject:
   - component: {fileID: 6655616805964349236}
   - component: {fileID: 4013524160879085}
   - component: {fileID: 6414261291195902691}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Component_303
   m_TagString: Untagged
   m_Icon: {fileID: 0}

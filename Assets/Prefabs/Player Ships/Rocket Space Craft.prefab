@@ -324,3 +324,7 @@ MonoBehaviour:
         z: -11.84
       ThrusterSize: 5
       ThrusterLength: 5
+      RocketColor:
+        x: 50
+        y: 255
+        z: 50

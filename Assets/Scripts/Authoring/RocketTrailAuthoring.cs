@@ -39,6 +39,7 @@ namespace Authoring
         public float3 ThrusterLocalPosition;
         public float ThrusterSize;
         public float ThrusterLength;
+        public float3 RocketColor;
 
         public static RocketData Default()
         {
@@ -46,7 +47,8 @@ namespace Authoring
             {
                 ThrusterSize = 1f,
                 ThrusterLength = 1f,
-                ThrusterLocalPosition = float3.zero
+                ThrusterLocalPosition = float3.zero,
+                RocketColor = new float3(255,255,255)
             };
         }
     }

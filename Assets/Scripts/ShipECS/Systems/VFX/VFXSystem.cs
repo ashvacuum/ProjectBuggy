@@ -276,8 +276,8 @@ partial struct VFXSystem : ISystem
     private VFXManager<VFXExplosionRequest> _explosionsManager;
     private VFXManagerParented<VFXRocketData> _thrustersManager;
 
-    private const int HitSparksCapacity = 1000;
-    private const int ExplosionsCapacity = 1000;
+    private const int HitSparksCapacity = 5000;
+    private const int ExplosionsCapacity = 5000;
     private const int ThrustersCapacity = 100000;
 
 

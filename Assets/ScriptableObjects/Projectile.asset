@@ -20,7 +20,7 @@ MonoBehaviour:
     Speed: 300
     FireRate: 1
     WeaponSize: 1
-    Damage: 7
+    Damage: 2
     Knockback: 150
     Range: 500
     Critical: 5
@@ -31,7 +31,7 @@ MonoBehaviour:
     Speed: 450
     FireRate: 0
     WeaponSize: 0
-    Damage: 10
+    Damage: 5
     Knockback: 0
     Range: 650
     Critical: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
     Speed: 0
     FireRate: 0
     WeaponSize: 0
-    Damage: 19
+    Damage: 7
     Knockback: 0
     Range: 0
     Critical: 0
@@ -86,7 +86,7 @@ MonoBehaviour:
     Speed: 600
     FireRate: 0.6
     WeaponSize: 3
-    Damage: 25
+    Damage: 10
     Knockback: 350
     Range: 950
     Critical: 30

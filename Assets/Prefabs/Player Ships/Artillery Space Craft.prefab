@@ -312,8 +312,12 @@ MonoBehaviour:
         x: 0
         y: 4
         z: -59
-      ThrusterSize: 2
+      ThrusterSize: 5
       ThrusterLength: 3
+      RocketColor:
+        x: 50
+        y: 255
+        z: 50
 --- !u!1 &9185681092122633078
 GameObject:
   m_ObjectHideFlags: 0
