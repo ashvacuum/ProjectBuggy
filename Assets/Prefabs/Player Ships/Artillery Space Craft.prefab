@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8806381681156467076}
   - component: {fileID: -7500812125144610506}
   - component: {fileID: -417469691608717054}
+  - component: {fileID: 2829477617905887729}
   m_Layer: 0
   m_Name: Artillery Space Craft
   m_TagString: Untagged
@@ -75,7 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 487cc95d51b53c44cad0978a8b6bd444, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25
+  speed: 50
   rotSpeed: 0.5
   CameraOffset:
     x: 0
@@ -293,6 +294,30 @@ MonoBehaviour:
     Tag05: 0
     Tag06: 0
     Tag07: 0
+--- !u!114 &2829477617905887729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304749839029204831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a021c4606bae99f4e9e0c339b298bdfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rocketData:
+    Data:
+      ThrusterLocalPosition:
+        x: 0
+        y: 4
+        z: -59
+      ThrusterSize: 5
+      ThrusterLength: 3
+      RocketColor:
+        x: 50
+        y: 255
+        z: 50
 --- !u!1 &9185681092122633078
 GameObject:
   m_ObjectHideFlags: 0

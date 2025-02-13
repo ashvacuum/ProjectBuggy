@@ -19,17 +19,24 @@ namespace ShipECS.Systems
             state.RequireForUpdate<DeadComponentTag>();
         }
 
-        //[BurstCompile]
+        [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
             
             VFXExplosionsSingleton vfxExplosionSingleton = SystemAPI.GetSingletonRW<VFXExplosionsSingleton>().ValueRW;
+            VFXThrustersSingleton vfxThrustersSingleton = SystemAPI.GetSingletonRW<VFXThrustersSingleton>().ValueRW;
             
-            ShipDeathJob shipDeathJob = new ShipDeathJob
+            RocketDeathJob rocketDeathJob = new RocketDeathJob
             {
-                ExplosionsManager = vfxExplosionSingleton.Manager,
+                ThrustersManager = vfxThrustersSingleton.Manager
             };
-            state.Dependency = shipDeathJob.Schedule(state.Dependency);
+            state.Dependency = rocketDeathJob.Schedule(state.Dependency);
+            
+            NormalShipDeathJob normalShipDeathJob = new NormalShipDeathJob
+            {
+                ExplosionsManager = vfxExplosionSingleton.Manager
+            };
+            state.Dependency = normalShipDeathJob.Schedule(state.Dependency);
             
             FinalizedDeathJob finalizeDeathJob = new FinalizedDeathJob
             {
@@ -41,11 +48,12 @@ namespace ShipECS.Systems
             
         }
         
+        
         [BurstCompile]
-        public partial struct ShipDeathJob : IJobEntity
+        public partial struct NormalShipDeathJob : IJobEntity
         {
             public VFXManager<VFXExplosionRequest> ExplosionsManager;
-
+            
             public void Execute(Entity entity, in LocalTransform transform, in DeadComponentTag tag,
                 in EnemyFollowTarget enemyTag)
             {
@@ -58,10 +66,17 @@ namespace ShipECS.Systems
                     Position = transform.Position,
                     Scale = explosionSize,
                 });
-                Debug.Log("Spawning VFX");
-
-
-
+            }
+        }
+        
+        [BurstCompile]
+        public partial struct RocketDeathJob : IJobEntity
+        {
+            public VFXManagerParented<VFXRocketData> ThrustersManager;
+            
+            public void Execute(Entity entity, in LocalTransform transform, in DeadComponentTag tag, in RocketTrailData rocket)
+            {
+                ThrustersManager.Kill(rocket.RocketVFXIndex);
             }
         }
 

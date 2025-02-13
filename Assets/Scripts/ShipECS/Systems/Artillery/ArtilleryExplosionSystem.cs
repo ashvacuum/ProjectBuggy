@@ -1,7 +1,6 @@
 using Authoring;
 using ShipECS.Systems.Damage;
 using Unity.Burst;
-using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -17,42 +16,48 @@ namespace ShipECS.Systems.Artillery
     [UpdateAfter(typeof(ArtilleryMovementSystem))]
     public partial struct ArtilleryExplosionSystem : ISystem
     {
-        private ComponentLookup<HealthComponent> _health;
         private ComponentLookup<KnockBackReceiver> _knockBackReceiver;
 
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<PhysicsWorldSingleton>();
-            //stores up to 1000 hits
-            _health = state.GetComponentLookup<HealthComponent>();
             _knockBackReceiver = state.GetComponentLookup<KnockBackReceiver>();
         }
 
         public void OnUpdate(ref SystemState state)
         {
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            _health.Update(ref state);
+            
+            VFXExplosionsSingleton vfxThrustersSingleton = SystemAPI.GetSingletonRW<VFXExplosionsSingleton>().ValueRW;
             _knockBackReceiver.Update(ref state);
             // Create a CollisionWorld reference
             var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
             var collisionWorld = physicsWorldSingleton.CollisionWorld;
             var random = Random.CreateFromIndex((uint)SystemAPI.Time.ElapsedTime * 1000);
             var hitResults = new NativeList<ColliderCastHit>(Allocator.Temp);
+            
             foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
             {
                 foreach (var (explosionTag, transform, entity) in
                          SystemAPI.Query<RefRO<ArtilleryExplosionTag>, RefRO<LocalTransform>>().WithEntityAccess()
                              .WithNone<DeadComponentTag>())
                 {
+                    
+                    
                     ecb.AddComponent<DeadComponentTag>(entity);
-                    var healthLookup = _health;
+                    
+                    vfxThrustersSingleton.Manager.AddRequest(new VFXExplosionRequest()
+                    {
+                        Position = transform.ValueRO.Position,
+                        Scale = random.NextFloat(artilleryFiringAspect.TotalRange, artilleryFiringAspect.TotalRange * 3f)
+                    });
 
                     var collisionFilter = new CollisionFilter()
                     {
                         BelongsTo = 1u << 0, CollidesWith = (1u << 2) | (1u << 3), GroupIndex = 0
                     };
                     var hasHit = collisionWorld.SphereCastAll(transform.ValueRO.Position,
-                        artilleryFiringAspect.TotalRange,
+                        artilleryFiringAspect.TotalRange * .5f,
                         transform.ValueRO.Forward(),
                         0,
                         ref hitResults,
@@ -65,7 +70,7 @@ namespace ShipECS.Systems.Artillery
                     }
 
                     var tempJob = new NativeList<ColliderCastHit>(Allocator.TempJob);
-                    tempJob.AddRange(hitResults);
+                    tempJob.AddRange(hitResults.AsArray());
                     
                     var job = new ProcessHitsJob
                     {
@@ -85,6 +90,7 @@ namespace ShipECS.Systems.Artillery
                     var handle = job.Schedule(state.Dependency);
 
                     state.Dependency = handle;
+                    state.Dependency.Complete();
 
                     /*
                     Debug.Log($"Found Hits {hitResults.Length}");
@@ -145,7 +151,7 @@ namespace ShipECS.Systems.Artillery
         public float KnockbackForce;
         public float TotalDamage;
         public float TotalCritical;
-        public Unity.Mathematics.Random Random;
+        public Random Random;
 
         public void Execute()
         {

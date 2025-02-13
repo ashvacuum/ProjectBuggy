@@ -65,6 +65,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3574062286998883874}
+    - targetCorrespondingSourceObject: {fileID: 260845055025845463, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6365724345955275938}
   m_SourcePrefab: {fileID: 100100000, guid: ba465d4a7fb2c784a807e4e10648ad70, type: 3}
 --- !u!1 &6569234968048207877 stripped
 GameObject:
@@ -105,6 +108,7 @@ MonoBehaviour:
   RangeBonus: 0
   ExpBonus: 0
   RadiusBonus: 0
+  CriticalBonus: 0
   ProjectileStats: {fileID: 11400000, guid: ed9c821274752dc428b992f9086fb7eb, type: 2}
 --- !u!114 &3743403228728422599
 MonoBehaviour:
@@ -300,3 +304,27 @@ MonoBehaviour:
     Tag05: 0
     Tag06: 0
     Tag07: 0
+--- !u!114 &6365724345955275938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6569234968048207877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a021c4606bae99f4e9e0c339b298bdfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rocketData:
+    Data:
+      ThrusterLocalPosition:
+        x: 0
+        y: 4.84
+        z: -11.84
+      ThrusterSize: 5
+      ThrusterLength: 5
+      RocketColor:
+        x: 50
+        y: 255
+        z: 50

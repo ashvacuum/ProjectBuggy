@@ -121,6 +121,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8501589321424488365, guid: 3a55112667d7c2344bdaf6659f6e17e7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9087879197833042090}
+    - targetCorrespondingSourceObject: {fileID: 8501589321424488365, guid: 3a55112667d7c2344bdaf6659f6e17e7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2511332525142450439}
   m_SourcePrefab: {fileID: 100100000, guid: 3a55112667d7c2344bdaf6659f6e17e7, type: 3}
 --- !u!1 &3249313154710831440 stripped
 GameObject:
@@ -340,3 +343,27 @@ MonoBehaviour:
         Tag07: 0
     m_SerializedVersion: 1
   m_SerializedVersion: 1
+--- !u!114 &2511332525142450439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3249313154710831440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a021c4606bae99f4e9e0c339b298bdfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rocketData:
+    Data:
+      ThrusterLocalPosition:
+        x: 0
+        y: 0
+        z: -10
+      ThrusterSize: 2
+      ThrusterLength: 5
+      RocketColor:
+        x: 255
+        y: 0
+        z: 0

@@ -25,6 +25,21 @@ public struct VFXExplosionRequest
 }
 
 
+[VFXType(VFXTypeAttribute.Usage.GraphicsBuffer)]
+public struct VFXRocketData : IKillableVFX
+{
+    public Vector3 Position;
+    public Vector3 Direction;
+    public Vector3 Color;
+    public float Size;
+    public float Length;
+    
+    public void Kill()
+    {
+        Size = -1f;
+    }
+}
+
 public struct VFXManager<T> where T : unmanaged
 {
     public NativeReference<int> RequestsCount;
@@ -92,6 +107,134 @@ public struct VFXManager<T> where T : unmanaged
     }
 }
 
+public interface IKillableVFX
+{
+    public void Kill();
+}
+
+[VFXType(VFXTypeAttribute.Usage.GraphicsBuffer)]
+public struct VFXSpawnToDataRequest
+{
+    public int IndexInData;
+}
+
+public struct VFXManagerParented<T> where T : unmanaged, IKillableVFX
+{
+    public NativeReference<int> RequestsCount;
+    public NativeArray<VFXSpawnToDataRequest> Requests;
+    public NativeArray<T> Datas;
+    private NativeQueue<int> FreeIndexes;
+    
+    public bool GraphIsInitialized { get; private set; }
+
+    public VFXManagerParented(int maxCount, ref GraphicsBuffer requestsGraphicsBuffer, ref GraphicsBuffer datasGraphicsBuffer)
+    {
+        RequestsCount = new NativeReference<int>(0, Allocator.Persistent);
+        Requests = new NativeArray<VFXSpawnToDataRequest>(maxCount, Allocator.Persistent);
+        Datas = new NativeArray<T>(maxCount, Allocator.Persistent);
+        FreeIndexes = new NativeQueue<int>(Allocator.Persistent);
+
+        requestsGraphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, maxCount,
+            Marshal.SizeOf(typeof(VFXSpawnToDataRequest)));
+        datasGraphicsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.Structured, maxCount,
+            Marshal.SizeOf(typeof(T)));
+
+        for (int i = 0; i < maxCount; i++)
+        {
+            FreeIndexes.Enqueue(i);
+        }
+        
+        GraphIsInitialized = false;
+    }
+
+    public void Dispose(ref GraphicsBuffer requestsGraphicsBuffer, ref GraphicsBuffer datasGraphicsBuffer)
+    {
+        requestsGraphicsBuffer?.Dispose();
+        datasGraphicsBuffer?.Dispose();
+        if (RequestsCount.IsCreated)
+        {
+            RequestsCount.Dispose();
+        }
+        if (Requests.IsCreated)
+        {
+            Requests.Dispose();
+        }
+        if (Datas.IsCreated)
+        {
+            Datas.Dispose();
+        }
+        if (FreeIndexes.IsCreated)
+        {
+            FreeIndexes.Dispose();
+        }
+    }
+
+    public void Update(
+        VisualEffect vfxGraph, 
+        ref GraphicsBuffer requestsGraphicsBuffer, 
+        ref GraphicsBuffer datasGraphicsBuffer, 
+        float deltaTimeMultiplier, 
+        int spawnBatchId, 
+        int requestsCountId, 
+        int requestsBufferId, 
+        int datasBufferId)
+    {
+        if (vfxGraph != null && requestsGraphicsBuffer != null && datasGraphicsBuffer != null)
+        {
+            vfxGraph.playRate = deltaTimeMultiplier;
+            
+            if (!GraphIsInitialized)
+            {
+                vfxGraph.SetGraphicsBuffer(requestsBufferId, requestsGraphicsBuffer);
+                vfxGraph.SetGraphicsBuffer(datasBufferId, datasGraphicsBuffer);
+                GraphIsInitialized = true;
+            }
+
+            if (requestsGraphicsBuffer.IsValid() && datasGraphicsBuffer.IsValid())
+            {
+                requestsGraphicsBuffer.SetData(Requests, 0, 0, RequestsCount.Value);
+                datasGraphicsBuffer.SetData(Datas);
+                
+                vfxGraph.SetInt(requestsCountId, math.min(RequestsCount.Value, Requests.Length));
+                vfxGraph.SendEvent(spawnBatchId);
+                RequestsCount.Value = 0;
+            }
+        }
+    }
+    
+    public int Create()
+    {
+        if (FreeIndexes.TryDequeue(out int index))
+        {
+            // Request to spawn
+            if (RequestsCount.Value < Requests.Length)
+            {
+                Requests[RequestsCount.Value] = new VFXSpawnToDataRequest
+                {
+                    IndexInData = index,
+                };
+                RequestsCount.Value++;
+            }
+            
+            return index;
+        }
+
+        return -1;
+    }
+
+    public void Kill(int index)
+    {
+        if (index >= 0 && index < Datas.Length)
+        {
+            T killdata = default;
+            killdata.Kill();
+            Datas[index] = killdata;
+
+            FreeIndexes.Enqueue(index);
+        }
+    }
+}
+
 public static class VFXReferences
 {
     public static VisualEffect HitSparksGraph;
@@ -99,7 +242,17 @@ public static class VFXReferences
 
     public static VisualEffect ExplosionsGraph;
     public static GraphicsBuffer ExplosionsRequestsBuffer;
+    
+    public static VisualEffect ThrustersGraph;
+    public static GraphicsBuffer ThrusterRequestsBuffer;
+    public static GraphicsBuffer ThrusterDatasBuffer;
 }
+
+public struct VFXThrustersSingleton : IComponentData
+{
+    public VFXManagerParented<VFXRocketData> Manager;
+}
+
 
 public struct VFXHitSparksSingleton : IComponentData
 {
@@ -121,9 +274,11 @@ partial struct VFXSystem : ISystem
 
     private VFXManager<VFXHitSparksRequest> _hitSparksManager;
     private VFXManager<VFXExplosionRequest> _explosionsManager;
+    private VFXManagerParented<VFXRocketData> _thrustersManager;
 
-    private const int HitSparksCapacity = 1000;
-    private const int ExplosionsCapacity = 1000;
+    private const int HitSparksCapacity = 5000;
+    private const int ExplosionsCapacity = 5000;
+    private const int ThrustersCapacity = 100000;
 
 
     public void OnCreate(ref SystemState state)
@@ -139,6 +294,9 @@ partial struct VFXSystem : ISystem
 
         _explosionsManager = new VFXManager<VFXExplosionRequest>(ExplosionsCapacity, ref ExplosionsRequestsBuffer);
 
+        _thrustersManager =
+            new VFXManagerParented<VFXRocketData>(ThrustersCapacity, ref ThrusterRequestsBuffer,
+                ref ThrusterDatasBuffer);
 
         // Singletons
         state.EntityManager.AddComponentData(state.EntityManager.CreateEntity(), new VFXHitSparksSingleton
@@ -149,6 +307,10 @@ partial struct VFXSystem : ISystem
         {
             Manager = _explosionsManager,
         });
+        state.EntityManager.AddComponentData(state.EntityManager.CreateEntity(), new VFXThrustersSingleton
+        {
+            Manager = _thrustersManager,
+        });
         
     }
 
@@ -157,6 +319,7 @@ partial struct VFXSystem : ISystem
     {
         SystemAPI.QueryBuilder().WithAll<VFXHitSparksSingleton>().Build().CompleteDependency();
         SystemAPI.QueryBuilder().WithAll<VFXExplosionsSingleton>().Build().CompleteDependency();
+        SystemAPI.QueryBuilder().WithAll<VFXThrustersSingleton>().Build().CompleteDependency();
 
         var rateRatio = SystemAPI.Time.DeltaTime / Time.deltaTime;
 
@@ -175,11 +338,22 @@ partial struct VFXSystem : ISystem
             _spawnBatchId,
             _requestsCountId,
             _requestsBufferId);
+        
+        _thrustersManager.Update(
+            ThrustersGraph, 
+            ref ThrusterRequestsBuffer, 
+            ref ThrusterDatasBuffer,
+            rateRatio,
+            _spawnBatchId, 
+            _requestsCountId,
+            _requestsBufferId,
+            _datasBufferId);
     }
 
     public void OnDestroy(ref SystemState state)
     {
         _hitSparksManager.Dispose(ref HitSparksRequestsBuffer);
         _explosionsManager.Dispose(ref ExplosionsRequestsBuffer);
+        _thrustersManager.Dispose(ref VFXReferences.ThrusterRequestsBuffer, ref VFXReferences.ThrusterDatasBuffer);
     }
 }

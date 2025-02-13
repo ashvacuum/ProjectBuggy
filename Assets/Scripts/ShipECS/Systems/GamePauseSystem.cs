@@ -4,8 +4,8 @@ using Unity.Entities;
 namespace ShipECS.Systems
 {
     //do not include this in the pausable system group
-    [UpdateInGroup(typeof(SimulationSystemGroup))]
-    [UpdateBefore(typeof(FixedStepSimulationSystemGroup))]
+    //[UpdateInGroup(typeof(SimulationSystemGroup))]
+    //[UpdateBefore(typeof(FixedStepSimulationSystemGroup))]
     partial struct GamePauseSystem : ISystem
     {
         [BurstCompile]
