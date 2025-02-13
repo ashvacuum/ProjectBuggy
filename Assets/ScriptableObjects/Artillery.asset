@@ -15,67 +15,78 @@ MonoBehaviour:
   upgradeData:
   - UpgradeType: -1
     Lifetime: 5
-    Count: 4
+    Count: 2
     Penetration: 6
     Speed: 100
-    FireRate: 5
+    FireRate: 2.5
     WeaponSize: 50
-    Damage: 1
+    Damage: 10
     Knockback: 10
-    Range: 300
+    Range: 150
     Critical: 10
-  - UpgradeType: -1
+  - UpgradeType: 16
     Lifetime: 5
-    Count: 4
-    Penetration: 6
-    Speed: 200
-    FireRate: 5
-    WeaponSize: 50
-    Damage: 1
-    Knockback: 10
-    Range: 300
-    Critical: 10
-  - UpgradeType: -1
-    Lifetime: 5
-    Count: 4
+    Count: 2
     Penetration: 6
     Speed: 100
-    FireRate: 5
+    FireRate: 2.2
     WeaponSize: 50
-    Damage: 1
+    Damage: 10
     Knockback: 10
-    Range: 300
+    Range: 150
     Critical: 10
-  - UpgradeType: -1
+  - UpgradeType: 2
     Lifetime: 5
     Count: 4
     Penetration: 6
     Speed: 100
-    FireRate: 5
+    FireRate: 2.5
     WeaponSize: 50
-    Damage: 1
+    Damage: 10
     Knockback: 10
-    Range: 300
+    Range: 150
     Critical: 10
-  - UpgradeType: -1
+  - UpgradeType: 4
     Lifetime: 5
-    Count: 4
+    Count: 2
+    Penetration: 10
+    Speed: 100
+    FireRate: 2.5
+    WeaponSize: 50
+    Damage: 10
+    Knockback: 10
+    Range: 150
+    Critical: 10
+  - UpgradeType: 256
+    Lifetime: 5
+    Count: 2
     Penetration: 6
     Speed: 100
-    FireRate: 5
+    FireRate: 2.5
     WeaponSize: 50
-    Damage: 1
+    Damage: 10
     Knockback: 10
-    Range: 300
+    Range: 250
     Critical: 10
-  - UpgradeType: -1
+  - UpgradeType: 64
     Lifetime: 5
-    Count: 4
+    Count: 2
     Penetration: 6
     Speed: 100
-    FireRate: 5
+    FireRate: 2.5
     WeaponSize: 50
-    Damage: 1
+    Damage: 20
     Knockback: 10
-    Range: 300
+    Range: 150
+    Critical: 10
+  - UpgradeType: 66
+    Lifetime: 5
+    Count: 8
+    Penetration: 6
+    Speed: 100
+    FireRate: 2.5
+    WeaponSize: 50
+    Damage: 20
+    Knockback: 10
+    Range: 150
     Critical: 10

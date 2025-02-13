@@ -23,7 +23,7 @@ namespace ShipECS.Systems
 
         public void OnUpdate(ref SystemState state)
         {
-            //var ecb = new EntityCommandBuffer(Allocator.Temp);
+            var ecb = new EntityCommandBuffer(Allocator.TempJob);
             
             var vfxSparksSingleton = SystemAPI.GetSingletonRW<VFXHitSparksSingleton>().ValueRW;
             var hasBuffer = SystemAPI.TryGetSingletonBuffer<DamageNumberRequest>(out var dmgBuffer, false);
@@ -31,15 +31,15 @@ namespace ShipECS.Systems
             var nonPlayerHealthJob = new NonPlayerHealthJob()
             {
                 DeltaTime = SystemAPI.Time.DeltaTime,
-                ECB = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
-                    .CreateCommandBuffer(state.WorldUnmanaged),
+                ECB = ecb,
                 HitSparksManager = vfxSparksSingleton.Manager,
                 DamageBuffers = dmgBuffer,
                 PlayerLookup = SystemAPI.GetComponentLookup<PlayerTag>(true)
             };
                 
             state.Dependency = nonPlayerHealthJob.Schedule(state.Dependency);
-
+            state.Dependency.Complete();
+            //nonPlayerHealthJob.C
             /*
 
             foreach (var (health, transform,entity) in SystemAPI.Query<RefRW<HealthComponent>, RefRO<LocalTransform>>().WithEntityAccess().WithNone<DeadComponentTag>())
@@ -105,6 +105,7 @@ namespace ShipECS.Systems
             if (health.CurrentNextTimeToTakeDamage > 0)
             {
                 health.CurrentNextTimeToTakeDamage -= DeltaTime;
+                return;
             }
             
             var difference = math.abs(health.CurrentHealth - health.PreviousHealth);
@@ -119,6 +120,9 @@ namespace ShipECS.Systems
                     IsCritical = health.WasDamagedCritical
                 });
             }
+            
+            health.WasDamagedCritical = false;
+            health.PreviousHealth = health.CurrentHealth;
 
             if (health.CurrentHealth <= 0)
             {
