@@ -1,8 +1,9 @@
-using System.ComponentModel;
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
+[Obsolete]
 public class ProjectileAuthoring : MonoBehaviour
 {
     class Baker : Baker<ProjectileAuthoring>

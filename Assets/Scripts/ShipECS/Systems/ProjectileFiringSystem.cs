@@ -15,13 +15,15 @@ namespace ShipECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
             state.RequireForUpdate<ProjectileSpawnerComponent>();
         }
         
         public void OnUpdate(ref SystemState state)
         {
 
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            var ecb =  SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
+                .CreateCommandBuffer(state.WorldUnmanaged);
             var projectileSpawnerData = SystemAPI.GetSingletonBuffer<ProjectileSpawnerComponent>();
             
             
@@ -30,7 +32,7 @@ namespace ShipECS.Systems
             foreach (var contents in SystemAPI.Query<RefRO<ProjectileMotion>, RefRO<NewSpawnRenderInvisibleTag>>().WithEntityAccess()
                          .WithNone<DeadComponentTag>())
             {
-                Debug.Log("Fixing Flicker issue");
+                //Debug.Log("Fixing Flicker issue");
                 RenderingFlickerFixUtil.BeginRecursiveLayerChange<NewSpawnRenderInvisibleTag>(ref state, contents.Item3, ecb);
             }
             
@@ -93,8 +95,8 @@ namespace ShipECS.Systems
 
             }
             enemyTargetBuffers.Clear();
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
+            //ecb.Playback(state.EntityManager);
+            //ecb.Dispose();
         }
 
         
