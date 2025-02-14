@@ -20,7 +20,7 @@ MonoBehaviour:
     Speed: 300
     FireRate: 1
     WeaponSize: 1
-    Damage: 2
+    Damage: 20
     Knockback: 150
     Range: 500
     Critical: 5
