@@ -110,7 +110,7 @@ namespace NonECS.UI
         
         if (damage.IsCritical)
         {
-            Debug.Log("Critical Detected");
+            //Debug.Log("Critical Detected");
             damageText.AddToClassList("critical-damage-text");
             damageText.style.color = Color.red;
             damageText.style.fontSize = 23f;

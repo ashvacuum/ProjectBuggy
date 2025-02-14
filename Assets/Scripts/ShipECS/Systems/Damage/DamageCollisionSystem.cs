@@ -1,6 +1,9 @@
 using Authoring;
 using Unity.Burst;
+using Unity.Burst.Intrinsics;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Jobs;
 using Unity.Physics;
 using Unity.Physics.Stateful;
 using UnityEngine;
@@ -30,7 +33,7 @@ namespace ShipECS.Systems.Damage
             
             _damage.Update(ref state);
             _health.Update(ref state);
-
+/*
             foreach (var (triggerEventBuffer, entityA) in SystemAPI 
                          .Query<DynamicBuffer<StatefulTriggerEvent>>().WithEntityAccess())
             {
@@ -55,7 +58,7 @@ namespace ShipECS.Systems.Damage
                     
                     if (damageComponent.CriticalChance > 0 && rolledChance < damageComponent.CriticalChance)
                     {
-                        Debug.Log($"Rolled {rolledChance}/{damageComponent.CriticalChance} ");
+                        //Debug.Log($"Rolled {rolledChance}/{damageComponent.CriticalChance} ");
                         healthB.CurrentHealth -= damageComponent.Damage * DamageConstants.CritMultiplier;
                         healthB.WasDamagedCritical = true;
                     }
@@ -100,7 +103,108 @@ namespace ShipECS.Systems.Damage
                     _health[entityA] = healthA;
                 }
             }
+*/
+
+            var statefulTriggerJob = new StatefulTriggerJob()
+            {
+                Damage = _damage,
+                Health = _health,
+                Random = Random.CreateFromIndex((uint)SystemAPI.Time.ElapsedTime * 1000)
+            };
+            state.Dependency = statefulTriggerJob.Schedule(state.Dependency);
             
+            var statefulCollisionJob = new StatefulCollisionJob()
+            {
+                Damage = _damage,
+                Health = _health,
+            };
+            state.Dependency = statefulCollisionJob.Schedule(state.Dependency);
+            
+            
+            
+        }
+        
+        [BurstCompile]
+        public partial struct StatefulTriggerJob : IJobEntity
+        {
+            [ReadOnly]
+            public ComponentLookup<DamageComponent> Damage;
+            public ComponentLookup<HealthComponent> Health;
+            public Random Random;
+            
+            public void Execute(Entity entityA, in DynamicBuffer<StatefulTriggerEvent> triggerEventBuffer)
+            {
+                foreach (var trigger in triggerEventBuffer)
+                {
+                    var currentTriggerEventBuffer = trigger;
+                    var entityB = currentTriggerEventBuffer.GetOtherEntity(entityA);
+                    
+                    if (trigger.State != StatefulEventState.Enter) continue;
+
+                    if (!Health.HasComponent(entityA) || !Damage.HasComponent(entityB) || !Health.HasComponent(entityB) || !Damage.HasComponent(entityA)) continue;
+                    
+                    var healthB = Health[entityB];
+                    var damageComponent = Damage[entityA];
+                    var healthA = Health[entityA];
+
+                    if (healthB.CurrentHealth <= 0 || !(healthB.CurrentNextTimeToTakeDamage <= 0)) return;
+                    healthB.PreviousHealth = healthB.CurrentHealth;
+                    healthB.CurrentHealth -= damageComponent.Damage;
+                    var rolledChance = Random.NextFloat(0, 100);
+                    
+                    if (damageComponent.CriticalChance > 0 && rolledChance < damageComponent.CriticalChance)
+                    {
+                        //Debug.Log($"Rolled {rolledChance}/{damageComponent.CriticalChance} ");
+                        healthB.CurrentHealth -= damageComponent.Damage * DamageConstants.CritMultiplier;
+                        healthB.WasDamagedCritical = true;
+                    }
+                    else
+                    {
+                        healthB.CurrentHealth -= damageComponent.Damage;
+                        healthB.WasDamagedCritical = false;
+                    }
+                    
+                    healthB.CurrentNextTimeToTakeDamage = healthB.NextTimeToTakeDamage;
+                    Health[entityB] = healthB;
+                    
+                    healthA.CurrentHealth -= 1;
+                    healthA.PreviousHealth =
+                        healthA.CurrentHealth; //prevents damage system from computing any damage
+
+                    healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
+                    Health[entityA] = healthA;
+
+                }
+            }
+        }
+
+        public partial struct StatefulCollisionJob : IJobEntity
+        {
+            
+            [ReadOnly]
+            public ComponentLookup<DamageComponent> Damage;
+            public ComponentLookup<HealthComponent> Health;
+            
+            public void Execute(Entity entityA, in DynamicBuffer<StatefulCollisionEvent> triggerEventBuffer)
+            {
+
+                foreach (var trigger in triggerEventBuffer)
+                {
+                    var currentTriggerEventBuffer = trigger;
+                    var entityB = currentTriggerEventBuffer.GetOtherEntity(entityA);
+                    if (trigger.State == StatefulEventState.Exit) continue;
+
+
+                    if (!Health.HasComponent(entityA) || !Damage.HasComponent(entityB)) continue;
+                    var healthA = Health[entityA];
+                    var damageComponent = Damage[entityB];
+                    if (healthA.CurrentHealth <= 0 || !(healthA.CurrentNextTimeToTakeDamage <= 0)) return;
+                    healthA.PreviousHealth = healthA.CurrentHealth;
+                    healthA.CurrentHealth -= damageComponent.Damage;
+                    healthA.CurrentNextTimeToTakeDamage = healthA.NextTimeToTakeDamage;
+                    Health[entityA] = healthA;
+                }
+            }
         }
     }
 

@@ -131,7 +131,7 @@ namespace ShipECS.Systems
 
             public void Execute(Entity entity, in DeadComponentTag dead)
             {
-                Debug.Log($"Destroying Entity: {entity.Index}");
+                //Debug.Log($"Destroying Entity: {entity.Index}");
                 ECB.DestroyEntity(_chunkIndex, entity);
             }
 
