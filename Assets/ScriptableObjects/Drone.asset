@@ -24,3 +24,36 @@ MonoBehaviour:
     Knockback: 200
     Range: 300
     Critical: 5
+  - UpgradeType: -1
+    Lifetime: 0.1
+    Count: 1
+    Penetration: 0
+    Speed: 300
+    FireRate: 2
+    WeaponSize: 1
+    Damage: 1
+    Knockback: 200
+    Range: 300
+    Critical: 5
+  - UpgradeType: -1
+    Lifetime: 0.1
+    Count: 1
+    Penetration: 0
+    Speed: 300
+    FireRate: 2
+    WeaponSize: 1
+    Damage: 1
+    Knockback: 200
+    Range: 300
+    Critical: 5
+  - UpgradeType: -1
+    Lifetime: 0.1
+    Count: 1
+    Penetration: 0
+    Speed: 300
+    FireRate: 2
+    WeaponSize: 1
+    Damage: 1
+    Knockback: 200
+    Range: 300
+    Critical: 5

@@ -1,4 +1,5 @@
 using Authoring;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -14,14 +15,48 @@ namespace ShipECS.Systems
             _droneComponentQuery = state.EntityManager.CreateEntityQuery(
                 ComponentType.ReadOnly(typeof(DroneComponent)),
                 ComponentType.ReadOnly(typeof(LocalTransform)));
+            
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+            
+            
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            
+            var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
+                .CreateCommandBuffer(state.WorldUnmanaged);
+
+            var hasDrone = SystemAPI.TryGetSingletonBuffer<DroneDatabase>(out var droneDatabases);
+            foreach (var artillery in SystemAPI.Query<DroneAspect>())
+            {
+
+                var remainingDronesToSpawn = 0;
+                if (_droneComponentQuery.IsEmpty)
+                {
+                    remainingDronesToSpawn = artillery.TotalCount;
+                }
+                else
+                {
+                    remainingDronesToSpawn = artillery.TotalCount - _droneComponentQuery.ToEntityArray(Allocator.Temp).Length;
+                }
+
+                if (!hasDrone) continue;
+                
+                if (droneDatabases.Length <= 0) continue;
+                
+                for (var i = 0; i < remainingDronesToSpawn; i++)
+                {
+                    ecb.Instantiate(droneDatabases[0].PrefabEntity);
+                }
+
+            }
         }
     }
 
+    
+    /// <summary>
+    /// Refers to actual drones that can turn and fire
+    /// </summary>
     public struct DroneComponent : IComponentData
     {
         

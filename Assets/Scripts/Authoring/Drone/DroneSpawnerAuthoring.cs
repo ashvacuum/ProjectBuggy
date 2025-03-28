@@ -14,14 +14,13 @@ namespace Authoring
             {
                 var entity = GetEntity(TransformUsageFlags.None);
                 var buffer = AddBuffer<DroneDatabase>(entity);
+
                 buffer.Add(new DroneDatabase()
                 {
                     PrefabEntity = GetEntity(authoring.droneEntity, TransformUsageFlags.Dynamic)
                 });
-                AddComponent(entity, new DroneComponent());
+                
             }
-
-
         }
     }
 
