@@ -2,7 +2,7 @@ using ShipECS.Systems;
 using Unity.Entities;
 using UnityEngine;
 
-namespace Authoring
+namespace Authoring.Drone
 {
     public class DroneSpawnerAuthoring : MonoBehaviour
     {

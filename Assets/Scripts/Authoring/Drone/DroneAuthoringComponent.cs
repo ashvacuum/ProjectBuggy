@@ -2,14 +2,17 @@ using ShipECS.Systems;
 using Unity.Entities;
 using UnityEngine;
 
-public class DroneAuthoringComponent : MonoBehaviour
+namespace Authoring.Drone
 {
-    private class DroneAuthoringComponentBaker : Baker<DroneAuthoringComponent>
+    public class DroneAuthoringComponent : MonoBehaviour
     {
-        public override void Bake(DroneAuthoringComponent authoring)
+        private class DroneAuthoringComponentBaker : Baker<DroneAuthoringComponent>
         {
-            var entity = GetEntity(authoring.gameObject, TransformUsageFlags.Dynamic);
-            AddComponent<DroneComponent>(entity);
+            public override void Bake(DroneAuthoringComponent authoring)
+            {
+                var entity = GetEntity(authoring.gameObject, TransformUsageFlags.Dynamic);
+                AddComponent<DroneComponent>(entity);
+            }
         }
     }
 }

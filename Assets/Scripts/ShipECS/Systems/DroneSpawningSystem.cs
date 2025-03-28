@@ -1,4 +1,5 @@
 using Authoring;
+using Authoring.Drone;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
