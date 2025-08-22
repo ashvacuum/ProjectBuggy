@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <ui:Template name="upgradecontainer" src="project://database/Assets/UI%20Toolkit/XML/upgradecontainer.uxml?fileID=9197481963319205126&amp;guid=d0ebd11674f378f4abef827928180814&amp;type=3#upgradecontainer" />
+    <Style src="project://database/Assets/UI%20Toolkit/Style%20Sheets/MainGameImproved.uss?fileID=7433441132597879392&amp;guid=NEW_GUID&amp;type=3#MainGameImproved" />
+    
+    <!-- Main Game HUD Container -->
+    <ui:VisualElement name="game-hud" class="game-hud">
+        
+        <!-- Bottom HUD Panel -->
+        <ui:VisualElement name="bottom-hud" class="bottom-hud">
+            <!-- Experience Bar -->
+            <ui:ProgressBar value="0" title="Experience" name="ExperienceBar" high-value="1" 
+                           class="experience-bar" />
+            
+            <!-- Level Display -->
+            <ui:Label name="LevelData" text="1" class="level-display" />
+        </ui:VisualElement>
+        
+        <!-- Player Health Bar (follows player) -->
+        <ui:ProgressBar value="1" name="HealthBar" title="Health" 
+                       high-value="100" class="health-bar" />
+    </ui:VisualElement>
+    
+    <!-- Upgrade Selection Container -->
+    <ui:Instance template="upgradecontainer" name="upgrade-container" class="upgrade-overlay" />
+</ui:UXML>
