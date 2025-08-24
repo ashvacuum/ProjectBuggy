@@ -153,7 +153,7 @@ namespace ShipECS.Systems
                 shipTransform.Position + finalDirection * calcExp,
                 calcExp);
             
-            LocalTransform newTransform = new LocalTransform
+            var newTransform = new LocalTransform
             {
                 Position = new float3(calculatedPosition.x, 0, calculatedPosition.z),
                 Rotation = math.slerp(

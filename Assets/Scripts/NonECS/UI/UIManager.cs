@@ -1,5 +1,8 @@
 using System;
+using Authoring;
+using ShipECS.Systems;
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace NonECS.UI

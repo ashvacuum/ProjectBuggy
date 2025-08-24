@@ -23,7 +23,7 @@ namespace NonECS.WeaponGeneration
         public T GetParameter<T>(string paramName, T defaultValue = default(T))
         {
             var param = parameters.Find(p => p.name == paramName);
-            if (param == null) return defaultValue;
+            if (string.IsNullOrEmpty(param.value)) return defaultValue;
             
             try
             {
@@ -38,7 +38,7 @@ namespace NonECS.WeaponGeneration
         public void SetParameter(string paramName, object value)
         {
             var param = parameters.Find(p => p.name == paramName);
-            if (param == null)
+            if (string.IsNullOrEmpty(param.value))
             {
                 parameters.Add(new BehaviorParameter { name = paramName, value = value.ToString() });
             }

@@ -31,8 +31,8 @@ namespace NonECS.UI
         
         private void Start()
         {
-            if (_entityManager.IsCreated)
-                return;
+           // if (_entityManager.)
+            //    return;
                 
             // Fallback if not initialized by UIManager
             Initialize(World.DefaultGameObjectInjectionWorld.EntityManager);
@@ -68,7 +68,7 @@ namespace NonECS.UI
 
         private void FixedUpdate()
         {
-            if (!_entityManager.IsCreated || !_entityManager.Exists(_targetEntity))
+            if (!_entityManager.Exists(_targetEntity))
                 return;
                 
             UpdateUIElements();

@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Editor
 {
-    public class WeaponGeneratorWindow : EditorWindow
+    public partial class WeaponGeneratorWindow : EditorWindow
     {
         private List<WeaponDefinition> weaponDefinitions = new List<WeaponDefinition>();
         private Vector2 scrollPosition;
@@ -62,7 +62,6 @@ namespace Editor
         private void OnEnable()
         {
             LoadWeaponDefinitions();
-            InitializeStyles();
             LoadIcons();
         }
         
@@ -113,6 +112,12 @@ namespace Editor
                 padding = new RectOffset(10, 10, 8, 8)
             };
             
+            buttonStyle = new GUIStyle("button")
+            {
+                fontSize = 11,
+                padding = new RectOffset(8, 8, 6, 6)
+            };
+            
             separatorStyle = new GUIStyle()
             {
                 normal = { background = MakeTex(1, 1, EditorGUIUtility.isProSkin ? new Color(0.1f, 0.1f, 0.1f) : new Color(0.6f, 0.6f, 0.6f)) },
@@ -147,6 +152,11 @@ namespace Editor
         
         private void OnGUI()
         {
+            if (headerStyle == null)
+            {
+                InitializeStyles();
+            }
+            
             DrawHeader();
             DrawTabBar();
             
@@ -674,9 +684,7 @@ namespace Editor
             
             try
             {
-                var json = WeaponJsonImporter.ExportToJson(weapon);
-                File.WriteAllText(filePath, json);
-                
+                WeaponJsonImporter.ExportToJson(weapon, filePath);
                 ShowNotification(new GUIContent($"Exported {weapon.displayName}!"));
                 Debug.Log($"Exported weapon to: {filePath}");
             }
@@ -699,8 +707,7 @@ namespace Editor
                 try
                 {
                     var filePath = Path.Combine(folderPath, $"{weapon.weaponName}.json");
-                    var json = WeaponJsonImporter.ExportToJson(weapon);
-                    File.WriteAllText(filePath, json);
+                    WeaponJsonImporter.ExportToJson(weapon, filePath);
                     exportedCount++;
                 }
                 catch (System.Exception e)

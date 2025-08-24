@@ -36,15 +36,15 @@ namespace NonECS.UI
                     break;
                 case UpgradeType.SpeedBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue, 
-                        (ref PlayerBonusStat stats, float value) => stats.SpeedBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.SpeedBonus = value);
                     break;
                 case UpgradeType.DamageBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.DamageBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.DamageBonus = value);
                     break;
                 case UpgradeType.FireRateReductionBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.FireRateReductionBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.FireRateReductionBonus = value);
                     break;
                 case UpgradeType.ExpBonus:
                     ApplyExperienceUpgrade(targetEntity, selection.UpgradeValue);
@@ -54,31 +54,31 @@ namespace NonECS.UI
                     break;
                 case UpgradeType.KnockbackBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.KnockbackBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.KnockbackBonus = value);
                     break;
                 case UpgradeType.LifetimeBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.LifetimeBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.LifetimeBonus = value);
                     break;
                 case UpgradeType.SizeBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.SizeBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.SizeBonus = value);
                     break;
                 case UpgradeType.RangeBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.RangeBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.RangeBonus = value);
                     break;
                 case UpgradeType.NumCountBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.NumCountBonus = (int)value);
+                        (PlayerBonusStat stats, float value) => stats.NumCountBonus = (int)value);
                     break;
                 case UpgradeType.PenetrationBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.PenetrationBonus = (int)value);
+                        (PlayerBonusStat stats, float value) => stats.PenetrationBonus = (int)value);
                     break;
                 case UpgradeType.CriticalBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (ref PlayerBonusStat stats, float value) => stats.CriticalBonus = value);
+                        (PlayerBonusStat stats, float value) => stats.CriticalBonus = value);
                     break;
                 default:
                     Debug.LogWarning($"Upgrade type {selection.UpgradeType} not implemented");
