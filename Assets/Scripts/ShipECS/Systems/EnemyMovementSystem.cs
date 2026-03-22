@@ -111,9 +111,11 @@ namespace ShipECS.Systems
                 return;
             }
 
-            // Calculate repulsion from nearby cells
-            var repulsionForce = float3.zero;
-            var repulsionRadius = 2.5f; // Adjust based on your entity size
+            // Calculate separation force from nearby enemies
+            var separationForce = float3.zero;
+            var separationRadius = 3.5f;
+            var separationStrength = 2.0f;
+            var neighborCount = 0;
 
             // Get the current cell and neighboring cells
             var currentCell = gridData.GridCell;
@@ -133,18 +135,32 @@ namespace ShipECS.Systems
                     // Get position and calculate distance
                     var otherPosition = TransformLookup[neighborEntity].Position;
                     var direction = shipTransform.Position - otherPosition;
-                    var distance = math.length(direction);
+                    var distanceSq = math.lengthsq(direction);
+                    var distance = math.sqrt(distanceSq);
 
-                    // Apply repulsion if within radius
-                    if (!(distance > 0) || !(distance < repulsionRadius)) continue;
-                    var repulsionStrength = (repulsionRadius - distance) / repulsionRadius;
-                    repulsionForce += math.normalize(direction) * repulsionStrength;
+                    // Apply separation if within radius
+                    if (distance > 0 && distance < separationRadius)
+                    {
+                        neighborCount++;
+                        // Use inverse square falloff for more natural separation
+                        var separationWeight = math.pow((separationRadius - distance) / separationRadius, 2.0f);
+                        separationForce += (direction / distance) * separationWeight;
+                    }
                 } while (CellToEntities.TryGetNextValue(out neighborEntity, ref iterator));
             }
 
-            // Combine target direction with repulsion
+            // Normalize separation force based on neighbor count for consistent behavior
+            if (neighborCount > 0)
+            {
+                separationForce = math.normalize(separationForce) * separationStrength;
+            }
+
+            // Calculate target direction and blend with separation
             float3 targetDirection = math.normalize(TargetLocation - shipTransform.Position);
-            float3 finalDirection = math.normalize(targetDirection + repulsionForce * 1.5f); // Adjust weight as needed
+            
+            // Adaptively weight separation based on density - more separation when crowded
+            var adaptiveSeparationWeight = math.min(1.0f, neighborCount * 0.3f);
+            float3 finalDirection = math.normalize(targetDirection + separationForce * adaptiveSeparationWeight);
 
 
             var calcExp = DeltaTime * followTarget.Speed;
