@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 78286596}
   - component: {fileID: 78286595}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: TimeDataAuthoring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -393,6 +393,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2115753040}
   - component: {fileID: 2115753041}
+  - component: {fileID: 2115753042}
   m_Layer: 0
   m_Name: EnemySpawner
   m_TagString: Untagged
@@ -433,6 +434,19 @@ MonoBehaviour:
   MaximumEnemies: 3000
   MaximumTime: 1800
   BossTime: 300
+--- !u!114 &2115753042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2115753039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64e288e25c9a8e54c8b4706179921675, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  droneEntity: {fileID: 2339328952495177032, guid: 9a5a4089c4100094d8ad34ee345e2762, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

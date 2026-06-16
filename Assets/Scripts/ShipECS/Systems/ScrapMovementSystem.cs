@@ -38,8 +38,11 @@ namespace ShipECS.Systems
 
                     var lerpTime = 0f;
 
-                    if (scrap.ValueRO.TimeLeft >=
-                        scrap.ValueRO.TimeToReachTarget || math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position) < 1f) // destroy entity if it has reached target
+                    var distanceToTarget = math.distance(targetTransform.ValueRO.Position, transform.ValueRO.Position);
+                    var hasReachedTarget = distanceToTarget < 1f;
+                    var timeExpired = scrap.ValueRO.TimeLeft >= scrap.ValueRO.TimeToReachTarget;
+                    
+                    if (hasReachedTarget || timeExpired) // destroy entity if it has reached target or time expired
                     {
                         
                         ecb.AddComponent<DeadComponentTag>(entity);

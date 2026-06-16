@@ -16,9 +16,6 @@ namespace Authoring
         public int MaximumEnemies;
         public float MaximumTime = 1800;
         public float BossTime = 300f;
-        //public 
-        
-        
         
         private class EnemySpawnerBaker : Baker<EnemySpawnerAuthoring>
         {

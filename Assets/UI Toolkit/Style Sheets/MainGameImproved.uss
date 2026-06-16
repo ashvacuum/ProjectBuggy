@@ -1,0 +1,194 @@
+/* Main Game HUD Styles */
+.game-hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+/* Bottom HUD Panel */
+.bottom-hud {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 10%;
+    min-height: 80px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+/* Experience Bar */
+.experience-bar {
+    flex-grow: 1;
+    max-width: 70%;
+    height: 30px;
+    margin-left: 15%;
+    margin-right: 5%;
+}
+
+.experience-bar .unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 15px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.experience-bar .unity-progress-bar__progress {
+    background-image: url("project://database/Assets/Art/Kenney/PNG/Yellow/Double/bar_round_gloss_large.png?fileID=2800000&guid=1b0442512c88151419b19eade13c3b66&type=3#bar_round_gloss_large");
+    background-color: rgba(255, 255, 255, 0);
+    background-size: 100% 100%;
+    border-radius: 15px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* Level Display */
+.level-display {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    color: white;
+    font-size: 36px;
+    -unity-text-outline-width: 2px;
+    -unity-text-outline-color: black;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Health Bar (Player Following) */
+.health-bar {
+    position: absolute;
+    width: 150px;
+    height: 25px;
+    pointer-events: none;
+}
+
+.health-bar .unity-progress-bar__background {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.health-bar .unity-progress-bar__progress {
+    background-image: url("project://database/Assets/Art/Kenney/PNG/Red/Default/bar_round_gloss_large.png?fileID=2800000&guid=b14228a813cbbe84fac42394c419827e&type=3#bar_round_gloss_large");
+    background-color: rgba(255, 255, 255, 0);
+    background-size: 100% 100%;
+    border-radius: 10px;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* Upgrade Overlay */
+.upgrade-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    display: none;
+}
+
+/* Upgrade Container */
+.upgrade-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 80%;
+    padding: 20px;
+}
+
+/* Upgrade Button */
+.upgrade-button {
+    width: 250px;
+    height: 200px;
+    margin: 10px;
+    background-color: rgba(40, 40, 40, 0.9);
+    border-radius: 15px;
+    border-width: 3px;
+    border-color: rgba(255, 255, 255, 0.3);
+    transition-duration: 0.2s;
+    cursor: initial;
+}
+
+.upgrade-button:hover {
+    background-color: rgba(60, 60, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.6);
+    scale: 1.05;
+}
+
+.upgrade-button:active {
+    scale: 0.95;
+}
+
+/* Upgrade Layout */
+.upgrade-layout {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 15px;
+}
+
+/* Upgrade Text Styles */
+.upgrade-title {
+    color: white;
+    font-size: 18px;
+    -unity-font-style: bold;
+    text-align: middle-center;
+    white-space: normal;
+    margin-bottom: 5px;
+}
+
+.upgrade-level {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    text-align: middle-center;
+    margin-bottom: 10px;
+}
+
+.upgrade-description {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    text-align: middle-center;
+    white-space: normal;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1280px) {
+    .upgrade-button {
+        width: 200px;
+        height: 160px;
+    }
+    
+    .upgrade-title {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 800px) {
+    .bottom-hud {
+        height: 15%;
+    }
+    
+    .level-display {
+        font-size: 28px;
+    }
+    
+    .upgrade-container {
+        flex-direction: column;
+        max-width: 90%;
+    }
+    
+    .upgrade-button {
+        width: 300px;
+        height: 120px;
+    }
+}

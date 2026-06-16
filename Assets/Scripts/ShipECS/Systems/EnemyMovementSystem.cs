@@ -1,6 +1,7 @@
 using System;
 using Authoring;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
@@ -16,13 +17,27 @@ namespace ShipECS.Systems
     {
         public void OnCreate(ref SystemState state)
         {
+            state.RequireForUpdate<SpatialGrid>();
             state.RequireForUpdate<EnemyFollowTarget>();
         }
         
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var grid = SystemAPI.GetSingleton<SpatialGrid>();
+            var transformLookup = SystemAPI.GetComponentLookup<LocalTransform>(false);
+           
             
+            var neighborOffsets = new NativeArray<int2>(9, Allocator.TempJob);
+            neighborOffsets[0] = new int2(-1, -1);
+            neighborOffsets[1] = new int2(-1, 0);
+            neighborOffsets[2] = new int2(-1, 1);
+            neighborOffsets[3] = new int2(0, -1);
+            neighborOffsets[4] = new int2(0, 0);
+            neighborOffsets[5] = new int2(0, 1);
+            neighborOffsets[6] = new int2(1, -1);
+            neighborOffsets[7] = new int2(1, 0);
+            neighborOffsets[8] = new int2(1, 1);
             foreach (var (playerTransform, playerEntity) in
                      SystemAPI.Query<RefRO<LocalTransform>>()
                          .WithAll<PlayerTag>()
@@ -31,64 +46,140 @@ namespace ShipECS.Systems
                 new FollowPlayerJob()
                 {
                     TargetLocation = playerTransform.ValueRO.Position,
-                    DeltaTime = SystemAPI.Time.DeltaTime
-                }.ScheduleParallel();
+                    DeltaTime = SystemAPI.Time.DeltaTime,
+                    CellToEntities = grid.CellToEntities,
+                    CellSize = grid.CellSize,
+                    TransformLookup = transformLookup,
+                    neighborOffsets = neighborOffsets
+                }.Schedule();
             }
         }
     }
     
-    [WithAll(typeof(EnemyFollowTarget), typeof(KnockBackReceiver))]
+    [WithAll(typeof(EnemyFollowTarget), typeof(KnockBackReceiver), typeof(SpatialGridData))]
     [WithNone(typeof(NewEnemySpawn), typeof(DeadComponentTag))]
     [BurstCompile]
     public partial struct FollowPlayerJob : IJobEntity
     {
         public float3 TargetLocation;
         public float DeltaTime;
-
-        void Execute(ref LocalTransform shipTransform, ref KnockBackReceiver receiver, in EnemyFollowTarget followTarget, in PhysicsMass mass)
+        [ReadOnly] public NativeParallelMultiHashMap<int2, Entity> CellToEntities;
+        public float CellSize;
+        [ReadOnly] public NativeArray<int2> neighborOffsets;
+        public ComponentLookup<LocalTransform> TransformLookup;
+        
+        void Execute([ChunkIndexInQuery] int chunkIndex, Entity entity, 
+            ref KnockBackReceiver receiver, in EnemyFollowTarget followTarget, 
+            in PhysicsMass mass, in SpatialGridData gridData)
         {
+            
+            var shipTransform = TransformLookup[entity];
             if (receiver.isBeingKnockedBack)
             {
                 var isKinematic = mass.IsKinematic;
                 if (receiver is { isBeingKnockedBack: true } && isKinematic)
                 {
-                    // Kinematic body: Update transform directly
-                    //Debug.Log($"Knockback Movement {ElapsedTime}");
-                    shipTransform.Position += receiver.currentKnockbackVelocity * DeltaTime;
+
+                    var postTransform = new LocalTransform
+                    {
+                        Position = shipTransform.Position + receiver.currentKnockbackVelocity * DeltaTime,
+                        Rotation = shipTransform.Rotation, //same rotation
+                        Scale = shipTransform.Scale // Keep the same scale
+                    };
+                    
+                    TransformLookup[entity] = postTransform;
+        
                     receiver.currentKnockbackVelocity *= math.exp(-5f * DeltaTime);
-                
+
                     if (math.lengthsq(receiver.currentKnockbackVelocity) < 0.01f || receiver.currentRecoveryTime <= 0)
                     {
                         receiver.isBeingKnockedBack = false;
-                    
+
                         receiver.currentKnockbackVelocity = float3.zero;
                     }
 
                 }
-            
+
 
                 receiver.currentRecoveryTime -= DeltaTime;
                 return;
             }
             
-            if (math.distance(shipTransform.Position,TargetLocation) < followTarget.FollowTargetLimits )
+
+            if (math.distance(shipTransform.Position, TargetLocation) < followTarget.FollowTargetLimits)
             {
                 return;
             }
+
+            // Calculate separation force from nearby enemies
+            var separationForce = float3.zero;
+            var separationRadius = 3.5f;
+            var separationStrength = 2.0f;
+            var neighborCount = 0;
+
+            // Get the current cell and neighboring cells
+            var currentCell = gridData.GridCell;
+
+            for (var i = 0; i < neighborOffsets.Length; i++)
+            {
+                var neighborCell = currentCell + neighborOffsets[i];
+
+                // Check entities in this neighbor cell
+                if (!CellToEntities.TryGetFirstValue(neighborCell, out Entity neighborEntity, out var iterator))
+                    continue;
+                do
+                {
+                    // Skip self
+                    if (neighborEntity.Equals(entity)) continue;
+
+                    // Get position and calculate distance
+                    var otherPosition = TransformLookup[neighborEntity].Position;
+                    var direction = shipTransform.Position - otherPosition;
+                    var distanceSq = math.lengthsq(direction);
+                    var distance = math.sqrt(distanceSq);
+
+                    // Apply separation if within radius
+                    if (distance > 0 && distance < separationRadius)
+                    {
+                        neighborCount++;
+                        // Use inverse square falloff for more natural separation
+                        var separationWeight = math.pow((separationRadius - distance) / separationRadius, 2.0f);
+                        separationForce += (direction / distance) * separationWeight;
+                    }
+                } while (CellToEntities.TryGetNextValue(out neighborEntity, ref iterator));
+            }
+
+            // Normalize separation force based on neighbor count for consistent behavior
+            if (neighborCount > 0)
+            {
+                separationForce = math.normalize(separationForce) * separationStrength;
+            }
+
+            // Calculate target direction and blend with separation
+            float3 targetDirection = math.normalize(TargetLocation - shipTransform.Position);
             
+            // Adaptively weight separation based on density - more separation when crowded
+            var adaptiveSeparationWeight = math.min(1.0f, neighborCount * 0.3f);
+            float3 finalDirection = math.normalize(targetDirection + separationForce * adaptiveSeparationWeight);
+
+
             var calcExp = DeltaTime * followTarget.Speed;
             var calculatedPosition = math.lerp(
                 shipTransform.Position,
-                shipTransform.Position + shipTransform.Forward(),
+                shipTransform.Position + finalDirection * calcExp,
                 calcExp);
             
-            shipTransform.Position = new float3(calculatedPosition.x, 0, calculatedPosition.z);
-            
-            var direction = TargetLocation - shipTransform.Position;
-            shipTransform.Rotation = quaternion.LookRotation(
-                math.normalize(direction)  * DeltaTime * followTarget.RotationSpeed,
-                math.up());
-            
+            var newTransform = new LocalTransform
+            {
+                Position = new float3(calculatedPosition.x, 0, calculatedPosition.z),
+                Rotation = math.slerp(
+                    shipTransform.Rotation,
+                    quaternion.LookRotation(finalDirection, math.up()),
+                    DeltaTime * followTarget.RotationSpeed),
+                Scale = shipTransform.Scale // Keep the same scale
+            };
+
+            TransformLookup[entity] = newTransform;
             
         }
     }

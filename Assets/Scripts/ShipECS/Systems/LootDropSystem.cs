@@ -12,10 +12,6 @@ namespace ShipECS.Systems
     [UpdateInGroup(typeof(PausableSystemGroup))]
     public partial struct LootSpawnSystem : ISystem
     {
-        public void OnCreate(ref SystemState state)
-        {
-        }
-        
         public void OnUpdate(ref SystemState state)
         {
             // Get the game timer

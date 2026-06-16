@@ -29,8 +29,9 @@ namespace Authoring
                     Speed = authoring.speed,
                     RotationSpeed = authoring.rotationSpeed,
                     FollowTargetLimits = authoring.targetRangeBounds,
-                    hasBeenRolledExp = false
+                    HasBeenRolledExp = false
                 });
+                AddComponent<SpatialGridData>(entity);
                 AddComponent(entity, new DamageComponent()
                 {
                     Damage = authoring.damage
@@ -59,7 +60,7 @@ namespace Authoring
         public float Speed;
         public float RotationSpeed;
         public float FollowTargetLimits;
-        public bool hasBeenRolledExp;
+        public bool HasBeenRolledExp;
 
     }
 

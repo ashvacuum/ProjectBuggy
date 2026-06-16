@@ -74,7 +74,7 @@ namespace NonECS.UI
             {
                 var isPaused = _currentLevelUpBuffers > 0;
                 manager.ValueRW.IsPaused = _currentLevelUpBuffers > 0;
-                Debug.Log($"Is paused? {isPaused}");
+                //Debug.Log($"Is paused? {isPaused}");
             }
             
             if (_currentLevelUpBuffers > 0 && !_isShowingBuffers)
