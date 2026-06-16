@@ -41,8 +41,10 @@ namespace ShipECS.Systems
                 return;
             }
             
-            foreach (var projectile in SystemAPI.Query<ProjectileFiringAspect>())
+            foreach (var (projectileRef, bonus, transform) in
+                     SystemAPI.Query<RefRW<ProjectileAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>>())
             {
+                var projectile = new ProjectileFiringAspect(projectileRef, bonus, transform);
                 if (projectile.CurrentFireRate > 0)
                 {
                     projectile.CurrentFireRate -= SystemAPI.Time.DeltaTime;
@@ -105,11 +107,19 @@ namespace ShipECS.Systems
         
     }
 
-    public readonly partial struct ProjectileFiringAspect : IAspect
+    public readonly struct ProjectileFiringAspect
     {
         private readonly RefRW<ProjectileAttack> _projectile;
         private readonly RefRO<PlayerBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
+
+        public ProjectileFiringAspect(RefRW<ProjectileAttack> projectile, RefRO<PlayerBonusStat> bonusStats,
+            RefRW<LocalTransform> transform)
+        {
+            _projectile = projectile;
+            _bonusStats = bonusStats;
+            _transform = transform;
+        }
 
         public float TotalFireRate => math.max(0,
             _projectile.ValueRW.BaseFireRate -

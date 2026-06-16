@@ -16,10 +16,11 @@ namespace Firing_System
         {
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
-            foreach (var weapon in
-                     SystemAPI.Query<WeaponAspect>()
+            foreach (var (weaponData, localToWorld) in
+                     SystemAPI.Query<RefRO<WeaponData>, RefRW<LocalToWorld>>()
                          .WithAll<Shooting>())
             {
+                var weapon = new WeaponAspect(weaponData, localToWorld);
                 //if (weapon.BulletPrefab == Entity.Null) continue;
                 var instance = state.EntityManager.Instantiate(weapon.BulletPrefab);
                 ecb.AddComponent<DamageComponent>(instance);

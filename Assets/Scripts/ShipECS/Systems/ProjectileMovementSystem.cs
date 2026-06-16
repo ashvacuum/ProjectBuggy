@@ -25,8 +25,11 @@ namespace ShipECS.Systems
             var ecb = new EntityCommandBuffer(Allocator.Temp);
             
             
-            foreach (var (projectile,entity) in SystemAPI.Query<ProjectileAspect>().WithNone<DeadComponentTag, NewSpawnRenderInvisibleTag>().WithEntityAccess())
+            foreach (var (motion, health, transform, entity) in
+                     SystemAPI.Query<RefRW<ProjectileMotion>, RefRO<HealthComponent>, RefRW<LocalTransform>>()
+                         .WithNone<DeadComponentTag, NewSpawnRenderInvisibleTag>().WithEntityAccess())
             {
+                var projectile = new ProjectileAspect(motion, health, transform);
                 if (!projectile.IsAlive)
                 {
                     ecb.AddComponent<DeadComponentTag>(entity);
@@ -68,11 +71,20 @@ namespace ShipECS.Systems
         }
     }
 
-    public readonly partial struct ProjectileAspect : IAspect
+    public readonly struct ProjectileAspect
     {
         private readonly RefRW<ProjectileMotion> _motion;
         private readonly RefRO<HealthComponent> _health;
         private readonly RefRW<LocalTransform> _transform;
+
+        public ProjectileAspect(RefRW<ProjectileMotion> motion, RefRO<HealthComponent> health,
+            RefRW<LocalTransform> transform)
+        {
+            _motion = motion;
+            _health = health;
+            _transform = transform;
+        }
+
         public bool IsAlive => _health.ValueRO.CurrentHealth > 0 && _motion.ValueRW.LifeTime > 0;
         public float3 ForwardVector => _motion.ValueRO.Direction;
         public float Speed => _motion.ValueRO.Speed;

@@ -36,8 +36,10 @@ namespace ShipECS.Systems.Artillery
             var random = Random.CreateFromIndex((uint)SystemAPI.Time.ElapsedTime * 1000);
             var hitResults = new NativeList<ColliderCastHit>(Allocator.Temp);
             
-            foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
+            foreach (var (artilleryRef, bonus, artilleryTransform, targets) in
+                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
             {
+                var artilleryFiringAspect = new ArtilleryFiringAspect(artilleryRef, bonus, artilleryTransform, targets);
                 foreach (var (explosionTag, transform, entity) in
                          SystemAPI.Query<RefRO<ArtilleryExplosionTag>, RefRO<LocalTransform>>().WithEntityAccess()
                              .WithNone<DeadComponentTag>())

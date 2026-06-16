@@ -28,8 +28,10 @@ namespace ShipECS.Systems
                 .CreateCommandBuffer(state.WorldUnmanaged);
 
             var hasDrone = SystemAPI.TryGetSingletonBuffer<DroneDatabase>(out var droneDatabases);
-            foreach (var artillery in SystemAPI.Query<DroneAspect>())
+            foreach (var (droneRef, bonus, transform) in
+                     SystemAPI.Query<RefRW<DroneAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>>())
             {
+                var artillery = new DroneAspect(droneRef, bonus, transform);
 
                 var remainingDronesToSpawn = 0;
                 if (_droneComponentQuery.IsEmpty)
@@ -63,12 +65,19 @@ namespace ShipECS.Systems
         
     }
 
-    public readonly partial struct DroneAspect : IAspect
+    public readonly struct DroneAspect
     {
         private readonly RefRW<DroneAttack> _droneAttack;
         private readonly RefRO<PlayerBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
 
+        public DroneAspect(RefRW<DroneAttack> droneAttack, RefRO<PlayerBonusStat> bonusStats,
+            RefRW<LocalTransform> transform)
+        {
+            _droneAttack = droneAttack;
+            _bonusStats = bonusStats;
+            _transform = transform;
+        }
 
         public float TotalFireRate => math.max(0,
             _droneAttack.ValueRW.BaseFireRate -

@@ -31,7 +31,7 @@ namespace ShipECS.Systems
         }
 
         [BurstCompile]
-        public void OnDestroy(ref SystemState state) 
+        public void OnDestroy(ref SystemState state)
         {
             // Clean up native array
             m_HitResults.Dispose();
@@ -42,19 +42,16 @@ namespace ShipECS.Systems
         {
             return;
             // Define capsule cast parameters
-            m_StartPoint = new float3(0, 1, 0);  // Starting point of the capsule
-            m_EndPoint = new float3(0, 5, 0);    // Endpoint of the capsule
-            m_Radius = 0.5f;                     // Radius of the capsule
-            float maxDistance = 10f;             // Maximum cast distance
+            m_StartPoint = new float3(0, 1, 0); // Starting point of the capsule
+            m_EndPoint = new float3(0, 5, 0); // Endpoint of the capsule
+            m_Radius = 0.5f; // Radius of the capsule
+            float maxDistance = 10f; // Maximum cast distance
 
             // Create a CollisionWorld reference
             var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
             var collisionWorld = physicsWorldSingleton.CollisionWorld;
 
-
-            foreach (var transform in
-                     SystemAPI.Query<RefRW<LocalTransform>>()
-                         .WithAll<PlayerTag>())
+            foreach (var transform in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<PlayerTag>())
             {
                 m_StartPoint = transform.ValueRO.Position;
                 m_EndPoint = transform.ValueRO.Forward() * 10;
@@ -64,11 +61,14 @@ namespace ShipECS.Systems
 
             // Create a NativeList to store results
             var hitResults = new NativeList<ColliderCastHit>(Allocator.Temp);
-            
-            
+
             // Perform the capsule cast
-            m_HasHit = collisionWorld.CapsuleCastAll(m_StartPoint,
-                m_EndPoint, m_Radius, m_EndPoint - m_StartPoint, maxDistance,
+            m_HasHit = collisionWorld.CapsuleCastAll(
+                m_StartPoint,
+                m_EndPoint,
+                m_Radius,
+                m_EndPoint - m_StartPoint,
+                maxDistance,
                 ref hitResults,
                 Unity.Physics.CollisionFilter.Default
             );
@@ -82,10 +82,12 @@ namespace ShipECS.Systems
                 // Process the results
                 foreach (var hit in hitResults)
                 {
-                    UnityEngine.Debug.Log($"Capsule Cast Hit: " +
-                                          $"Point={hit.Position}, " +
-                                          $"Distance={hit.Fraction * maxDistance}, " +
-                                          $"Entity Index={hit.Entity.Index}");
+                    UnityEngine.Debug.Log(
+                        $"Capsule Cast Hit: "
+                            + $"Point={hit.Position}, "
+                            + $"Distance={hit.Fraction * maxDistance}, "
+                            + $"Entity Index={hit.Entity.Index}"
+                    );
                 }
             }
 
@@ -93,13 +95,14 @@ namespace ShipECS.Systems
             hitResults.Dispose();
         }
 
+#if UNITY_EDITOR
         // Custom Gizmo drawing method
         [DrawGizmo(GizmoType.Active | GizmoType.NonSelected)]
         private static void DrawCapsuleCastGizmos(CapsuleCastSystem system, GizmoType gizmoType)
         {
             // Draw the capsule cast path
             Gizmos.color = Color.yellow;
-        
+
             // Draw the capsule start and end points
             Gizmos.DrawWireSphere(system.m_StartPoint, system.m_Radius);
             Gizmos.DrawWireSphere(system.m_EndPoint, system.m_Radius);
@@ -111,19 +114,20 @@ namespace ShipECS.Systems
             if (system.m_HasHit)
             {
                 Gizmos.color = Color.red;
-            
+
                 // Draw hit points
                 foreach (var hit in system.m_HitResults)
                 {
                     Gizmos.DrawSphere(hit.Position, system.m_Radius * 1.2f);
-                
+
                     // Optional: Draw hit normal
                     Gizmos.DrawRay(hit.Position, hit.SurfaceNormal * system.m_Radius);
                 }
             }
         }
+#endif
     }
 
-// Companion component (optional, for attaching to an entity if needed)
+    // Companion component (optional, for attaching to an entity if needed)
     public struct CapsuleCastTag : IComponentData { }
 }

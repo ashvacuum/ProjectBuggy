@@ -30,8 +30,10 @@ namespace ShipECS.Systems.Artillery
         public void OnUpdate(ref SystemState state)
         {
             var hasBuffer = SystemAPI.TryGetSingletonBuffer<ArtilleryQueue>(out var artilleryQueue);
-            foreach (var artillery in SystemAPI.Query<ArtilleryFiringAspect>())
+            foreach (var (artilleryRef, bonus, transform, targets) in
+                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
             {
+                var artillery = new ArtilleryFiringAspect(artilleryRef, bonus, transform, targets);
                 if (artillery.CurrentFireRate > 0)
                 {
                     artillery.CurrentFireRate -= SystemAPI.Time.DeltaTime;
@@ -81,13 +83,21 @@ namespace ShipECS.Systems.Artillery
         public float CurrentFireRate; // value to edit if it hits 0 it will fire and reset to total fire rate
     }
     
-    public readonly partial struct ArtilleryFiringAspect : IAspect
+    public readonly struct ArtilleryFiringAspect
     {
         private readonly RefRW<ArtilleryAttack> _artillery;
         private readonly RefRO<PlayerBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
-
         private readonly DynamicBuffer<ArtilleryTarget> _targets;
+
+        public ArtilleryFiringAspect(RefRW<ArtilleryAttack> artillery, RefRO<PlayerBonusStat> bonusStats,
+            RefRW<LocalTransform> transform, DynamicBuffer<ArtilleryTarget> targets)
+        {
+            _artillery = artillery;
+            _bonusStats = bonusStats;
+            _transform = transform;
+            _targets = targets;
+        }
 
         public float TotalFireRate => math.max(0,
             _artillery.ValueRW.BaseFireRate -

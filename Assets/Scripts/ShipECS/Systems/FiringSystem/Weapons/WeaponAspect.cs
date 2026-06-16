@@ -4,11 +4,17 @@ using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
 
-public readonly partial struct WeaponAspect : IAspect
+public readonly struct WeaponAspect
 {
     readonly RefRO<WeaponData> m_Weapon;
     public readonly RefRW<LocalToWorld> LocalToWorld;
-    
+
+    public WeaponAspect(RefRO<WeaponData> weapon, RefRW<LocalToWorld> localToWorld)
+    {
+        m_Weapon = weapon;
+        LocalToWorld = localToWorld;
+    }
+
     public Entity BulletPrefab => m_Weapon.ValueRO.bulletPrefab;
     public Entity BulletSpawn => m_Weapon.ValueRO.bulletSpawn;
 

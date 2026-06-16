@@ -29,8 +29,10 @@ namespace ShipECS.Systems.Artillery
             if (!hasBuffer || !hasSpawnBuffer) return;
             
             
-            foreach (var artilleryFiringAspect in SystemAPI.Query<ArtilleryFiringAspect>())
+            foreach (var (artilleryRef, bonus, transform, targets) in
+                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
             {
+                var artilleryFiringAspect = new ArtilleryFiringAspect(artilleryRef, bonus, transform, targets);
                 artilleryFiringAspect.CalculatePositions();
                 foreach (var artillery in artilleryQueue)
                 {
@@ -85,15 +87,6 @@ namespace ShipECS.Systems.Artillery
         }
     }
     
-    [BurstCompile]
-    public partial struct CalculatePositionsJob : IJobEntity
-    {
-        void Execute(ArtilleryFiringAspect artillery)
-        {
-            artillery.CalculatePositions();
-        }
-    }
-
     public struct ArtilleryTarget : IBufferElementData
     {
         public float3 TargetLocation;
