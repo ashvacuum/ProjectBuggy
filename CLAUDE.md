@@ -15,10 +15,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture
 
 ### ECS Structure
-- **Components**: Stored in `Assets/Scripts/ShipECS/Components/` - Data-only structures that define entity properties
+- **Components**: Data-only `IComponentData` structs are colocated with the system or authoring file that owns them (e.g. `SpatialGrid` is defined in `SpatialGridSystem.cs`). The `ShipECS/Components` and `ShipECS/Data` folders exist but are currently empty scaffolding.
 - **Systems**: Located in `Assets/Scripts/ShipECS/Systems/` - Contain game logic and behavior processing
 - **Entities**: Found in `Assets/Scripts/ShipECS/Entities/` - Entity definitions and aspects for data access patterns
-- **Data**: In `Assets/Scripts/ShipECS/Data/` - Shared data structures and blob assets
+- **Blob assets**: In `Assets/Scripts/BlobAsset/` - Shared blob data structures
 - **Authoring**: Located in `Assets/Scripts/Authoring/` - MonoBehaviour components that convert to ECS at runtime
 
 ### Key Systems
@@ -94,9 +94,8 @@ This is a Unity project - build through Unity Editor or Unity command line tools
 
 ## Important Notes
 
-- The project is currently on branch `explosion-graph-mods` 
-- Recent commits focus on ship avoidance logic, drone systems, and explosion graph updates
-- Modified file: `Assets/Scripts/ShipECS/Systems/EnemyMovementSystem.cs` contains ship avoidance logic
+- The project is being assessed for a pivot from space-ship survivors to a dune-buggy survivors game (see `TODO.md`). Most DOTS infrastructure is reusable; the new work is a terrain heightfield spine and a trick/landing loop.
+- `EnemyMovementSystem.cs` uses per-entity steering toward the player (with spatial-grid separation), NOT a flow field. A flow field is planned for terrain-aware swarm channeling.
 - Uses Burst compilation for performance-critical systems
 - Extensive use of Unity.Mathematics for SIMD-optimized math operations
 - Spatial grid system for efficient collision/proximity queries supporting thousands of entities

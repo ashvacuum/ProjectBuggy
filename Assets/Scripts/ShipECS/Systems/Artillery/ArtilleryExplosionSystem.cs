@@ -65,7 +65,6 @@ namespace ShipECS.Systems.Artillery
 
                     if (!hasHit)
                     {
-                        Debug.Log($"No Hits Detected Range {artilleryFiringAspect.TotalRange}");
                         continue;
                     }
 
@@ -91,43 +90,6 @@ namespace ShipECS.Systems.Artillery
 
                     state.Dependency = handle;
                     state.Dependency.Complete();
-
-                    /*
-                    Debug.Log($"Found Hits {hitResults.Length}");
-                    foreach (var hit in hitResults)
-                    {
-                        if (healthLookup.HasComponent(hit.Entity))
-                        {
-                            var rolledChance = random.NextFloat(0, 100);
-                            var health = healthLookup[hit.Entity];
-                            if (health.CurrentHealth <= 0 || !(health.CurrentNextTimeToTakeDamage <= 0)) return;
-                            if (artilleryFiringAspect.TotalCritical > 0 &&
-                                rolledChance < artilleryFiringAspect.TotalCritical)
-                            {
-                                Debug.Log($"Rolled {rolledChance}/{artilleryFiringAspect.TotalCritical} ");
-                                health.CurrentHealth -=
-                                    artilleryFiringAspect.TotalDamage * DamageConstants.CritMultiplier;
-                                health.WasDamagedCritical = true;
-                            }
-                            else
-                            {
-                                health.CurrentHealth -= artilleryFiringAspect.TotalDamage;
-                                health.WasDamagedCritical = false;
-                            }
-
-                            health.CurrentNextTimeToTakeDamage = health.NextTimeToTakeDamage;
-                            healthLookup[hit.Entity] = health;
-                        }
-
-                        if (_knockBackReceiver.HasComponent(hit.Entity))
-                        {
-                            //TODO: implement knockback system
-                        }
-                    }*/
-
-                    //hitResults.Dispose();
-
-
                 }
 
                 break;
