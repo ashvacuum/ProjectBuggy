@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Key Systems
 - **Movement Systems**: `EnemyMovementSystem`, `CharacterMovementSystem`, `ProjectileMovementSystem`
-- **Combat Systems**: `WeaponShootingSystem`, `DamageCollisionSystem`, weapon-specific systems in `Systems/Artillery/` and `Systems/Firing System/`
+- **Combat Systems**: `WeaponShootingSystem`, `DamageCollisionSystem`, weapon-specific systems in `Systems/Artillery/` and `Systems/FiringSystem/`
 - **Spawning Systems**: `EnemySpawnSystem`, `PlayerSpawnSystem`, `DroneSpawningSystem`
 - **Spatial Optimization**: `SpatialGridSystem` for efficient collision and proximity queries
 - **VFX Systems**: Visual effects management in `Systems/VFX/`
