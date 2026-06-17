@@ -1,101 +1,70 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository.
 
 ## Project Overview
 
-**Project Starship** is a 3D bullet heaven rogue-like space combat game inspired by Vampire Survivors but set in space. Built with Unity DOTS (Data-Oriented Technology Stack) using ECS, Unity Physics, and HDRP. Players control decommissioned spacecraft using the "Alchemist System" to transmute scrap into upgrades, surviving against cybernetic empire drone swarms for 1-30 minute sessions.
+**Project Dune-Crawler** (repo name `ProjectBuggy`, forked from a Unity DOTS space-ship survivors
+project) is a top-down **arcade dune-buggy survivor**. You drive a fast vehicle across an endless,
+mutating mathematical desert while an escalating swarm chases; survival is forgiving, but damage is
+gated behind **verticality** — launch off dunes, flip, and slam into the crowd. Built with Unity 6
+DOTS (ECS, Burst, Unity Physics) and HDRP.
 
-### Game Concept
-- **Genre**: Bullet Heaven Rogue-Like (3D Space Survivors)
-- **Core Loop**: Survive → Kill Enemies → Collect Scrap → Level Up → Choose Upgrades → Repeat
-- **Victory Condition**: Defeat final boss at 30 minutes
-- **USP**: 3D space combat with ECS performance, weapon evolution systems, and ship variety
+**`ARCHITECTURE.md` is the canonical design + technical-architecture document.** It records the decided
+approach and the rationale for several deliberate reversals of the brainstorm docs. Read it before
+making design or terrain/vehicle decisions. Key settled choices (do not re-open without the triggers
+listed there):
+- Swarm is **~1k–5k ECS entities (Burst)**, not 500k GPU compute.
+- **Stay HDRP** (not URP).
+- Terrain is an **analytical sum-of-sines formula** rendered on a **world-space follow-grid** (not
+  Unity Terrain, not floating origin).
+- Maximum reuse of the existing ECS survivors infrastructure; the genuinely new work is the formula
+  terrain, the arcade vehicle physics, and the verticality (slam/stun) loop.
 
-## Architecture
+## Architecture (current codebase)
 
 ### ECS Structure
-- **Components**: Data-only `IComponentData` structs are colocated with the system or authoring file that owns them (e.g. `SpatialGrid` is defined in `SpatialGridSystem.cs`). The `ShipECS/Components` and `ShipECS/Data` folders exist but are currently empty scaffolding.
-- **Systems**: Located in `Assets/Scripts/ShipECS/Systems/` - Contain game logic and behavior processing
-- **Entities**: Found in `Assets/Scripts/ShipECS/Entities/` - Entity definitions and aspects for data access patterns
-- **Blob assets**: In `Assets/Scripts/BlobAsset/` - Shared blob data structures
-- **Authoring**: Located in `Assets/Scripts/Authoring/` - MonoBehaviour components that convert to ECS at runtime
-
-### Key Systems
-- **Movement Systems**: `EnemyMovementSystem`, `CharacterMovementSystem`, `ProjectileMovementSystem`
-- **Combat Systems**: `WeaponShootingSystem`, `DamageCollisionSystem`, weapon-specific systems in `Systems/Artillery/` and `Systems/FiringSystem/`
-- **Spawning Systems**: `EnemySpawnSystem`, `PlayerSpawnSystem`, `DroneSpawningSystem`
-- **Spatial Optimization**: `SpatialGridSystem` for efficient collision and proximity queries
-- **VFX Systems**: Visual effects management in `Systems/VFX/`
+- **Components**: Data-only `IComponentData` structs are colocated with the system or authoring file
+  that owns them (e.g. `SpatialGrid` is in `SpatialGridSystem.cs`). The `ShipECS/Components` and
+  `ShipECS/Data` folders exist but are empty scaffolding.
+- **Systems**: `Assets/Scripts/ShipECS/Systems/` — game logic.
+- **Entities**: `Assets/Scripts/ShipECS/Entities/` — entity/aspect definitions. (Aspects have been
+  migrated off the deprecated `IAspect` to plain readonly structs + constructors.)
+- **Blob assets**: `Assets/Scripts/BlobAsset/`.
+- **Authoring**: `Assets/Scripts/Authoring/` — MonoBehaviours baked to ECS.
+- **Terrain (new)**: `Assets/Scripts/Terrain/` — `TerrainNoise`/`TerrainGenerator` (prototype height +
+  Unity Terrain, validates the sampling seam) and `BuggyTerrainSystem` (ECS height-follow). Being
+  migrated to the displaced follow-grid per `ARCHITECTURE.md`.
 
 ### System Groups
-The project uses `PausableSystemGroup` to allow game pausing. Many systems update in groups like:
-- `PostPhysicsPausableSystemGroup` for post-physics logic
-- System ordering with `[UpdateAfter]` attributes for dependencies
+`PausableSystemGroup` (and `Pre/Post/InPhysics` variants) gate updates on pause. Order with
+`[UpdateAfter]`/`[UpdateBefore]`.
 
 ## Development
 
-### Unity Version
-Uses Unity 6000.x with HDRP 17.x and Unity DOTS 1.3.x
-
-### Key Dependencies
-- `com.unity.entities`: Core ECS framework
-- `com.unity.physics`: Physics simulation
-- `com.unity.entities.graphics`: DOTS rendering
-- `com.unity.render-pipelines.high-definition`: HDRP graphics pipeline
-- `com.unity.inputsystem`: Modern input system
-
-### Build Commands
-This is a Unity project - build through Unity Editor or Unity command line tools. No custom build scripts detected.
-
-### Scenes
-- Main gameplay: `Assets/Scenes/CameraFollow ECS.unity`
-- VFX testing: `Assets/Scenes/VFX/VFX Lessons.unity`
-- Movement testing: `Assets/Scenes/Movement.unity`
+- **Unity** 6000.x, HDRP 17.x, Unity DOTS 1.3.x.
+- **Key deps**: `com.unity.entities`, `com.unity.physics`, `com.unity.entities.graphics`,
+  `com.unity.render-pipelines.high-definition`, `com.unity.inputsystem`.
+- **Build**: Unity project — build via the Editor. No custom build scripts.
+- **There is no compiler in the Claude environment.** Shaders, GPU code, and C# can be written here but
+  must be verified in the user's Unity Editor. Work in small, verifiable slices (see the Implementation
+  Plan in `ARCHITECTURE.md`).
+- **Scenes**: `Assets/Scenes/TerrainTest.unity` (current terrain work). Legacy ship scenes
+  (`CameraFollow ECS`, `Movement`, `VFX/VFX Lessons`) remain as reference.
 
 ## Code Patterns
+- `IJobEntity` / `IJobChunk` + Burst for parallel work; `RefRO<T>`/`RefRW<T>` access; `ComponentLookup<T>`
+  for random access; `NativeArray` / `NativeParallelMultiHashMap` for data structures.
+- VFX goes through `VFXSystem`'s `VFXManager<T>` buffer pattern (request struct → GraphicsBuffer →
+  single `SendEvent`). Never stand up a parallel particle path.
+- ScriptableObjects in `Assets/ScriptableObjects/`, prefabs in `Assets/Prefabs/`.
 
-### ECS Job Patterns
-- Systems use `IJobEntity` for parallel processing (e.g., `FollowPlayerJob` in `EnemyMovementSystem`)
-- Components use `RefRO<T>` for read-only access and `RefRW<T>` for read-write access
-- Extensive use of `ComponentLookup<T>` for random entity access
-- `NativeArray` and `NativeParallelMultiHashMap` for efficient data structures
-
-### Physics Integration
-- Uses Unity Physics with custom collision handling
-- Knockback system for entity interactions
-- Spatial grid optimization for performance at scale
-
-### Asset Management
-- ScriptableObjects in `Assets/ScriptableObjects/` for game configuration
-- Prefabs organized by type in `Assets/Prefabs/`
-- Blob assets for shared data across entities
-
-## Game Systems Design
-
-### Core Gameplay Features
-- **Ship Types**: 3 player ships (Cruiser, Behemoth, Starlance) with different starting weapons
-- **Weapon Systems**: Single Target Bullet, Artillery Barrage, Laser Strikes - each with evolution mechanics
-- **Progression**: Experience from scrap → level up → choose from 3 upgrades (Systems or Ship upgrades)
-- **Boss System**: Bosses spawn every 5 minutes, become salvageable derelicts when defeated
-- **Difficulty Scaling**: Enemy count scales from 10 at 2min to 3000 at 30min
-- **Scrap Types**: C/B/S tier scrap with different exp values and drop rates over time
-
-### Upgrade System
-- **Ship Attributes**: Turn Speed, Move Speed, Health, (Luck for player ships)
-- **Weapon Evolution**: Weapons require specific ship systems to upgrade beyond max level
-- **Luck Mechanic**: Extra upgrade rolls (up to 5 total) from derelict ships and level-ups
-
-### Target Specifications
-- **Platform**: PC, Steam Deck, Handheld PCs
-- **Session Length**: 1-30 minutes
-- **Price Point**: <200PHP (~$3.50 USD)
-- **Competition**: TemTem Swarm, Vampire Survivors, Star Survivor
-
-## Important Notes
-
-- The project is being assessed for a pivot from space-ship survivors to a dune-buggy survivors game (see `TODO.md`). Most DOTS infrastructure is reusable; the new work is a terrain heightfield spine and a trick/landing loop.
-- `EnemyMovementSystem.cs` uses per-entity steering toward the player (with spatial-grid separation), NOT a flow field. A flow field is planned for terrain-aware swarm channeling.
-- Uses Burst compilation for performance-critical systems
-- Extensive use of Unity.Mathematics for SIMD-optimized math operations
-- Spatial grid system for efficient collision/proximity queries supporting thousands of entities
+## Engineering Invariants (from ARCHITECTURE.md §8 — these are hard rules)
+1. **CPU/GPU height parity is sacred** — the height formula lives in C# (physics) and HLSL (render) and
+   must match exactly. Sum-of-sines only; no gradient noise, no `sin`-hash.
+2. **Integer hashes** for procedural placement (trees/scatter) — never `frac(sin()*big)` across the
+   CPU/GPU boundary.
+3. **Deformation is CPU-owned** — CPU writes/samples the deformation field for physics, uploads a copy
+   to the GPU for render. Never GPU-only.
+4. **World space, not floating origin** — the buggy moves; the grid follows (cell-snapped).
+5. **Single VFX path** through `VFXManager<T>`.
