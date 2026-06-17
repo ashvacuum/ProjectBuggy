@@ -1,3 +1,4 @@
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -21,6 +22,20 @@ namespace ProjectBuggy
         void Start()
         {
             if (generateOnStart) Generate();
+            PushNoiseToEcs();
+        }
+
+        /// Publishes the noise params + terrain origin into ECS so gameplay samples the same surface.
+        public void PushNoiseToEcs()
+        {
+            var world = World.DefaultGameObjectInjectionWorld;
+            if (world == null || !world.IsCreated) return;
+
+            var em = world.EntityManager;
+            var query = em.CreateEntityQuery(typeof(TerrainNoiseSingleton));
+            Entity e = query.IsEmpty ? em.CreateEntity(typeof(TerrainNoiseSingleton)) : query.GetSingletonEntity();
+            em.SetComponentData(e, new TerrainNoiseSingleton { Noise = noiseParams, Origin = transform.position });
+            query.Dispose();
         }
 
         [ContextMenu("Generate")]
