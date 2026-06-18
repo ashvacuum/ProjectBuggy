@@ -29,7 +29,7 @@ namespace ShipECS.Systems
 
             var hasDrone = SystemAPI.TryGetSingletonBuffer<DroneDatabase>(out var droneDatabases);
             foreach (var (droneRef, bonus, transform) in
-                     SystemAPI.Query<RefRW<DroneAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>>())
+                     SystemAPI.Query<RefRW<DroneAttack>, RefRO<WeaponBonusStat>, RefRW<LocalTransform>>())
             {
                 var artillery = new DroneAspect(droneRef, bonus, transform);
 
@@ -68,10 +68,10 @@ namespace ShipECS.Systems
     public readonly struct DroneAspect
     {
         private readonly RefRW<DroneAttack> _droneAttack;
-        private readonly RefRO<PlayerBonusStat> _bonusStats;
+        private readonly RefRO<WeaponBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
 
-        public DroneAspect(RefRW<DroneAttack> droneAttack, RefRO<PlayerBonusStat> bonusStats,
+        public DroneAspect(RefRW<DroneAttack> droneAttack, RefRO<WeaponBonusStat> bonusStats,
             RefRW<LocalTransform> transform)
         {
             _droneAttack = droneAttack;
@@ -89,7 +89,7 @@ namespace ShipECS.Systems
         public float TotalRange => _droneAttack.ValueRO.BaseRange + (_bonusStats.ValueRO.RangeBonus/100f * _droneAttack.ValueRO.BaseRange);
         public float TotalSize =>  _droneAttack.ValueRO.BaseSize + (_bonusStats.ValueRO.SizeBonus/100f * _droneAttack.ValueRO.BaseSize);
         public float TotalLifeTime => _droneAttack.ValueRO.BaseLifeTime + (_bonusStats.ValueRO.LifetimeBonus/100 * _droneAttack.ValueRO.BaseLifeTime);
-        public float TotalSpeed => _droneAttack.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _droneAttack.ValueRO.BaseSpeed;
+        public float TotalSpeed => _droneAttack.ValueRO.BaseSpeed; // movement-speed bonus moved to VehiclePhysicsData
         public float TotalKnockback => _droneAttack.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _droneAttack.ValueRO.BaseKnockback;
         public float3 Position => _transform.ValueRO.Position;
         public float3 Forward => _transform.ValueRO.Forward();

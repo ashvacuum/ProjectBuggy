@@ -42,7 +42,7 @@ namespace ShipECS.Systems
             }
             
             foreach (var (projectileRef, bonus, transform) in
-                     SystemAPI.Query<RefRW<ProjectileAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>>())
+                     SystemAPI.Query<RefRW<ProjectileAttack>, RefRO<WeaponBonusStat>, RefRW<LocalTransform>>())
             {
                 var projectile = new ProjectileFiringAspect(projectileRef, bonus, transform);
                 if (projectile.CurrentFireRate > 0)
@@ -110,10 +110,10 @@ namespace ShipECS.Systems
     public readonly struct ProjectileFiringAspect
     {
         private readonly RefRW<ProjectileAttack> _projectile;
-        private readonly RefRO<PlayerBonusStat> _bonusStats;
+        private readonly RefRO<WeaponBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
 
-        public ProjectileFiringAspect(RefRW<ProjectileAttack> projectile, RefRO<PlayerBonusStat> bonusStats,
+        public ProjectileFiringAspect(RefRW<ProjectileAttack> projectile, RefRO<WeaponBonusStat> bonusStats,
             RefRW<LocalTransform> transform)
         {
             _projectile = projectile;
@@ -131,7 +131,7 @@ namespace ShipECS.Systems
         public float TotalRange => _projectile.ValueRO.BaseRange + (_bonusStats.ValueRO.RangeBonus/100f * _projectile.ValueRO.BaseRange);
         public float TotalSize =>  _projectile.ValueRO.BaseSize + (_bonusStats.ValueRO.SizeBonus/100f * _projectile.ValueRO.BaseSize);
         public float TotalLifeTime => _projectile.ValueRO.BaseLifeTime + (_bonusStats.ValueRO.LifetimeBonus/100 * _projectile.ValueRO.BaseLifeTime);
-        public float TotalSpeed => _projectile.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _projectile.ValueRO.BaseSpeed;
+        public float TotalSpeed => _projectile.ValueRO.BaseSpeed; // movement-speed bonus moved to VehiclePhysicsData
         public float TotalKnockback => _projectile.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _projectile.ValueRO.BaseKnockback;
         public float3 Position => _transform.ValueRO.Position;
         public float TotalCritical => _projectile.ValueRO.BaseCritical + (_bonusStats.ValueRO.CriticalBonus / 100f * _projectile.ValueRO.BaseCritical);

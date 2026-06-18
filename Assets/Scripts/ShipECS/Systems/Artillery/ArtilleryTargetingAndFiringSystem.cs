@@ -30,7 +30,7 @@ namespace ShipECS.Systems.Artillery
             
             
             foreach (var (artilleryRef, bonus, transform, targets) in
-                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
+                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<WeaponBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
             {
                 var artilleryFiringAspect = new ArtilleryFiringAspect(artilleryRef, bonus, transform, targets);
                 artilleryFiringAspect.CalculatePositions();

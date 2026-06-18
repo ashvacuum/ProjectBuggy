@@ -15,11 +15,28 @@ namespace Authoring
 {
     public class MainCharacterAuthoring : MonoBehaviour
     {
-        public float speed = 100f;
-        public float rotSpeed = 20f;
+        [Header("Arcade vehicle (Phase 1.2)")]
+        public float TopSpeed = 60f;
+        public float ReverseSpeed = 20f;
+        public float Acceleration = 80f;
+        public float Friction = 40f;       // coast-down when off throttle
+        public float TurnSpeedDeg = 180f;  // nose yaw rate at full speed
+        [Tooltip("Y catch-up rate to terrain. Higher = tighter tracking, lower = smoother ride. 0 = hard snap (jitters).")]
+        public float RideSmoothing = 12f;
+        [Tooltip("Lateral traction limit (units/s^2). Higher = harder to break loose; hard turns at speed slide.")]
+        public float GripAccel = 120f;
+        [Header("Nitrous (Sprint tap)")]
+        [Tooltip("% extra top speed at full nitro.")]
+        public float NitroTopSpeedBonus = 50f;
+        [Tooltip("% extra acceleration at full nitro.")]
+        public float NitroAccelBonus = 100f;
+        [Tooltip("Seconds for a nitro burst to fade out.")]
+        public float NitroDuration = 2f;
         public float3 CameraOffset;
         public float CameraPitchOverride;
         public float CameraSpeedOverride;
+        [Tooltip("Y-axis follow speed. Lower than CameraSpeed = camera lags on jumps. 0 = no lag.")]
+        public float CameraVerticalSpeedOverride;
         [FormerlySerializedAs("Health")] public float MaxHealth = 400f;
         public float NextTimeCanTakeDamage = 0.4f;
         public float InitialPickupradius = 300f;
@@ -30,7 +47,6 @@ namespace Authoring
         public int NumCountBonus; 
         public int PenetrationBonus;
         public float DamageBonus;
-        public float SpeedBonus;
         public float SizeBonus;
         public float FireRateReductionBonus;
         public float KnockbackBonus;
@@ -53,7 +69,8 @@ namespace Authoring
                 {
                     Offset = authoring.CameraOffset,
                     CameraPitch = authoring.CameraPitchOverride,
-                    CameraSpeed = authoring.CameraSpeedOverride
+                    CameraSpeed = authoring.CameraSpeedOverride,
+                    VerticalSpeed = authoring.CameraVerticalSpeedOverride
                 });
                 AddComponent(entity, new HealthComponent()
                 {
@@ -70,13 +87,12 @@ namespace Authoring
                     PickupRadiusBonus = authoring.RadiusBonus
                 });
 
-                AddComponent(entity, new PlayerBonusStat()
+                AddComponent(entity, new WeaponBonusStat()
                 {
                     LifetimeBonus = authoring.LifetimeBonus,
                     NumCountBonus = authoring.NumCountBonus,
                     PenetrationBonus = authoring.PenetrationBonus,
                     DamageBonus = authoring.DamageBonus,
-                    SpeedBonus = authoring.SpeedBonus,
                     SizeBonus = authoring.SizeBonus,
                     KnockbackBonus = authoring.KnockbackBonus,
                     RangeBonus = authoring.RangeBonus,
@@ -124,10 +140,18 @@ namespace Authoring
                     AddBuffer<ArtilleryQueue>(entity);
                 }
 
-                AddComponent(entity, new CharacterData
+                AddComponent(entity, new VehiclePhysicsData
                 {
-                    moveSpeed = authoring.speed,
-                    rotSpeed = authoring.rotSpeed
+                    TopSpeed = authoring.TopSpeed,
+                    ReverseSpeed = authoring.ReverseSpeed,
+                    Acceleration = authoring.Acceleration,
+                    Friction = authoring.Friction,
+                    TurnSpeed = math.radians(authoring.TurnSpeedDeg),
+                    GripAccel = authoring.GripAccel,
+                    RideSmoothing = authoring.RideSmoothing,
+                    NitroTopSpeedBonus = authoring.NitroTopSpeedBonus,
+                    NitroAccelBonus = authoring.NitroAccelBonus,
+                    NitroDuration = authoring.NitroDuration
                 });
                 AddComponent(entity, new InputsData() );
                 AddComponent<PlayerTag>(entity);
@@ -195,13 +219,12 @@ namespace Authoring
     /// <summary>
     /// Refers to the bonus stats the player has gained via upgrades outside of menu or via ship components
     /// </summary>
-    public struct PlayerBonusStat : IComponentData
+    public struct WeaponBonusStat : IComponentData
     {
         public float LifetimeBonus;
         public int NumCountBonus; 
         public int PenetrationBonus;
         public float DamageBonus;
-        public float SpeedBonus;
         public float SizeBonus;
         public float FireRateReductionBonus;
         public float RangeBonus;

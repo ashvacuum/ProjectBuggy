@@ -35,16 +35,15 @@ namespace NonECS.UI
                     ApplyHealthUpgrade(targetEntity, selection.UpgradeValue);
                     break;
                 case UpgradeType.SpeedBonus:
-                    ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue, 
-                        (PlayerBonusStat stats, float value) => stats.SpeedBonus = value);
+                    ApplyMovementSpeedUpgrade(targetEntity, selection.UpgradeValue);
                     break;
                 case UpgradeType.DamageBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.DamageBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.DamageBonus = value);
                     break;
                 case UpgradeType.FireRateReductionBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.FireRateReductionBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.FireRateReductionBonus = value);
                     break;
                 case UpgradeType.ExpBonus:
                     ApplyExperienceUpgrade(targetEntity, selection.UpgradeValue);
@@ -54,31 +53,31 @@ namespace NonECS.UI
                     break;
                 case UpgradeType.KnockbackBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.KnockbackBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.KnockbackBonus = value);
                     break;
                 case UpgradeType.LifetimeBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.LifetimeBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.LifetimeBonus = value);
                     break;
                 case UpgradeType.SizeBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.SizeBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.SizeBonus = value);
                     break;
                 case UpgradeType.RangeBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.RangeBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.RangeBonus = value);
                     break;
                 case UpgradeType.NumCountBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.NumCountBonus = (int)value);
+                        (WeaponBonusStat stats, float value) => stats.NumCountBonus = (int)value);
                     break;
                 case UpgradeType.PenetrationBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.PenetrationBonus = (int)value);
+                        (WeaponBonusStat stats, float value) => stats.PenetrationBonus = (int)value);
                     break;
                 case UpgradeType.CriticalBonus:
                     ApplyBonusStatUpgrade(targetEntity, selection.UpgradeValue,
-                        (PlayerBonusStat stats, float value) => stats.CriticalBonus = value);
+                        (WeaponBonusStat stats, float value) => stats.CriticalBonus = value);
                     break;
                 default:
                     Debug.LogWarning($"Upgrade type {selection.UpgradeType} not implemented");
@@ -147,11 +146,11 @@ namespace NonECS.UI
             _entityManager.SetComponentData(entity, health);
         }
         
-        private void ApplyBonusStatUpgrade(Entity entity, float value, Action<PlayerBonusStat, float> setter)
+        private void ApplyBonusStatUpgrade(Entity entity, float value, Action<WeaponBonusStat, float> setter)
         {
-            if (!_entityManager.HasComponent<PlayerBonusStat>(entity)) return;
+            if (!_entityManager.HasComponent<WeaponBonusStat>(entity)) return;
             
-            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(entity);
+            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(entity);
             setter(bonusStats, value);
             _entityManager.SetComponentData(entity, bonusStats);
         }
@@ -168,10 +167,19 @@ namespace NonECS.UI
         private void ApplyRadiusUpgrade(Entity entity, float value)
         {
             if (!_entityManager.HasComponent<PickupRadiusComponent>(entity)) return;
-            
+
             var radius = _entityManager.GetComponentData<PickupRadiusComponent>(entity);
             radius.PickupRadiusBonus = value;
             _entityManager.SetComponentData(entity, radius);
+        }
+
+        private void ApplyMovementSpeedUpgrade(Entity entity, float value)
+        {
+            if (!_entityManager.HasComponent<VehiclePhysicsData>(entity)) return;
+
+            var vehicle = _entityManager.GetComponentData<VehiclePhysicsData>(entity);
+            vehicle.SpeedBonus = value;
+            _entityManager.SetComponentData(entity, vehicle);
         }
     }
 }

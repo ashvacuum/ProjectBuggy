@@ -31,7 +31,7 @@ namespace ShipECS.Systems.Artillery
         {
             var hasBuffer = SystemAPI.TryGetSingletonBuffer<ArtilleryQueue>(out var artilleryQueue);
             foreach (var (artilleryRef, bonus, transform, targets) in
-                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
+                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<WeaponBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
             {
                 var artillery = new ArtilleryFiringAspect(artilleryRef, bonus, transform, targets);
                 if (artillery.CurrentFireRate > 0)
@@ -86,11 +86,11 @@ namespace ShipECS.Systems.Artillery
     public readonly struct ArtilleryFiringAspect
     {
         private readonly RefRW<ArtilleryAttack> _artillery;
-        private readonly RefRO<PlayerBonusStat> _bonusStats;
+        private readonly RefRO<WeaponBonusStat> _bonusStats;
         private readonly RefRW<LocalTransform> _transform;
         private readonly DynamicBuffer<ArtilleryTarget> _targets;
 
-        public ArtilleryFiringAspect(RefRW<ArtilleryAttack> artillery, RefRO<PlayerBonusStat> bonusStats,
+        public ArtilleryFiringAspect(RefRW<ArtilleryAttack> artillery, RefRO<WeaponBonusStat> bonusStats,
             RefRW<LocalTransform> transform, DynamicBuffer<ArtilleryTarget> targets)
         {
             _artillery = artillery;
@@ -109,7 +109,7 @@ namespace ShipECS.Systems.Artillery
         public float TotalRange => _artillery.ValueRO.BaseRange + (_bonusStats.ValueRO.RangeBonus/100f * _artillery.ValueRO.BaseRange);
         public float TotalSize =>  _artillery.ValueRO.BaseSize + (_bonusStats.ValueRO.SizeBonus/100f * _artillery.ValueRO.BaseSize);
         public float TotalLifeTime => _artillery.ValueRO.BaseLifeTime + (_bonusStats.ValueRO.LifetimeBonus/100 * _artillery.ValueRO.BaseLifeTime);
-        public float TotalSpeed => _artillery.ValueRO.BaseSpeed + _bonusStats.ValueRO.SpeedBonus/100f * _artillery.ValueRO.BaseSpeed;
+        public float TotalSpeed => _artillery.ValueRO.BaseSpeed; // movement-speed bonus moved to VehiclePhysicsData
         public float TotalKnockback => _artillery.ValueRO.BaseKnockback - _bonusStats.ValueRO.KnockbackBonus/100f * _artillery.ValueRO.BaseKnockback;
         public float3 Position => _transform.ValueRO.Position;
         public float3 Forward => _transform.ValueRO.Forward();

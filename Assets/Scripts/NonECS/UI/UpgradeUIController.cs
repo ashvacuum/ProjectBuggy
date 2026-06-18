@@ -47,7 +47,7 @@ namespace NonECS.UI
             _timeManagerQuery = _entityManager.CreateEntityQuery(typeof(TimeManagerComponent));
             _upgradesQuery = _entityManager.CreateEntityQuery(
                 ComponentType.ReadWrite<HealthComponent>(),
-                ComponentType.ReadWrite<PlayerBonusStat>(),
+                ComponentType.ReadWrite<WeaponBonusStat>(),
                 ComponentType.ReadWrite<PickupRadiusComponent>(),
                 ComponentType.ReadWrite<ExperienceContainer>(),
                 ComponentType.ReadWrite<ShipUpgradeLevels>()

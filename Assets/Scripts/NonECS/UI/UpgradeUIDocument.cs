@@ -43,7 +43,7 @@ namespace NonECS.UI
             _timeManagerQuery = _entityManager.CreateEntityQuery(typeof(TimeManagerComponent));
             _upgradesQuery = _entityManager.CreateEntityQuery(
                 ComponentType.ReadWrite<HealthComponent>(),
-                ComponentType.ReadWrite<PlayerBonusStat>(),
+                ComponentType.ReadWrite<WeaponBonusStat>(),
                 ComponentType.ReadWrite<PickupRadiusComponent>(),
                 ComponentType.ReadWrite<ExperienceContainer>(),
                 ComponentType.ReadWrite<ShipUpgradeLevels>()
@@ -244,11 +244,11 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.SpeedBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<VehiclePhysicsData>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
-                            bonusStats.SpeedBonus = value;
-                            _entityManager.SetComponentData(currentEntity, bonusStats);
+                            var vehicle = _entityManager.GetComponentData<VehiclePhysicsData>(currentEntity);
+                            vehicle.SpeedBonus = value;
+                            _entityManager.SetComponentData(currentEntity, vehicle);
                         }
 
                         break;
@@ -264,9 +264,9 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.KnockbackBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.KnockbackBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -274,9 +274,9 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.LifetimeBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.LifetimeBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -284,9 +284,9 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.DamageBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.DamageBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -294,9 +294,9 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.FireRateReductionBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.FireRateReductionBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -304,9 +304,9 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.SizeBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.SizeBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -314,9 +314,9 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.RangeBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.RangeBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -324,18 +324,18 @@ namespace NonECS.UI
                         break;
 
                     case UpgradeType.NumCountBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.NumCountBonus = (int)value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
 
                         break;
                     case UpgradeType.PenetrationBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.PenetrationBonus = (int)value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }
@@ -343,9 +343,9 @@ namespace NonECS.UI
                         break;
                     
                     case UpgradeType.CriticalBonus:
-                        if (_entityManager.HasComponent<PlayerBonusStat>(currentEntity))
+                        if (_entityManager.HasComponent<WeaponBonusStat>(currentEntity))
                         {
-                            var bonusStats = _entityManager.GetComponentData<PlayerBonusStat>(currentEntity);
+                            var bonusStats = _entityManager.GetComponentData<WeaponBonusStat>(currentEntity);
                             bonusStats.CriticalBonus = value;
                             _entityManager.SetComponentData(currentEntity, bonusStats);
                         }

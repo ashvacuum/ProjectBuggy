@@ -37,7 +37,7 @@ namespace ShipECS.Systems.Artillery
             var hitResults = new NativeList<ColliderCastHit>(Allocator.Temp);
             
             foreach (var (artilleryRef, bonus, artilleryTransform, targets) in
-                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<PlayerBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
+                     SystemAPI.Query<RefRW<ArtilleryAttack>, RefRO<WeaponBonusStat>, RefRW<LocalTransform>, DynamicBuffer<ArtilleryTarget>>())
             {
                 var artilleryFiringAspect = new ArtilleryFiringAspect(artilleryRef, bonus, artilleryTransform, targets);
                 foreach (var (explosionTag, transform, entity) in
