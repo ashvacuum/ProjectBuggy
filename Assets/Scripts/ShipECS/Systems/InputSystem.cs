@@ -18,6 +18,7 @@ namespace ShipECS.Systems
             foreach (RefRW<InputsData> data in SystemAPI.Query<RefRW<InputsData>>())
             {
                 data.ValueRW.move = inputs.Player.Move.ReadValue<Vector2>();
+                data.ValueRW.nitro = inputs.Player.Sprint.WasPressedThisFrame();
             }   
         }
     }
