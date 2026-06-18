@@ -5,6 +5,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 
 
+[DisableAutoCreation] // ponytail: dead parallel firing path; player uses ProjectileAttack
 public partial struct BulletProjectileSystem : ISystem
 {
         [BurstCompile]

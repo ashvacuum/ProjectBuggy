@@ -5,6 +5,7 @@ using Unity.Transforms;
 
 namespace Firing_System
 {
+    [DisableAutoCreation] // ponytail: dead parallel firing path; player uses ProjectileAttack
     public partial struct WeaponShootingSystem : ISystem
     {
         public void OnCreate(ref SystemState state)

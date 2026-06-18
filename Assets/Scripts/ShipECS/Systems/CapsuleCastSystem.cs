@@ -11,6 +11,7 @@ using UnityEngine;
 
 namespace ShipECS.Systems
 {
+    [DisableAutoCreation] // ponytail: physics-debug gizmo only; off in the buggy world
     [UpdateInGroup(typeof(PhysicsDebugDisplayGroup))]
     public partial struct CapsuleCastSystem : ISystem
     {
